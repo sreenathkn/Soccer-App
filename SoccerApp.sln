@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamBuilder", "TeamBuilder\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamBuilder.Tests", "TeamBuilder.Tests\TeamBuilder.Tests.csproj", "{453F0C59-5E80-41BB-9A51-DD384AD8A406}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Player", "Player\Player.csproj", "{26663EB8-122D-49BC-950F-196FECEDF6F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{453F0C59-5E80-41BB-9A51-DD384AD8A406}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{453F0C59-5E80-41BB-9A51-DD384AD8A406}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{453F0C59-5E80-41BB-9A51-DD384AD8A406}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26663EB8-122D-49BC-950F-196FECEDF6F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26663EB8-122D-49BC-950F-196FECEDF6F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26663EB8-122D-49BC-950F-196FECEDF6F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26663EB8-122D-49BC-950F-196FECEDF6F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
