@@ -72,9 +72,9 @@
     <None Include="Res\bg-soccer350x500.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Controller\Controller.csproj">
+    <ProjectReference Include="..\Controller\Match.csproj">
       <Project>{DB492908-9959-45B2-ACED-60FC17458D06}</Project>
-      <Name>Controller</Name>
+      <Name>Match</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

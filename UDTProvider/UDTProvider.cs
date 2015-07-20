@@ -18,15 +18,16 @@ namespace UDTProvider
         CRemoteHelper _objRemoteHelper;
         ConnectionStatus info;
         CUDTManagerHelper _mObjUdtHandler;
+        public CUdtArgs CurrentUDT { get; set; }
 
         public UDTProvider()
         {
            _CommonPath =  Environment.GetEnvironmentVariable("Wasp3.5");
         }
 
-        public bool Initialize()
+        public bool InitializeConnection()
         {
-            bool Result = false;
+          
            // string url=string.Empty;
             if (string.IsNullOrEmpty(_CommonPath))
                 return false;
@@ -34,16 +35,18 @@ namespace UDTProvider
 
             XDocument xdoc = XDocument.Load(configfile);
             var url = from lv1 in xdoc.Descendants("add")
-            where lv1.Attribute("key").Value=="REMOTEMANAGERURL"
+                      where lv1.Attribute("key").Value == "LOCALMANAGERURL"
             select lv1.Attribute("value").Value ;
-    
-
-
             _objRemoteHelper = new CRemoteHelper(url.ElementAt(0));
              info = _objRemoteHelper.Connect();
             _mObjUdtHandler = new CUDTManagerHelper(CRemoteHelper.GetDisconnectedUrl("UDTManager"));
-             var udt =_mObjUdtHandler.GetUdtByName("Soccer");
-             return Result;
+            
+             return true;
         }
+        public void InitializeUDT(string UdtName)
+        {
+            CurrentUDT = _mObjUdtHandler.GetUdtByName(UdtName);
+        }
+
     }
 }

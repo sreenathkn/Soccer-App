@@ -54,6 +54,12 @@
       <DependentUpon>Team.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Controller\Match.csproj">
+      <Project>{db492908-9959-45b2-aced-60fc17458d06}</Project>
+      <Name>Match</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

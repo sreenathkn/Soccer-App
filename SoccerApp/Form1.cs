@@ -15,6 +15,8 @@ namespace SoccerApp
         public Form1()
         {
             InitializeComponent();
+            team1.TeamType = "home";
+            team2.TeamType = "away";
         }
     }
 }

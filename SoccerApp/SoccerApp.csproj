@@ -80,9 +80,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Controller\Controller.csproj">
+    <ProjectReference Include="..\Controller\Match.csproj">
       <Project>{db492908-9959-45b2-aced-60fc17458d06}</Project>
-      <Name>Controller</Name>
+      <Name>Match</Name>
     </ProjectReference>
     <ProjectReference Include="..\Player\Player.csproj">
       <Project>{26663eb8-122d-49bc-950f-196fecedf6f8}</Project>
@@ -91,6 +91,10 @@
     <ProjectReference Include="..\Team\Team.csproj">
       <Project>{41734eef-d9b7-45f0-b7de-d096d55974d4}</Project>
       <Name>Team</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UDTProvider\UDTProvider.csproj">
+      <Project>{bfa81bc4-2ed7-48ed-935b-045265a4d60c}</Project>
+      <Name>UDTProvider</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

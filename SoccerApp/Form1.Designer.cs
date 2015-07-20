@@ -31,7 +31,7 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.team1 = new Team.Team();
             this.team2 = new Team.Team();
-            this.controller1 = new Controller.Controller();
+            this.controller1 = new Controller.Match();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -91,7 +91,7 @@
 
         #endregion
 
-        private Controller.Controller controller1;
+        private Controller.Match controller1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private Team.Team team1;
         private Team.Team team2;

@@ -7,24 +7,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using Controller;
 namespace Team
 {
     public partial class Team : UserControl
     {
+        private Controller.Match _objController;
+        public string TeamType { get; set; }
+
         public Team()
         {
             InitializeComponent();
 
-            (dataGridView1.Columns[3] as DataGridViewButtonColumn).UseColumnTextForButtonValue = false;
-            (dataGridView1.Columns[4] as DataGridViewButtonColumn).UseColumnTextForButtonValue = false;
-          //  (dataGridView1.Columns[5] as DataGridViewButtonColumn).UseColumnTextForButtonValue = false;
-            //(dataGridView1.Columns[7] as DataGridViewButtonColumn).UseColumnTextForButtonValue = false;
-           // (dataGridView1.Columns[8] as DataGridViewButtonColumn).UseColumnTextForButtonValue = false;
-            (dataGridView1.Columns[6] as DataGridViewComboBoxColumn).Items.Add("SUDHEESH");
-           
         }
-
+        public Team(Controller.Match cnt)
+        {
+            _objController = cnt;
+        }
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             var senderGrid = (DataGridView)sender;
@@ -37,6 +36,14 @@ namespace Team
                     case 3: //Goals
                         (senderGrid.Columns[e.ColumnIndex] as DataGridViewButtonColumn).Text = "GOAL";
                         column.Selected = false;
+                        if (TeamType == "home")
+                        {
+                            _objController.HomeTeamGoal += 1;
+                        }
+                        else
+                        {
+                            _objController.AwayTeamGoal += 1;
+                        }
                         break;
                     case 4: //Shots on Goal
                         break;

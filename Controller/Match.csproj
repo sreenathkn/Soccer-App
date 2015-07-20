@@ -51,24 +51,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controller.cs">
+    <Compile Include="Match.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controller.Designer.cs">
-      <DependentUpon>Controller.cs</DependentUpon>
+    <Compile Include="Match.Designer.cs">
+      <DependentUpon>Match.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MatchSelection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MatchSelection.Designer.cs">
+      <DependentUpon>MatchSelection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MatchPart.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MatchPart.Designer.cs">
+      <DependentUpon>MatchPart.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Controller.resx">
-      <DependentUpon>Controller.cs</DependentUpon>
+    <EmbeddedResource Include="Match.resx">
+      <DependentUpon>Match.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MatchSelection.resx">
+      <DependentUpon>MatchSelection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MatchPart.resx">
+      <DependentUpon>MatchPart.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Team\Team.csproj">
-      <Project>{41734eef-d9b7-45f0-b7de-d096d55974d4}</Project>
-      <Name>Team</Name>
-    </ProjectReference>
     <ProjectReference Include="..\UDTProvider\UDTProvider.csproj">
       <Project>{bfa81bc4-2ed7-48ed-935b-045265a4d60c}</Project>
       <Name>UDTProvider</Name>
