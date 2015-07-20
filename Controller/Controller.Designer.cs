@@ -29,6 +29,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Controller));
             this.label5 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -44,6 +45,7 @@
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.udt1 = new BeeSys.Wasp3D.Controls2.UDT();
             this.SuspendLayout();
             // 
             // label5
@@ -201,6 +203,24 @@
             this.button4.Text = "....";
             this.button4.UseVisualStyleBackColor = true;
             // 
+            // udt1
+            // 
+            this.udt1.AddInId = "";
+            this.udt1.AddinName = "";
+            this.udt1.AutoPost = false;
+            this.udt1.DsNamedColumn = null;
+            this.udt1.Filter = "";
+            this.udt1.ProviderId = "";
+            this.udt1.ProviderName = "";
+            this.udt1.Query = "";
+            this.udt1.Requery = false;
+            this.udt1.SelectedUdt = null;
+            this.udt1.SelectedUdtId = "";
+            this.udt1.State = System.Data.ConnectionState.Open;
+            this.udt1.TableConditions = null;
+            this.udt1.UDTNames = "Soccer";
+            this.udt1.UniqueID = "710993a6-55be-4828-ad7a-5d31524a110b";
+            // 
             // Controller
             // 
             this.Controls.Add(this.button4);
@@ -243,5 +263,6 @@
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
+        private BeeSys.Wasp3D.Controls2.UDT udt1;
     }
 }

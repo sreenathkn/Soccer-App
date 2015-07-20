@@ -18,9 +18,9 @@ namespace Team
 
             (dataGridView1.Columns[3] as DataGridViewButtonColumn).UseColumnTextForButtonValue = false;
             (dataGridView1.Columns[4] as DataGridViewButtonColumn).UseColumnTextForButtonValue = false;
-            (dataGridView1.Columns[5] as DataGridViewButtonColumn).UseColumnTextForButtonValue = false;
-            (dataGridView1.Columns[7] as DataGridViewButtonColumn).UseColumnTextForButtonValue = false;
-            (dataGridView1.Columns[8] as DataGridViewButtonColumn).UseColumnTextForButtonValue = false;
+          //  (dataGridView1.Columns[5] as DataGridViewButtonColumn).UseColumnTextForButtonValue = false;
+            //(dataGridView1.Columns[7] as DataGridViewButtonColumn).UseColumnTextForButtonValue = false;
+           // (dataGridView1.Columns[8] as DataGridViewButtonColumn).UseColumnTextForButtonValue = false;
             (dataGridView1.Columns[6] as DataGridViewComboBoxColumn).Items.Add("SUDHEESH");
            
         }

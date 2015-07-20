@@ -35,13 +35,11 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.JerseyNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Name = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Position = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Goal = new System.Windows.Forms.DataGridViewButtonColumn();
             this.ShotsOnGoal = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Foul = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Substitution = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.Yellow = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.Red = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.Card = new System.Windows.Forms.DataGridViewComboBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -84,20 +82,18 @@
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.JerseyNumber,
             this.Name,
-            this.Position,
             this.Goal,
             this.ShotsOnGoal,
             this.Foul,
             this.Substitution,
-            this.Yellow,
-            this.Red});
+            this.Card});
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.EnableHeadersVisualStyles = false;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.dataGridView1.RowHeadersVisible = false;
-            this.dataGridView1.Size = new System.Drawing.Size(756, 299);
+            this.dataGridView1.Size = new System.Drawing.Size(654, 299);
             this.dataGridView1.TabIndex = 22;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
@@ -118,7 +114,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.dataGridView1);
-            this.splitContainer1.Size = new System.Drawing.Size(756, 358);
+            this.splitContainer1.Size = new System.Drawing.Size(654, 358);
             this.splitContainer1.SplitterDistance = 55;
             this.splitContainer1.TabIndex = 23;
             // 
@@ -131,11 +127,6 @@
             // 
             this.Name.HeaderText = "Player Name";
             this.Name.Name = "Name";
-            // 
-            // Position
-            // 
-            this.Position.HeaderText = "Postion";
-            this.Position.Name = "Position";
             // 
             // Goal
             // 
@@ -167,27 +158,20 @@
             this.Substitution.Name = "Substitution";
             this.Substitution.Width = 200;
             // 
-            // Yellow
+            // Card
             // 
-            this.Yellow.HeaderText = "Yellow Card";
-            this.Yellow.Name = "Yellow";
-            this.Yellow.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Yellow.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.Yellow.Width = 50;
-            // 
-            // Red
-            // 
-            this.Red.HeaderText = "Red Card";
-            this.Red.Name = "Red";
-            this.Red.Width = 50;
+            this.Card.HeaderText = "Card";
+            this.Card.Name = "Card";
+            this.Card.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Card.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // Team
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.splitContainer1);
-           
-            this.Size = new System.Drawing.Size(756, 358);
+         
+            this.Size = new System.Drawing.Size(654, 358);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
@@ -207,12 +191,10 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.DataGridViewTextBoxColumn JerseyNumber;
         private System.Windows.Forms.DataGridViewTextBoxColumn Name;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Position;
         private System.Windows.Forms.DataGridViewButtonColumn Goal;
         private System.Windows.Forms.DataGridViewButtonColumn ShotsOnGoal;
         private System.Windows.Forms.DataGridViewButtonColumn Foul;
         private System.Windows.Forms.DataGridViewComboBoxColumn Substitution;
-        private System.Windows.Forms.DataGridViewButtonColumn Yellow;
-        private System.Windows.Forms.DataGridViewButtonColumn Red;
+        private System.Windows.Forms.DataGridViewComboBoxColumn Card;
     }
 }

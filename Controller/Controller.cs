@@ -15,6 +15,9 @@ namespace Controller
         public Controller()
         {
             InitializeComponent();
+            UDTProvider.UDTProvider up = new UDTProvider.UDTProvider();
+            up.Initialize();
+            
         }
 
        
