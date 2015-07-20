@@ -8,5 +8,7 @@ namespace BaseServices
 {
     interface ITeam
     {
+        public string TeamType { get; set; }
+
     }
 }

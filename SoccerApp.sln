@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Player", "Player\Player.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UDTProvider", "UDTProvider\UDTProvider.csproj", "{BFA81BC4-2ED7-48ED-935B-045265A4D60C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseServices", "BaseServices\BaseServices.csproj", "{043969D2-E908-4EB2-A294-9F66F40CC444}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{BFA81BC4-2ED7-48ED-935B-045265A4D60C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFA81BC4-2ED7-48ED-935B-045265A4D60C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFA81BC4-2ED7-48ED-935B-045265A4D60C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{043969D2-E908-4EB2-A294-9F66F40CC444}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{043969D2-E908-4EB2-A294-9F66F40CC444}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{043969D2-E908-4EB2-A294-9F66F40CC444}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{043969D2-E908-4EB2-A294-9F66F40CC444}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
