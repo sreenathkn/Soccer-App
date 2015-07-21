@@ -3,6 +3,7 @@ using BeeSys.Wasp.KernelController;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,12 +20,17 @@ namespace UDTProvider
         ConnectionStatus info;
         CUDTManagerHelper _mObjUdtHandler;
         public CUdtArgs CurrentUDT { get; set; }
+        public DataSet CurrentDataSet { get;set;}
+        public Dictionary<string, UdtFilter> UdtFilters;
 
         public UDTProvider()
         {
            _CommonPath =  Environment.GetEnvironmentVariable("Wasp3.5");
+           CurrentDataSet = new DataSet("Soccer");
+           UdtFilters = new Dictionary<string, UdtFilter>();
         }
 
+     
         public bool InitializeConnection()
         {
           
@@ -46,7 +52,41 @@ namespace UDTProvider
         public void InitializeUDT(string UdtName)
         {
             CurrentUDT = _mObjUdtHandler.GetUdtByName(UdtName);
+            using (XmlReader reader = XmlReader.Create(new StringReader(CurrentUDT.FORMAT)))
+            {
+                CurrentDataSet.ReadXmlSchema(reader);
+            }
+
+            if (!string.IsNullOrEmpty(CurrentUDT.DATA))
+            {
+                using (XmlReader reader = XmlReader.Create(new StringReader(CurrentUDT.DATA)))
+                {
+                    CurrentDataSet.ReadXml(reader);
+                }
+            }
         }
+        public void UpdateUDT(int tableIndex,string[] Columns,string[]Values,string primaryColumn,string PrimaryValue)
+        {
+            DataTable dtTable = CurrentDataSet.Tables[tableIndex];
+            DataRow[] dr = dtTable.Select(primaryColumn + "=" + PrimaryValue);
+            for(int i=0;i<Columns.Count();i++)
+            {
+                dr[0][Columns[i]] = Values[i];
+            }
+            var udtTable = new UdtTable();
+            udtTable.UDTROWDATA = dr[0].ItemArray.Select(o => o.ToString()).ToList();
+            udtTable.UdtTableName = dr[0].Table.TableName;
+            List<UdtTable> udtTables = new List<UdtTable> { udtTable };
+            CurrentUDT.UDTTABLE = udtTables;
+            _mObjUdtHandler.UpadteUdtRow(CurrentUDT);
+        }
+
+    }
+    public struct UdtFilter
+    {
+        public int TableIndex;
+        public string FilterColumn;
+        public string FilterValue;
 
     }
 }
