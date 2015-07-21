@@ -29,7 +29,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Match));
             this.label5 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -45,14 +44,12 @@
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
-            this.udt1 = new BeeSys.Wasp3D.Controls2.UDT();
             this.SuspendLayout();
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.BackColor = System.Drawing.Color.Black;
-            this.udt1.SetDataSourceList(this.label5, "udt1");
             this.label5.Font = new System.Drawing.Font("Corbel", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
             this.label5.Location = new System.Drawing.Point(686, 5);
@@ -63,7 +60,6 @@
             // 
             // button2
             // 
-            this.udt1.SetDataSourceList(this.button2, "udt1");
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button2.Location = new System.Drawing.Point(1188, 66);
             this.button2.Name = "button2";
@@ -74,7 +70,6 @@
             // 
             // button1
             // 
-            this.udt1.SetDataSourceList(this.button1, "udt1");
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.Location = new System.Drawing.Point(1131, 67);
             this.button1.Name = "button1";
@@ -87,7 +82,6 @@
             // 
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.Black;
-            this.udt1.SetDataSourceList(this.label4, "udt1");
             this.label4.Font = new System.Drawing.Font("CopperplateTLig", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.label4.Location = new System.Drawing.Point(1130, 28);
@@ -99,7 +93,6 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.udt1.SetDataSourceList(this.label3, "udt1");
             this.label3.Location = new System.Drawing.Point(290, 7);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(70, 13);
@@ -110,7 +103,6 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.udt1.SetDataSourceList(this.label1, "udt1");
             this.label1.Location = new System.Drawing.Point(369, 5);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(59, 13);
@@ -121,7 +113,6 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.udt1.SetDataSourceList(this.label6, "udt1");
             this.label6.Location = new System.Drawing.Point(1159, 6);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(44, 13);
@@ -132,7 +123,6 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.udt1.SetDataSourceList(this.label7, "udt1");
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.Location = new System.Drawing.Point(436, 21);
             this.label7.Name = "label7";
@@ -144,7 +134,6 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.udt1.SetDataSourceList(this.label8, "udt1");
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.Location = new System.Drawing.Point(734, 19);
             this.label8.Name = "label8";
@@ -156,7 +145,6 @@
             // textBox1
             // 
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.udt1.SetDataSourceList(this.textBox1, "udt1");
             this.textBox1.Location = new System.Drawing.Point(536, 22);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(136, 13);
@@ -165,7 +153,6 @@
             // textBox2
             // 
             this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.udt1.SetDataSourceList(this.textBox2, "udt1");
             this.textBox2.Location = new System.Drawing.Point(834, 21);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(136, 13);
@@ -175,7 +162,6 @@
             // 
             this.label9.AutoSize = true;
             this.label9.BackColor = System.Drawing.Color.Black;
-            this.udt1.SetDataSourceList(this.label9, "udt1");
             this.label9.Font = new System.Drawing.Font("Corbel", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
             this.label9.Location = new System.Drawing.Point(984, 8);
@@ -187,7 +173,6 @@
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.udt1.SetDataSourceList(this.linkLabel1, "udt1");
             this.linkLabel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.linkLabel1.Location = new System.Drawing.Point(7, 4);
             this.linkLabel1.Name = "linkLabel1";
@@ -198,7 +183,6 @@
             // 
             // button3
             // 
-            this.udt1.SetDataSourceList(this.button3, "udt1");
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button3.Location = new System.Drawing.Point(295, 21);
             this.button3.Name = "button3";
@@ -210,7 +194,6 @@
             // 
             // button4
             // 
-            this.udt1.SetDataSourceList(this.button4, "udt1");
             this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button4.Location = new System.Drawing.Point(372, 21);
             this.button4.Name = "button4";
@@ -220,25 +203,7 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
-            // udt1
-            // 
-            this.udt1.AddInId = "";
-            this.udt1.AddinName = "";
-            this.udt1.AutoPost = false;
-            this.udt1.DsNamedColumn = null;
-            this.udt1.Filter = "";
-            this.udt1.ProviderId = "";
-            this.udt1.ProviderName = "";
-            this.udt1.Query = "";
-            this.udt1.Requery = false;
-            this.udt1.SelectedUdt = null;
-            this.udt1.SelectedUdtId = "";
-            this.udt1.State = System.Data.ConnectionState.Open;
-            this.udt1.TableConditions = null;
-            this.udt1.UDTNames = "Soccer";
-            this.udt1.UniqueID = "710993a6-55be-4828-ad7a-5d31524a110b";
-            // 
-            // Controller
+            // Match
             // 
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
@@ -255,8 +220,7 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
-            this.udt1.SetDataSourceList(this, "udt1");
-            this.Name = "Controller";
+            this.Name = "Match";
             this.Size = new System.Drawing.Size(1279, 92);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -281,6 +245,5 @@
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
-        private BeeSys.Wasp3D.Controls2.UDT udt1;
     }
 }
