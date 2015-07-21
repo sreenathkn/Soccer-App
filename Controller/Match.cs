@@ -22,9 +22,7 @@ namespace Controller
         public Match()
         {
             InitializeComponent();
-            Udt = new UDTProvider.UDTProvider();
-            Udt.InitializeConnection();
-            Udt.InitializeUDT("Soccer");
+         
         }
 
         private void button3_Click(object sender, EventArgs e)

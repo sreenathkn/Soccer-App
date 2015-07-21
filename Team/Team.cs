@@ -7,12 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Controller;
+using UDTProvider;
+
 namespace Team
 {
     public partial class Team : UserControl
     {
-        private Controller.Match _objController;
+        public UDTProvider.UDTProvider _objUDTProvider;
         public string TeamType { get; set; }
 
         public Team()
@@ -20,9 +21,9 @@ namespace Team
             InitializeComponent();
 
         }
-        public Team(Controller.Match cnt)
+        public Team(UDTProvider.UDTProvider UDTProvider)
         {
-            _objController = cnt;
+            _objUDTProvider = UDTProvider;
         }
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -33,17 +34,31 @@ namespace Team
                 var column = senderGrid.Columns[e.ColumnIndex] as DataGridViewButtonColumn;
                 switch(e.ColumnIndex)
                 {
-                    case 3: //Goals
+                    case 2: //Goals
                         (senderGrid.Columns[e.ColumnIndex] as DataGridViewButtonColumn).Text = "GOAL";
                         column.Selected = false;
+                        string ColumnName = "";
+                        string TeamName = "";
+                        var activeMatch = _objUDTProvider.UdtFilters["Active Match"];
+                        var currentMatchPart = _objUDTProvider.UdtFilters["Match Part"];
+                        DataRow[] dr = _objUDTProvider.CurrentDataSet.Tables[10].Select("Name = '" + activeMatch.FilterValue + "'");
                         if (TeamType == "home")
                         {
-                            _objController.HomeTeamGoal += 1;
+                            ColumnName = "HomeScore";
+                            TeamName = dr[0]["HomeTeam"].ToString();
                         }
                         else
                         {
-                            _objController.AwayTeamGoal += 1;
+                            ColumnName = "AwayScore";
+                            TeamName = dr[0]["AwayTeam"].ToString();
                         }
+                      
+                        var HomeScore = dr[0][ColumnName];
+                        int score = Convert.ToInt32(HomeScore) + 1;
+                        _objUDTProvider.UpdateUDT(10, new string[] { ColumnName }, new string[] { score.ToString() }, "ID", dr[0]["ID"].ToString());
+                        // Insert Into Match Events
+                        _objUDTProvider.InsertUDTData(12, new string[] { "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { activeMatch.FilterValue, currentMatchPart.FilterValue,DateTime.Now.ToString(),"Goal",TeamName,"" });
+
                         break;
                     case 4: //Shots on Goal
                         break;

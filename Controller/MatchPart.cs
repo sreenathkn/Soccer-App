@@ -20,6 +20,12 @@ namespace Controller
         {
             InitializeComponent();
             _objController = objController;
+           _objUDT = objController.Udt;
+            DataSet dt = _objController.Udt.CurrentDataSet;
+            var t = dt.Tables[11];
+            listBox1.DataSource = t;
+            listBox1.DisplayMember = "Name";
+            listBox1.ValueMember = "ID";
         }
 
         private void listBox1_DoubleClick(object sender, EventArgs e)

@@ -7,16 +7,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using UDTProvider;
 
 namespace SoccerApp
 {
     public partial class Form1 : Form
     {
+        public UDTProvider.UDTProvider Udt { get; set; }
         public Form1()
         {
             InitializeComponent();
             team1.TeamType = "home";
             team2.TeamType = "away";
+            Udt = new UDTProvider.UDTProvider();
+            Udt.InitializeConnection();
+            Udt.InitializeUDT("Soccer");
+            match1.Udt = Udt;
+            team1._objUDTProvider = Udt;
+            team2._objUDTProvider = Udt;
         }
     }
 }

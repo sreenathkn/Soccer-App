@@ -81,6 +81,22 @@ namespace UDTProvider
             _mObjUdtHandler.UpadteUdtRow(CurrentUDT);
         }
 
+        public void InsertUDTData(int tableIndex, string[] Columns, string[] Values)
+        {
+            DataTable dtTable = CurrentDataSet.Tables[tableIndex];
+            DataRow dr= dtTable.NewRow();
+            for (int i = 0; i < Columns.Count(); i++)
+            {
+                dr[Columns[i]] = Values[i];
+            }
+            var udtTable = new UdtTable();
+            udtTable.UDTROWDATA = dr.ItemArray.Select(o => o.ToString()).ToList();
+            udtTable.UdtTableName = dr.Table.TableName;
+            List<UdtTable> udtTables = new List<UdtTable> { udtTable };
+            CurrentUDT.UDTTABLE = udtTables;
+            _mObjUdtHandler.AddDefaultRow(CurrentUDT);
+        }
+
     }
     public struct UdtFilter
     {
