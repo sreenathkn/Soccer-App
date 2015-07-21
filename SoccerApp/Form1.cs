@@ -17,11 +17,11 @@ namespace SoccerApp
         public Form1()
         {
             InitializeComponent();
-            team1.TeamType = "home";
-            team2.TeamType = "away";
             Udt = new UDTProvider.UDTProvider();
             Udt.InitializeConnection();
             Udt.InitializeUDT("Soccer");
+            team1.TeamType = "home";
+            team2.TeamType = "away";
             match1.Udt = Udt;
             team1._objUDTProvider = Udt;
             team2._objUDTProvider = Udt;

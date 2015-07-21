@@ -15,6 +15,28 @@ namespace Team
     {
         public UDTProvider.UDTProvider _objUDTProvider;
         public string TeamType { get; set; }
+        /*{
+            get
+            {
+                return this.TeamType;
+            }
+        set
+        {
+            if (_objUDTProvider != null)
+            {
+                var activeMatch = _objUDTProvider.UdtFilters["Active Match"];
+                DataRow[] dr = _objUDTProvider.CurrentDataSet.Tables[10].Select("Name = '" + activeMatch.FilterValue + "'");
+                if (value == "home")
+                {
+                    TeamName = dr[0]["HomeTeam"].ToString();
+                }
+                else
+                {
+                    TeamName = dr[0]["AwayTeam"].ToString();
+                }
+            }
+        }
+        }*/
 
         public Team()
         {
@@ -24,6 +46,8 @@ namespace Team
         public Team(UDTProvider.UDTProvider UDTProvider)
         {
             _objUDTProvider = UDTProvider;
+            
+
         }
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -38,7 +62,7 @@ namespace Team
                         (senderGrid.Columns[e.ColumnIndex] as DataGridViewButtonColumn).Text = "GOAL";
                         column.Selected = false;
                         string ColumnName = "";
-                        string TeamName = "";
+                       
                         var activeMatch = _objUDTProvider.UdtFilters["Active Match"];
                         var currentMatchPart = _objUDTProvider.UdtFilters["Match Part"];
                         DataRow[] dr = _objUDTProvider.CurrentDataSet.Tables[10].Select("Name = '" + activeMatch.FilterValue + "'");
@@ -75,5 +99,30 @@ namespace Team
 
             }
         }
+
+        private void btnTeamList_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(TeamName))
+            {
+                var activeMatch = _objUDTProvider.UdtFilters["Active Match"];
+                DataRow[] dr = _objUDTProvider.CurrentDataSet.Tables[10].Select("Name = '" + activeMatch.FilterValue + "'");
+                if (TeamType == "home")
+                {
+                    TeamName = dr[0]["HomeTeam"].ToString();
+                }
+                else
+                {
+                    TeamName = dr[0]["AwayTeam"].ToString();
+                }
+            }
+            TeamBuilderForm objTb = new TeamBuilderForm();
+            objTb._objUDTProvider = _objUDTProvider;
+            objTb.Team = TeamName;
+            objTb.FIllTeam();
+            objTb.ShowDialog();
+            objTb = null;
+        }
+
+        public string TeamName { get; set; }
     }
 }

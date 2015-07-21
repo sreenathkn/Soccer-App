@@ -48,19 +48,19 @@
     <Compile Include="Team.Designer.cs">
       <DependentUpon>Team.cs</DependentUpon>
     </Compile>
-    <Compile Include="TeamBuilder.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="TeamBuilderForm.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TeamBuilder.Designer.cs">
-      <DependentUpon>TeamBuilder.cs</DependentUpon>
+    <Compile Include="TeamBuilderForm.Designer.cs">
+      <DependentUpon>TeamBuilderForm.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Team.resx">
       <DependentUpon>Team.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TeamBuilder.resx">
-      <DependentUpon>TeamBuilder.cs</DependentUpon>
+    <EmbeddedResource Include="TeamBuilderForm.resx">
+      <DependentUpon>TeamBuilderForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

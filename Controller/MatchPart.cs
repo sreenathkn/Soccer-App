@@ -35,7 +35,10 @@ namespace Controller
             filter.FilterColumn = "Name";
             filter.FilterValue = listBox1.Text;
             filter.TableIndex = 11;
-            _objController.Udt.UdtFilters.Add("Match Part", filter);
+            if (!_objController.Udt.UdtFilters.ContainsKey("Match Part"))
+                _objController.Udt.UdtFilters.Add("Match Part", filter);
+            else
+                _objController.Udt.UdtFilters["Match Part"] = filter;
             this.Close();
         }
     }

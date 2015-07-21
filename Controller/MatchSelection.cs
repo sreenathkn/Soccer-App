@@ -36,7 +36,10 @@ namespace Controller
             filter.FilterColumn = "Name";
             filter.FilterValue = listBox1.Text;
             filter.TableIndex = 10;
-            _objController.Udt.UdtFilters.Add("Active Match",filter);
+            if (!_objController.Udt.UdtFilters.ContainsKey("Active Match"))
+                _objController.Udt.UdtFilters.Add("Active Match", filter);
+            else
+                _objController.Udt.UdtFilters["Active Match"] = filter;
             this.Close();
         }
     }

@@ -18,7 +18,6 @@ namespace Controller
         public int HomeTeamGoal { get;set;}
         public int AwayTeamGoal { get; set; }
 
-
         public Match()
         {
             InitializeComponent();
