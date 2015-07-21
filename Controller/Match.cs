@@ -40,7 +40,10 @@ namespace Controller
             mp.ShowDialog();
             mp = null;
         }
-
+        private void UpdateScoreinUDT(int HomeScore,int AwayScore)
+        {
+            
+        }
        
     }
 }

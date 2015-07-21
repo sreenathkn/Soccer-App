@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using UDTProvider;
 
 namespace Controller
 {
@@ -21,33 +22,21 @@ namespace Controller
             InitializeComponent();
             _objController = objController;
             _objUDT = objController.Udt;
-
-            DataSet dt = new DataSet();
-            using (XmlReader reader = XmlReader.Create(new StringReader(_objUDT.CurrentUDT.FORMAT)))
-            {
-                dt.ReadXmlSchema(reader);
-            }
-
-            if (!string.IsNullOrEmpty(_objUDT.CurrentUDT.DATA))
-            {
-                using (XmlReader reader = XmlReader.Create(new StringReader(_objUDT.CurrentUDT.DATA)))
-                {
-                    dt.ReadXml(reader);
-                }
-            }
+            DataSet dt = _objController.Udt.CurrentDataSet;
             var t = dt.Tables[10];
             listBox1.DataSource = t;
             listBox1.DisplayMember = "Name";
             listBox1.ValueMember = "ID";
-            /*var ab = from fn in _objUDT.CurrentUDT.UDTTABLE
-                     where fn.UdtTableName == "Match"
-                     select fn.RowIndex;*/
-            
         }
-
         private void listBox1_DoubleClick(object sender, EventArgs e)
         {
             _objController.selectedMatch = listBox1.Text;
+
+            UdtFilter filter= new UdtFilter();
+            filter.FilterColumn = "Name";
+            filter.FilterValue = listBox1.Text;
+            filter.TableIndex = 10;
+            _objController.Udt.UdtFilters.Add("Active Match",filter);
             this.Close();
         }
     }

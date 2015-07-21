@@ -33,13 +33,6 @@
     <Reference Include="BeeSys.Wasp.KernelController.IUDTManager">
       <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\BeeSys.Wasp.KernelController.IUDTManager.dll</HintPath>
     </Reference>
-    <Reference Include="BeeSys.Wasp3D.Controls2">
-      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\BeeSys.Wasp3D.Controls2.dll</HintPath>
-    </Reference>
-    <Reference Include="BeeSys.Wasp3D.Designer.WFilterControl, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\BeeSys.Wasp3D.Designer.WFilterControl.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
