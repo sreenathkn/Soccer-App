@@ -42,6 +42,7 @@ namespace Controller
                         _objController.Udt.UdtFilters.Add("Active Match", filter);
                     else
                         _objController.Udt.UdtFilters["Active Match"] = filter;
+                    _objController.Udt.Notify("Active Match");
                 }
 
             }

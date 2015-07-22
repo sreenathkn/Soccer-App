@@ -40,7 +40,7 @@ namespace Controller
                         _objController.Udt.UdtFilters.Add("Match Part", filter);
                     else
                         _objController.Udt.UdtFilters["Match Part"] = filter;
-
+                    _objController.Udt.Notify("Match Part");
                     listBox1.SetSelected(index, true);
                 }
 
