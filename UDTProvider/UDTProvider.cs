@@ -68,7 +68,7 @@ namespace UDTProvider
         public void UpdateUDT(int tableIndex,string[] Columns,string[]Values,string primaryColumn,string PrimaryValue)
         {
             DataTable dtTable = CurrentDataSet.Tables[tableIndex];
-            DataRow[] dr = dtTable.Select(primaryColumn + "=" + PrimaryValue);
+            DataRow[] dr = dtTable.Select(primaryColumn + "='" + PrimaryValue+"'");
             for(int i=0;i<Columns.Count();i++)
             {
                 dr[0][Columns[i]] = Values[i];

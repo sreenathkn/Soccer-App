@@ -102,8 +102,7 @@ namespace Team
 
         private void btnTeamList_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(TeamName))
-            {
+           
                 var activeMatch = _objUDTProvider.UdtFilters["Active Match"];
                 DataRow[] dr = _objUDTProvider.CurrentDataSet.Tables[10].Select("Name = '" + activeMatch.FilterValue + "'");
                 if (TeamType == "home")
@@ -114,7 +113,7 @@ namespace Team
                 {
                     TeamName = dr[0]["AwayTeam"].ToString();
                 }
-            }
+        
             TeamBuilderForm objTb = new TeamBuilderForm();
             objTb._objUDTProvider = _objUDTProvider;
             objTb.Team = TeamName;
