@@ -31,7 +31,18 @@ namespace Controller
             {
                 int index = listBox1.FindString(dr[0]["Name"].ToString());
                 if (index != -1)
+                {
+                    UdtFilter filter = new UdtFilter();
+                    filter.FilterColumn = "Name";
+                    filter.FilterValue = listBox1.Text;
+                    filter.TableIndex = 11;
+                    if (!_objController.Udt.UdtFilters.ContainsKey("Match Part"))
+                        _objController.Udt.UdtFilters.Add("Match Part", filter);
+                    else
+                        _objController.Udt.UdtFilters["Match Part"] = filter;
+
                     listBox1.SetSelected(index, true);
+                }
 
             }
         }
