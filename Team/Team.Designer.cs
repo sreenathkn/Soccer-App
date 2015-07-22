@@ -32,14 +32,14 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.btnTeamList = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.JerseyNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Name = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Goal = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.ShotsOnGoal = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.Foul = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.Substitution = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.Card = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.Card = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.Substitution = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.Foul = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.ShotsOnGoal = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.Goal = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.Name = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.JerseyNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -98,53 +98,6 @@
             this.dataGridView1.TabIndex = 22;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
-            // JerseyNumber
-            // 
-            this.JerseyNumber.HeaderText = "Jersey Number";
-            this.JerseyNumber.Name = "JerseyNumber";
-            // 
-            // Name
-            // 
-            this.Name.HeaderText = "Player Name";
-            this.Name.Name = "Name";
-            // 
-            // Goal
-            // 
-            this.Goal.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.Goal.HeaderText = "Goal";
-            this.Goal.Name = "Goal";
-            this.Goal.Text = "Goal(0)";
-            this.Goal.Width = 50;
-            // 
-            // ShotsOnGoal
-            // 
-            this.ShotsOnGoal.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ShotsOnGoal.HeaderText = "Shots On Goal";
-            this.ShotsOnGoal.Name = "ShotsOnGoal";
-            this.ShotsOnGoal.Text = "Shots On Goal(3)";
-            this.ShotsOnGoal.Width = 50;
-            // 
-            // Foul
-            // 
-            this.Foul.HeaderText = "Foul";
-            this.Foul.Name = "Foul";
-            this.Foul.Text = "Foul(1)";
-            this.Foul.Width = 50;
-            // 
-            // Substitution
-            // 
-            this.Substitution.HeaderText = "Substitution";
-            this.Substitution.MinimumWidth = 200;
-            this.Substitution.Name = "Substitution";
-            this.Substitution.Width = 200;
-            // 
-            // Card
-            // 
-            this.Card.HeaderText = "Card";
-            this.Card.Name = "Card";
-            this.Card.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Card.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -166,12 +119,59 @@
             this.splitContainer1.SplitterDistance = 55;
             this.splitContainer1.TabIndex = 23;
             // 
+            // Card
+            // 
+            this.Card.HeaderText = "Card";
+            this.Card.Name = "Card";
+            this.Card.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Card.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // Substitution
+            // 
+            this.Substitution.HeaderText = "Substitution";
+            this.Substitution.MinimumWidth = 200;
+            this.Substitution.Name = "Substitution";
+            this.Substitution.Width = 200;
+            // 
+            // Foul
+            // 
+            this.Foul.HeaderText = "Foul";
+            this.Foul.Name = "Foul";
+            this.Foul.Text = "Foul(1)";
+            this.Foul.Width = 50;
+            // 
+            // ShotsOnGoal
+            // 
+            this.ShotsOnGoal.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ShotsOnGoal.HeaderText = "Shots On Goal";
+            this.ShotsOnGoal.Name = "ShotsOnGoal";
+            this.ShotsOnGoal.Text = "Shots On Goal(3)";
+            this.ShotsOnGoal.Width = 50;
+            // 
+            // Goal
+            // 
+            this.Goal.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.Goal.HeaderText = "Goal";
+            this.Goal.Name = "Goal";
+            this.Goal.Text = "Goal(0)";
+            this.Goal.Width = 50;
+            // 
+            // Name
+            // 
+            this.Name.HeaderText = "Player Name";
+            this.Name.Name = "Name";
+            // 
+            // JerseyNumber
+            // 
+            this.JerseyNumber.HeaderText = "Jersey Number";
+            this.JerseyNumber.Name = "JerseyNumber";
+            // 
             // Team
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.splitContainer1);
-           
+          
             this.Size = new System.Drawing.Size(654, 358);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.splitContainer1.Panel1.ResumeLayout(false);

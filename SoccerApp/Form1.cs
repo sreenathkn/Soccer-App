@@ -22,9 +22,15 @@ namespace SoccerApp
             Udt.InitializeUDT("Soccer");
             team1.TeamType = "home";
             team2.TeamType = "away";
+            team1.UDTProvider = Udt;
+            team2.UDTProvider = Udt;
             match1.Udt = Udt;
-            team1._objUDTProvider = Udt;
-            team2._objUDTProvider = Udt;
+           //dt.FilterChnaged = ParameterChanged;
+        }
+
+        public void ParameterChanged(string changedParam)
+        {
+            System.Diagnostics.Trace.WriteLine(changedParam);
         }
     }
 }

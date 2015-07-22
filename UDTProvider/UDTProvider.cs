@@ -22,7 +22,8 @@ namespace UDTProvider
         public CUdtArgs CurrentUDT { get; set; }
         public DataSet CurrentDataSet { get;set;}
         public Dictionary<string, UdtFilter> UdtFilters;
-
+        public delegate void FilterChangedEventHandler(string param);
+        public event FilterChangedEventHandler FilterChanged;
         public UDTProvider()
         {
            _CommonPath =  Environment.GetEnvironmentVariable("Wasp3.5");
@@ -30,7 +31,7 @@ namespace UDTProvider
            UdtFilters = new Dictionary<string, UdtFilter>();
         }
 
-     
+       
         public bool InitializeConnection()
         {
           
@@ -46,8 +47,13 @@ namespace UDTProvider
             _objRemoteHelper = new CRemoteHelper(url.ElementAt(0));
              info = _objRemoteHelper.Connect();
             _mObjUdtHandler = new CUDTManagerHelper(CRemoteHelper.GetDisconnectedUrl("UDTManager"));
-            
+           
              return true;
+        }
+        public void Notify(string changedParameter)
+        {
+            if (FilterChanged != null)
+                FilterChanged(changedParameter);
         }
         public void InitializeUDT(string UdtName)
         {

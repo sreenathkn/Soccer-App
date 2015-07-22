@@ -13,41 +13,93 @@ namespace Team
 {
     public partial class Team : UserControl
     {
-        public UDTProvider.UDTProvider _objUDTProvider;
-        public string TeamType { get; set; }
-        /*{
+        private UDTProvider.UDTProvider _objUDTProvider;
+        
+        public UDTProvider.UDTProvider UDTProvider
+        {
             get
             {
-                return this.TeamType;
+                return _objUDTProvider;
             }
-        set
+            set
+            {
+                _objUDTProvider = value;
+                _objUDTProvider.FilterChanged += OnFilterChangeEvent;
+            }
+        }
+        private string _TeamType;
+
+        private void OnFilterChangeEvent(string filterparam)
         {
-            if (_objUDTProvider != null)
+            if (filterparam == "Active Match")
             {
                 var activeMatch = _objUDTProvider.UdtFilters["Active Match"];
                 DataRow[] dr = _objUDTProvider.CurrentDataSet.Tables[10].Select("Name = '" + activeMatch.FilterValue + "'");
-                if (value == "home")
+                var HomeTeam = dr[0]["HomeTeam"].ToString();
+                var AwayTeam = dr[0]["AwayTeam"].ToString();
+                DataRow[] drPlayers;
+                if (TeamType == "home")
                 {
-                    TeamName = dr[0]["HomeTeam"].ToString();
+                    drPlayers = _objUDTProvider.CurrentDataSet.Tables[7].Select("Team = '" + HomeTeam + "' AND Playing='true'");
                 }
                 else
                 {
-                    TeamName = dr[0]["AwayTeam"].ToString();
+                    drPlayers = _objUDTProvider.CurrentDataSet.Tables[7].Select("Team = '" + AwayTeam + "' AND Playing='true'");
+                }
+                for (int i = 0; i < drPlayers.Count(); i++)
+                {
+                    DataGridViewRow dgv = (DataGridViewRow)dataGridView1.Rows[0].Clone();
+                    dgv.Cells[0].Value = drPlayers[i]["JerseyNo"].ToString();
+                    dgv.Cells[1].Value = drPlayers[i]["Name"].ToString();
+                    dgv.Cells[2].Value = drPlayers[i]["Name"].ToString();
+                    dataGridView1.Rows.Add(dgv);
                 }
             }
         }
-        }*/
+        public string TeamType
+        {
+            get
+            {
+                return _TeamType;
+            }
+            set
+            {
+                _TeamType = value;
+            }
+        }
+      
 
         public Team()
         {
             InitializeComponent();
-
+          
+           
         }
         public Team(UDTProvider.UDTProvider UDTProvider)
         {
             _objUDTProvider = UDTProvider;
-            
 
+            var activeMatch = _objUDTProvider.UdtFilters["Active Match"];
+            DataRow[] dr = _objUDTProvider.CurrentDataSet.Tables[10].Select("Name = '" + activeMatch.FilterValue + "'");
+            var HomeTeam = dr[0]["HomeTeam"].ToString();
+            var AwayTeam = dr[0]["AwayTeam"].ToString();
+            DataRow[] drPlayers;
+            if (TeamType == "home")
+            {
+                drPlayers = _objUDTProvider.CurrentDataSet.Tables[7].Select("Team = '" + HomeTeam + "'");
+            }
+            else
+            {
+                drPlayers = _objUDTProvider.CurrentDataSet.Tables[7].Select("Team = '" + AwayTeam + "'");
+            }
+            for (int i = 0; i < drPlayers.Count(); i++)
+            {
+                DataGridViewRow dgv = new DataGridViewRow();
+                dgv.Cells[0].Value = drPlayers[0]["JerseyNo"].ToString();
+                dgv.Cells[1].Value = drPlayers[0]["Name"].ToString();
+                dgv.Cells[2].Value = drPlayers[0]["Name"].ToString();
+                dataGridView1.Rows.Add(dgv);
+            }
         }
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {

@@ -59,8 +59,8 @@ namespace Controller
                 else
                     _objUDT.UpdateUDT(10, new string[] { "Active" }, new string[] { "false" }, "Name", item["Name"].ToString());
             }
-            
 
+            _objUDT.Notify("Active Match");
             
             this.Close();
         }
