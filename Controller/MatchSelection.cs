@@ -27,6 +27,15 @@ namespace Controller
             listBox1.DataSource = t;
             listBox1.DisplayMember = "Name";
             listBox1.ValueMember = "ID";
+            DataRow[] dr = _objUDT.CurrentDataSet.Tables[10].Select("Active=true");
+            if(dr.Count()>0)
+            {
+                int index = listBox1.FindString(dr[0]["Name"].ToString());
+                if (index != -1)
+                    listBox1.SetSelected(index, true);
+
+            }
+               
         }
         private void listBox1_DoubleClick(object sender, EventArgs e)
         {
@@ -40,6 +49,19 @@ namespace Controller
                 _objController.Udt.UdtFilters.Add("Active Match", filter);
             else
                 _objController.Udt.UdtFilters["Active Match"] = filter;
+
+            foreach (DataRowView item in listBox1.Items)
+            {
+                System.Diagnostics.Trace.WriteLine(item["Name"].ToString());
+
+                if (item["Name"].ToString() == listBox1.Text)
+                    _objUDT.UpdateUDT(10, new string[] { "Active" }, new string[] { "true" }, "Name", listBox1.Text);
+                else
+                    _objUDT.UpdateUDT(10, new string[] { "Active" }, new string[] { "false" }, "Name", item["Name"].ToString());
+            }
+            
+
+            
             this.Close();
         }
     }
