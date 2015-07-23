@@ -9,6 +9,5 @@ namespace BaseServices
     interface ITeam
     {
          string TeamType { get; set; }
-
-    }
+            }
 }
