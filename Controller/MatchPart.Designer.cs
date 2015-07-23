@@ -36,7 +36,7 @@
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(7, 7);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(151, 121);
+            this.listBox1.Size = new System.Drawing.Size(328, 264);
             this.listBox1.TabIndex = 0;
             this.listBox1.DoubleClick += new System.EventHandler(this.listBox1_DoubleClick);
             // 
@@ -44,7 +44,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(170, 132);
+            this.ClientSize = new System.Drawing.Size(371, 367);
             this.Controls.Add(this.listBox1);
             this.Name = "MatchPart";
             this.Text = "MatchPart";
