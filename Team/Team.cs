@@ -23,6 +23,7 @@ namespace Team
             }
             set
             {
+
                 _objUDTProvider = value;
                 _objUDTProvider.FilterChanged += OnFilterChangeEvent;
             }
