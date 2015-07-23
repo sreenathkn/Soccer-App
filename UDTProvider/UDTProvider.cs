@@ -102,6 +102,8 @@ namespace UDTProvider
             List<UdtTable> udtTables = new List<UdtTable> { udtTable };
             CurrentUDT.UDTTABLE = udtTables;
             _mObjUdtHandler.AddDefaultRow(CurrentUDT);
+            //Testing merging at same time
+            //sreenath added
         }
 
     }
