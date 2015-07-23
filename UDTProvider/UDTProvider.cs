@@ -94,6 +94,7 @@ namespace UDTProvider
             for (int i = 0; i < Columns.Count(); i++)
             {
                 dr[Columns[i]] = Values[i];
+                //delete this
             }
             var udtTable = new UdtTable();
             udtTable.UDTROWDATA = dr.ItemArray.Select(o => o.ToString()).ToList();
