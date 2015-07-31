@@ -69,13 +69,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Res\bg-soccer350x500.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Controller\Match.csproj">
       <Project>{DB492908-9959-45B2-ACED-60FC17458D06}</Project>
       <Name>Match</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Res\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,0 +1,330 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Configuration;
+using UDTProvider;
+
+namespace SoccerApp
+{
+    public partial class SoccerApp : Form
+    {
+        private UDTProvider.UDTProvider _objUDT;
+        string ActiveMatch=string.Empty;
+        public DateTime CountDownTarget = DateTime.Now;
+        private int SrNo = 1;
+        private DateTime MatchPartStartTime = DateTime.Now;
+        public SoccerApp()
+        {
+            InitializeComponent();
+            InitilizeUDT();
+            InitializeCombos();
+        }
+
+        private void InitilizeUDT()
+        {
+            _objUDT = new UDTProvider.UDTProvider();
+            _objUDT.InitializeConnection();
+            _objUDT.InitializeUDT(ConfigurationManager.AppSettings["udtname"]);
+        }
+
+        private void InitializeCombos()
+        {
+            cmbMatch.AutoCompleteMode = AutoCompleteMode.Suggest;
+            cmbMatch.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            // Get the Match List from UDT and add to cmbstr, Fill the Combo, and set the selected Item
+            FillMatchList();
+            cmbMatchPart.AutoCompleteMode = AutoCompleteMode.Suggest;
+            cmbMatchPart.AutoCompleteSource = AutoCompleteSource.CustomSource;
+           
+           
+            // Get the Match part List from UDT and add to cmbstr1, Fill the Combo, and set the selected Item
+            FillMatchPart();
+ 
+        }
+
+        private void FillMatchPart()
+        {
+            AutoCompleteStringCollection cmbstr1 = new AutoCompleteStringCollection();
+            var t = _objUDT.CurrentDataSet.Tables[11];
+            foreach (DataRow item in _objUDT.CurrentDataSet.Tables[11].Rows)
+            {
+                cmbstr1.Add(item["Name"].ToString());
+                cmbMatchPart.Items.Add(item["Name"].ToString());
+            }
+            cmbMatchPart.AutoCompleteCustomSource = cmbstr1;
+            DataRow[] dr = _objUDT.CurrentDataSet.Tables[11].Select("Active=true");
+            if (dr.Count() > 0)
+            {
+
+                int index = cmbMatchPart.FindString(dr[0]["Name"].ToString());
+                if (index != -1)
+                {
+                    cmbMatchPart.SelectedIndex = index;
+                    UdtFilter filter = new UdtFilter();
+                    filter.FilterColumn = "Name";
+                    filter.FilterValue = cmbMatchPart.Text;
+                    filter.TableIndex = 11;
+                    if (!_objUDT.UdtFilters.ContainsKey("Match Part"))
+                        _objUDT.UdtFilters.Add("Match Part", filter);
+                    else
+                        _objUDT.UdtFilters["Match Part"] = filter;
+                    _objUDT.Notify("Match Part");
+                }
+
+            }
+
+        }
+
+        private void FillMatchList()
+        {
+           
+            DataSet dt = _objUDT.CurrentDataSet;
+            var t = dt.Tables[10];
+            AutoCompleteStringCollection cmbstr = new AutoCompleteStringCollection();
+            foreach (DataRow item in _objUDT.CurrentDataSet.Tables[10].Rows)
+            {
+                cmbstr.Add(item["Name"].ToString());
+                cmbMatch.Items.Add(item["Name"].ToString());
+            }
+            cmbMatch.AutoCompleteCustomSource = cmbstr;
+            DataRow[] dr = _objUDT.CurrentDataSet.Tables[10].Select("Active=true");
+            if (dr.Count() > 0)
+            {
+               
+                int index = cmbMatch.FindString(dr[0]["Name"].ToString());
+                if (index != -1)
+                {
+                    cmbMatch.SelectedIndex=index;
+                    UdtFilter filter = new UdtFilter();
+                    filter.FilterColumn = "Name";
+                    filter.FilterValue = cmbMatch.Text;
+                    filter.TableIndex = 10;
+                    if (!_objUDT.UdtFilters.ContainsKey("Active Match"))
+                        _objUDT.UdtFilters.Add("Active Match", filter);
+                    else
+                        _objUDT.UdtFilters["Active Match"] = filter;
+                    _objUDT.Notify("Active Match");
+                }
+                
+               
+
+            }
+        }
+        private void cmbMatch_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UdtFilter filter = new UdtFilter();
+            filter.FilterColumn = "Name";
+            filter.FilterValue = cmbMatch.Text;
+            filter.TableIndex = 10;
+            if (!_objUDT.UdtFilters.ContainsKey("Active Match"))
+                _objUDT.UdtFilters.Add("Active Match", filter);
+            else
+                _objUDT.UdtFilters["Active Match"] = filter;
+
+            foreach (string item in cmbMatch.Items)
+            {
+                System.Diagnostics.Trace.WriteLine(item);
+
+                if (item == cmbMatch.Text)
+                    _objUDT.UpdateUDT(10, new string[] { "Active" }, new string[] { "true" }, "Name", cmbMatch.Text);
+                else
+                    _objUDT.UpdateUDT(10, new string[] { "Active" }, new string[] { "false" }, "Name", item);
+            }
+            _objUDT.Notify("Active Match");
+            //Select Teams based on the selected Match
+            SelectTeams(cmbMatch.Text);
+            ActiveMatch = cmbMatch.Text;
+            dataGridView1.Rows.Clear();
+            FillMatchEvents();
+        }
+
+        private void FillMatchEvents()
+        {
+            DataRow[] dr = _objUDT.CurrentDataSet.Tables[12].Select("MatchID= '"+cmbMatch.Text+"'");
+            foreach (DataRow item in dr)
+            {
+                DataGridViewRow dgv = (DataGridViewRow)dataGridView1.Rows[0].Clone();
+                dgv.Cells[0].Value = item[0].ToString();
+                dgv.Cells[1].Value = item[3].ToString();
+                dgv.Cells[2].Value = item[2].ToString();
+                dgv.Cells[3].Value = item[4].ToString();
+                dgv.Cells[4].Value = item[5].ToString();
+                dgv.Cells[5].Value = item[6].ToString();
+                dataGridView1.Rows.Add(dgv);
+            }
+            
+        }
+        private void SelectTeams(string ActiveMatch)
+        {
+            DataRow[] dr = _objUDT.CurrentDataSet.Tables[10].Select("Name= '"+ActiveMatch+"'");
+            if(dr.Count()>0)
+            {
+                lblHomeTeam.Text = dr[0]["HomeTeam"].ToString();
+                lblAwayTeam.Text = dr[0]["AwayTeam"].ToString();
+                // Get Team Flag from team Table
+                dr = _objUDT.CurrentDataSet.Tables[6].Select("Name= '" + lblHomeTeam.Text + "'");
+                pnlHomeFlag.BackgroundImage = Image.FromFile(dr[0]["Logo"].ToString());
+                dr = _objUDT.CurrentDataSet.Tables[6].Select("Name= '" + lblAwayTeam.Text + "'");
+                pnlAwayFlag.BackgroundImage = Image.FromFile(dr[0]["Logo"].ToString());
+                //Get initial scores for the selected teams from UDT
+                InitializeScores(ActiveMatch);
+            }
+      
+        }
+
+        private void InitializeScores(string ActiveMatch)
+        {
+            DataRow[] dr = _objUDT.CurrentDataSet.Tables[10].Select("Name= '" + ActiveMatch + "'");
+            lblHomeScore.Text = dr[0]["HomeScore"].ToString();
+            lblAwayScore.Text = dr[0]["AwayScore"].ToString();
+        }
+        private void cmbMatchPart_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+            UdtFilter filter = new UdtFilter();
+            filter.FilterColumn = "Name";
+            filter.FilterValue = cmbMatch.Text;
+            filter.TableIndex = 11;
+            if (!_objUDT.UdtFilters.ContainsKey("Match Part"))
+                _objUDT.UdtFilters.Add("Match Part", filter);
+            else
+                _objUDT.UdtFilters["Match Part"] = filter;
+
+            foreach (string item in cmbMatchPart.Items)
+            {
+                 if (item == cmbMatchPart.Text)
+                    _objUDT.UpdateUDT(11, new string[] { "Active" }, new string[] { "true" }, "Name", cmbMatchPart.Text);
+                else
+                    _objUDT.UpdateUDT(11, new string[] { "Active" }, new string[] { "false" }, "Name", item);
+            }
+
+            _objUDT.Notify("Match Part");
+            timer1.Stop();
+            lblCounter.Text = "00:00";
+            btnstartstop.Text = "Start";
+        }
+
+        private void btnhomeplus_Click(object sender, EventArgs e)
+        {
+            
+             lblHomeScore.Text =( Convert.ToInt32(lblHomeScore.Text) + 1).ToString();
+            _objUDT.UpdateUDT(10, new string[] { "HomeScore" }, new string[] { lblHomeScore.Text }, "Name", cmbMatch.Text);
+            Player p = new Player();
+            p.Team = lblHomeTeam.Text;
+            p._objUDTProvider = _objUDT;
+            p.FillTeam();
+            p.ShowDialog();
+            TimeSpan ts = DateTime.Now.Subtract(MatchPartStartTime);
+            string selectedPlayer = p.selectedPlayer;
+            DataGridViewRow dgv = (DataGridViewRow)dataGridView1.Rows[0].Clone();
+            dgv.Cells[0].Value = SrNo;
+            dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+            dgv.Cells[2].Value = cmbMatchPart.Text;
+            dgv.Cells[3].Value = "Goal";
+            dgv.Cells[4].Value = lblHomeTeam.Text;
+            dgv.Cells[5].Value = selectedPlayer;
+            dataGridView1.Rows.Add(dgv);
+            SrNo++;
+            _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Goal", lblHomeTeam.Text, selectedPlayer });
+            p = null;
+        }
+
+        private void btnHomeminus_Click(object sender, EventArgs e)
+        {
+            lblHomeScore.Text = (Convert.ToInt32(lblHomeScore.Text) -1).ToString();
+            _objUDT.UpdateUDT(10, new string[] { "HomeScore" }, new string[] { lblHomeScore.Text }, "Name", cmbMatch.Text);
+        }
+
+        private void btnawayplus_Click(object sender, EventArgs e)
+        {
+            lblAwayScore.Text = (Convert.ToInt32(lblAwayScore.Text) + 1).ToString();
+            _objUDT.UpdateUDT(10, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text);
+            lblAwayScore.Text = (Convert.ToInt32(lblHomeScore.Text) + 1).ToString();
+            _objUDT.UpdateUDT(10, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text);
+            Player p = new Player();
+            p.Team = lblAwayTeam.Text;
+            p._objUDTProvider = _objUDT;
+            p.FillTeam();
+            p.ShowDialog();
+            TimeSpan ts = DateTime.Now.Subtract(MatchPartStartTime);
+            string selectedPlayer = p.selectedPlayer;
+            DataGridViewRow dgv = (DataGridViewRow)dataGridView1.Rows[0].Clone();
+            dgv.Cells[0].Value = SrNo;
+            dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+            dgv.Cells[2].Value = cmbMatchPart.Text;
+            dgv.Cells[3].Value = "Goal";
+            dgv.Cells[4].Value = lblAwayTeam.Text;
+            dgv.Cells[5].Value = selectedPlayer;
+            dataGridView1.Rows.Add(dgv);
+            SrNo++;
+            _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Goal", lblAwayTeam.Text, selectedPlayer });
+            p = null;
+        }
+
+        private void btnawayminus_Click(object sender, EventArgs e)
+        {
+            lblAwayScore.Text = (Convert.ToInt32(lblHomeScore.Text) - 1).ToString();
+            _objUDT.UpdateUDT(10, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text);
+        }
+
+        private void lblHomeTeam_DoubleClick(object sender, EventArgs e)
+        {
+            TeamBuilderForm tf = new TeamBuilderForm();
+            tf.Team = lblHomeTeam.Text;
+            tf._objUDTProvider = _objUDT;
+            tf.FIllTeam();
+            tf.ShowDialog();
+            tf = null;
+        }
+
+        private void lblAwayTeam_DoubleClick(object sender, EventArgs e)
+        {
+            TeamBuilderForm tf = new TeamBuilderForm();
+            tf.Team = lblAwayTeam.Text;
+            tf._objUDTProvider = _objUDT;
+            tf.FIllTeam();
+            tf.ShowDialog();
+            tf = null;
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (CountDownTarget < DateTime.Now)
+                timer1.Stop();
+            else
+            {
+                TimeSpan timeLeft = CountDownTarget.Subtract(DateTime.Now);
+                lblCounter.Text = timeLeft.Minutes.ToString("00") + ":" + timeLeft.Seconds.ToString("00");
+               
+            }
+        }
+
+        private void btnstartstop_Click(object sender, EventArgs e)
+        {
+            if(btnstartstop.Text=="Start")
+            {
+                if (lblCounter.Text.Trim() == "00:00")
+                {
+                    CountDownTarget = DateTime.Now.AddMinutes(45.00);
+                    MatchPartStartTime = DateTime.Now;
+                }
+                timer1.Enabled=true;
+                timer1.Interval = 1000;
+                timer1.Start();
+                btnstartstop.Text = "Stop";
+            }
+            else
+            {
+                timer1.Stop();
+                btnstartstop.Text = "Start";
+            }
+        }
+  
+    }
+}

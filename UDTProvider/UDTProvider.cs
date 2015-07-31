@@ -9,7 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.XPath;
 using System.Xml.Linq;
+using ExtensionMethods;
 
 namespace UDTProvider
 {
@@ -31,7 +33,6 @@ namespace UDTProvider
            UdtFilters = new Dictionary<string, UdtFilter>();
         }
 
-       
         public bool InitializeConnection()
         {
           
@@ -57,19 +58,10 @@ namespace UDTProvider
         }
         public void InitializeUDT(string UdtName)
         {
+            
             CurrentUDT = _mObjUdtHandler.GetUdtByName(UdtName);
-            using (XmlReader reader = XmlReader.Create(new StringReader(CurrentUDT.FORMAT)))
-            {
-                CurrentDataSet.ReadXmlSchema(reader);
-            }
-
-            if (!string.IsNullOrEmpty(CurrentUDT.DATA))
-            {
-                using (XmlReader reader = XmlReader.Create(new StringReader(CurrentUDT.DATA)))
-                {
-                    CurrentDataSet.ReadXml(reader);
-                }
-            }
+            CurrentDataSet = CurrentUDT.ToDataSet();
+        
         }
         public void UpdateUDT(int tableIndex,string[] Columns,string[]Values,string primaryColumn,string PrimaryValue)
         {
@@ -86,7 +78,7 @@ namespace UDTProvider
             CurrentUDT.UDTTABLE = udtTables;
             _mObjUdtHandler.UpadteUdtRow(CurrentUDT);
         }
-
+        
         public void InsertUDTData(int tableIndex, string[] Columns, string[] Values)
         {
             DataTable dtTable = CurrentDataSet.Tables[tableIndex];
@@ -97,6 +89,7 @@ namespace UDTProvider
                 //delete this
             }
             var udtTable = new UdtTable();
+            udtTable.UDTPREVIOUSROWDATA = null;
             udtTable.UDTROWDATA = dr.ItemArray.Select(o => o.ToString()).ToList();
             udtTable.UdtTableName = dr.Table.TableName;
             List<UdtTable> udtTables = new List<UdtTable> { udtTable };
