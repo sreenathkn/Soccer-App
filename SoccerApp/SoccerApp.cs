@@ -111,9 +111,7 @@ namespace SoccerApp
                         _objUDT.UdtFilters["Active Match"] = filter;
                     _objUDT.Notify("Active Match");
                 }
-                
-               
-
+    
             }
         }
         private void cmbMatch_SelectedIndexChanged(object sender, EventArgs e)

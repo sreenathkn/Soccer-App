@@ -29,8 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.cmbMatch = new BeeSys.Wasp3D.Controls2.ComboBox(this.components);
-            this.cmbMatchPart = new BeeSys.Wasp3D.Controls2.ComboBox(this.components);
             this.lblHomeTeam = new System.Windows.Forms.Label();
             this.lblAwayTeam = new System.Windows.Forms.Label();
             this.pnlHomeFlag = new System.Windows.Forms.Panel();
@@ -51,48 +49,10 @@
             this.EventMem = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.TeamName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PlayerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cmbMatch = new System.Windows.Forms.ComboBox();
+            this.cmbMatchPart = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // cmbMatch
-            // 
-            this.cmbMatch.AddInId = "";
-            this.cmbMatch.AddinName = "";
-            this.cmbMatch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmbMatch.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cmbMatch.FormattingEnabled = true;
-            this.cmbMatch.Index = "";
-            this.cmbMatch.Location = new System.Drawing.Point(18, 52);
-            this.cmbMatch.Name = "cmbMatch";
-            this.cmbMatch.ProviderId = "";
-            this.cmbMatch.ProviderName = "";
-            this.cmbMatch.Size = new System.Drawing.Size(159, 21);
-            this.cmbMatch.TabIndex = 0;
-            this.cmbMatch.TagType = null;
-            this.cmbMatch.TemplateID = null;
-            this.cmbMatch.TemplateName = null;
-            this.cmbMatch.UserXml = null;
-            this.cmbMatch.SelectedIndexChanged += new System.EventHandler(this.cmbMatch_SelectedIndexChanged);
-            // 
-            // cmbMatchPart
-            // 
-            this.cmbMatchPart.AddInId = "";
-            this.cmbMatchPart.AddinName = "";
-            this.cmbMatchPart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmbMatchPart.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cmbMatchPart.FormattingEnabled = true;
-            this.cmbMatchPart.Index = "";
-            this.cmbMatchPart.Location = new System.Drawing.Point(191, 52);
-            this.cmbMatchPart.Name = "cmbMatchPart";
-            this.cmbMatchPart.ProviderId = "";
-            this.cmbMatchPart.ProviderName = "";
-            this.cmbMatchPart.Size = new System.Drawing.Size(159, 21);
-            this.cmbMatchPart.TabIndex = 1;
-            this.cmbMatchPart.TagType = null;
-            this.cmbMatchPart.TemplateID = null;
-            this.cmbMatchPart.TemplateName = null;
-            this.cmbMatchPart.UserXml = null;
-            this.cmbMatchPart.SelectedIndexChanged += new System.EventHandler(this.cmbMatchPart_SelectedIndexChanged);
             // 
             // lblHomeTeam
             // 
@@ -296,12 +256,31 @@
             this.PlayerName.ReadOnly = true;
             this.PlayerName.Width = 215;
             // 
+            // cmbMatch
+            // 
+            this.cmbMatch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cmbMatch.FormattingEnabled = true;
+            this.cmbMatch.Location = new System.Drawing.Point(19, 52);
+            this.cmbMatch.Name = "cmbMatch";
+            this.cmbMatch.Size = new System.Drawing.Size(155, 21);
+            this.cmbMatch.TabIndex = 15;
+            // 
+            // cmbMatchPart
+            // 
+            this.cmbMatchPart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cmbMatchPart.FormattingEnabled = true;
+            this.cmbMatchPart.Location = new System.Drawing.Point(225, 52);
+            this.cmbMatchPart.Name = "cmbMatchPart";
+            this.cmbMatchPart.Size = new System.Drawing.Size(136, 21);
+            this.cmbMatchPart.TabIndex = 16;
+            // 
             // SoccerApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImage = global::SoccerApp.Properties.Resources.Soccer_revised;
             this.ClientSize = new System.Drawing.Size(892, 602);
+            this.Controls.Add(this.cmbMatchPart);
+            this.Controls.Add(this.cmbMatch);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.btnstartstop);
             this.Controls.Add(this.lblCounter);
@@ -315,8 +294,6 @@
             this.Controls.Add(this.pnlHomeFlag);
             this.Controls.Add(this.lblAwayTeam);
             this.Controls.Add(this.lblHomeTeam);
-            this.Controls.Add(this.cmbMatchPart);
-            this.Controls.Add(this.cmbMatch);
             this.Name = "SoccerApp";
             this.Text = "Soccer Application";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
@@ -327,8 +304,6 @@
 
         #endregion
 
-        private BeeSys.Wasp3D.Controls2.ComboBox cmbMatch;
-        private BeeSys.Wasp3D.Controls2.ComboBox cmbMatchPart;
         private System.Windows.Forms.Label lblHomeTeam;
         private System.Windows.Forms.Label lblAwayTeam;
         private System.Windows.Forms.Panel pnlHomeFlag;
@@ -349,6 +324,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn EventMem;
         private System.Windows.Forms.DataGridViewTextBoxColumn TeamName;
         private System.Windows.Forms.DataGridViewTextBoxColumn PlayerName;
+        private System.Windows.Forms.ComboBox cmbMatch;
+        private System.Windows.Forms.ComboBox cmbMatchPart;
 
     }
 }

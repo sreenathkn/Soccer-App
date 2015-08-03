@@ -33,65 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BeeSys.Shared.Library, Version=3.0.0.0, Culture=neutral, PublicKeyToken=97f06817abd0bb0a" />
-    <Reference Include="Beesys.Wasp.AddIn.ILinkCommandManager, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Beesys.Wasp.AddIn.ILinkCommandManager.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="BeeSys.Wasp.CommonReference, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\BeeSys.Wasp.CommonReference.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="BeeSys.Wasp.Communicator, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\BeeSys.Wasp.Communicator.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="BeeSys.Wasp.KernelController.IServices, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\BeeSys.Wasp.KernelController.IServices.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="BeeSys.Wasp.KernelController.IUDTManager, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\BeeSys.Wasp.KernelController.IUDTManager.dll</HintPath>
-    </Reference>
-    <Reference Include="BeeSys.Wasp.PlayOut.MultiPageDataController, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <Reference Include="BeeSys.Wasp.PlayOut.Multiple_SG_Controller, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <Reference Include="Beesys.Wasp.SceneReader, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Beesys.Wasp.SceneReader.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Beesys.Wasp.ShotBoxManager, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Beesys.Wasp.ShotBoxManager.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Beesys.Wasp.Workflow.CommunicationHandler, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Beesys.Wasp.Workflow.CommunicationHandler.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Beesys.Wasp.Workflow.Editors, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <Reference Include="BeeSys.Wasp3D.Controls2, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="BeeSys.Wasp3D.Designer.AssetManagerExtendedAssembly, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <Reference Include="BeeSys.Wasp3D.Designer.TextEditorControl, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="BeeSys.Wasp3D.Designer.WaxEditorDialog, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <Reference Include="BeeSys.Wasp3D.Designer.WFilterControl, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <Reference Include="BeeSys.Wasp3D.Hosting.SceneGraph, Version=3.0.0.0, Culture=neutral, PublicKeyToken=3cb3a91560535d00" />
-    <Reference Include="GeneralTasks, Version=3.0.0.0, Culture=neutral, PublicKeyToken=97f06817abd0bb0a" />
-    <Reference Include="GeneralWorkings, Version=3.0.0.0, Culture=neutral, PublicKeyToken=97f06817abd0bb0a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\GeneralWorkings.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Interop.adodb, Version=2.7.0.0, Culture=neutral, PublicKeyToken=null">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="Interop.MSDASC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="Interop.MSMQ, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Interop.MSMQ.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NetSpell.SpellChecker, Version=2.1.7.41329, Culture=neutral, PublicKeyToken=318b389f0db66e46" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -101,7 +42,6 @@
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
@@ -109,18 +49,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="WaspPools, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="WindowsBase" />
-    <Reference Include="Xceed.Compression, Version=3.2.6319.0, Culture=neutral, PublicKeyToken=ba83ff368b7563c6">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Xceed.Compression.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Xceed.FileSystem, Version=3.2.6319.0, Culture=neutral, PublicKeyToken=ba83ff368b7563c6">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Xceed.FileSystem.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Xceed.Zip, Version=3.2.6319.0, Culture=neutral, PublicKeyToken=ba83ff368b7563c6">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Xceed.Zip.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Player.cs">
@@ -162,7 +90,6 @@
     <EmbeddedResource Include="TeamBuilderForm.resx">
       <DependentUpon>TeamBuilderForm.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
