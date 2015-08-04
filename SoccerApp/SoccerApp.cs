@@ -228,7 +228,7 @@ namespace SoccerApp
                     SrNo = sr;
                 }
             }
-            
+            SrNo++;
         }
         private void SelectTeams(string ActiveMatch)
         {
@@ -427,8 +427,8 @@ namespace SoccerApp
             dgv.Cells[4].Value = sb.Team;
             dgv.Cells[5].Value = sb.SelectedOutPlayer;
             dataGridView1.Rows.Add(dgv);
-            SrNo++;
             _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "SubstituteOut", sb.Team, sb.SelectedOutPlayer });
+            SrNo++;
             dgv = (DataGridViewRow)dataGridView1.Rows[0].Clone();
             dgv.Cells[0].Value = SrNo;
             dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
@@ -437,9 +437,215 @@ namespace SoccerApp
             dgv.Cells[4].Value = sb.Team;
             dgv.Cells[5].Value = sb.SelectedInPlayer;
             dataGridView1.Rows.Add(dgv);
-            SrNo++;
             _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "SubstituteIN", sb.Team, sb.SelectedInPlayer });
+            SrNo++;
             sb = null;
+        }
+
+        private void btnFoul_Click(object sender, EventArgs e)
+        {
+            TimeSpan ts = new TimeSpan();
+            if (MatchPartStartTime.Year != 0001)
+            {
+                ts = DateTime.Now.Subtract(MatchPartStartTime);
+            }
+            PlayerDetails pd = new PlayerDetails();
+            pd._objUDTProvider = _objUDT;
+            pd.Parent = "Foul";
+            pd.Team = lblHomeTeam.Text;
+            pd.cmbTeam.Items.Add(lblHomeTeam.Text);
+            pd.cmbTeam.Items.Add(lblAwayTeam.Text);
+            pd.Initialize();
+            pd.ShowDialog();
+
+            DataGridViewRow dgv = (DataGridViewRow)dataGridView1.Rows[0].Clone();
+            dgv.Cells[0].Value = SrNo;
+            if (MatchPartStartTime.Year != 0001)
+            {
+                dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+            }
+            else
+            {
+                dgv.Cells[1].Value = "00:00";
+            }
+            dgv.Cells[2].Value = cmbMatchPart.Text;
+            dgv.Cells[3].Value = "Foul";
+            dgv.Cells[4].Value = pd.Team;
+            dgv.Cells[5].Value = pd.SelectedPlayer;
+            dataGridView1.Rows.Add(dgv);
+             _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Foul", pd.Team, pd.SelectedPlayer });
+             SrNo++;
+        }
+
+        private void cmbCorner_Click(object sender, EventArgs e)
+        {
+            TimeSpan ts = new TimeSpan();
+            if (MatchPartStartTime.Year != 0001)
+            {
+                ts = DateTime.Now.Subtract(MatchPartStartTime);
+            }
+            TeamSelection tms = new TeamSelection();
+            tms.cmbTeam.Items.Add(lblHomeTeam.Text);
+            tms.cmbTeam.Items.Add(lblAwayTeam.Text);
+            tms.ShowDialog();
+            DataGridViewRow dgv = (DataGridViewRow)dataGridView1.Rows[0].Clone();
+            dgv.Cells[0].Value = SrNo;
+            if (MatchPartStartTime.Year != 0001)
+            {
+                dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+            }
+            else
+            {
+                dgv.Cells[1].Value = "00:00";
+            }
+            dgv.Cells[2].Value = cmbMatchPart.Text;
+            dgv.Cells[3].Value = "Corner";
+            dgv.Cells[4].Value = tms.SelectedTeam;
+            dgv.Cells[5].Value = "";
+            dataGridView1.Rows.Add(dgv);
+            _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Corner", tms.SelectedTeam, "" });
+            SrNo++;
+            tms = null;
+        }
+
+        private void btnShots_Click(object sender, EventArgs e)
+        {
+            TimeSpan ts = new TimeSpan();
+            if (MatchPartStartTime.Year != 0001)
+            {
+                ts = DateTime.Now.Subtract(MatchPartStartTime);
+            }
+            PlayerDetails pd = new PlayerDetails();
+            pd._objUDTProvider = _objUDT;
+            pd.Parent = "Shots ON";
+            pd.Team = lblHomeTeam.Text;
+            pd.cmbTeam.Items.Add(lblHomeTeam.Text);
+            pd.cmbTeam.Items.Add(lblAwayTeam.Text);
+            pd.Initialize();
+            pd.ShowDialog();
+
+            DataGridViewRow dgv = (DataGridViewRow)dataGridView1.Rows[0].Clone();
+            dgv.Cells[0].Value = SrNo;
+            if (MatchPartStartTime.Year != 0001)
+            {
+                dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+            }
+            else
+            {
+                dgv.Cells[1].Value = "00:00";
+            }
+            dgv.Cells[2].Value = cmbMatchPart.Text;
+            dgv.Cells[3].Value = "Shots ON";
+            dgv.Cells[4].Value = pd.Team;
+            dgv.Cells[5].Value = pd.SelectedPlayer;
+            dataGridView1.Rows.Add(dgv);
+            _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Shots ON", pd.Team, pd.SelectedPlayer });
+            SrNo++;
+        }
+
+        private void btnShotsOff_Click(object sender, EventArgs e)
+        {
+            TimeSpan ts = new TimeSpan();
+            if (MatchPartStartTime.Year != 0001)
+            {
+                ts = DateTime.Now.Subtract(MatchPartStartTime);
+            }
+            PlayerDetails pd = new PlayerDetails();
+            pd._objUDTProvider = _objUDT;
+            pd.Parent = "Shots OFF";
+            pd.Team = lblHomeTeam.Text;
+            pd.cmbTeam.Items.Add(lblHomeTeam.Text);
+            pd.cmbTeam.Items.Add(lblAwayTeam.Text);
+            pd.Initialize();
+            pd.ShowDialog();
+
+            DataGridViewRow dgv = (DataGridViewRow)dataGridView1.Rows[0].Clone();
+            dgv.Cells[0].Value = SrNo;
+            if (MatchPartStartTime.Year != 0001)
+            {
+                dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+            }
+            else
+            {
+                dgv.Cells[1].Value = "00:00";
+            }
+            dgv.Cells[2].Value = cmbMatchPart.Text;
+            dgv.Cells[3].Value = "Shots OFF";
+            dgv.Cells[4].Value = pd.Team;
+            dgv.Cells[5].Value = pd.SelectedPlayer;
+            dataGridView1.Rows.Add(dgv);
+            _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Shots OFF", pd.Team, pd.SelectedPlayer });
+            SrNo++;
+        }
+
+        private void btnYellow_Click(object sender, EventArgs e)
+        {
+            TimeSpan ts = new TimeSpan();
+            if (MatchPartStartTime.Year != 0001)
+            {
+                ts = DateTime.Now.Subtract(MatchPartStartTime);
+            }
+            PlayerDetails pd = new PlayerDetails();
+            pd._objUDTProvider = _objUDT;
+            pd.Parent = "Yellow Card";
+            pd.Team = lblHomeTeam.Text;
+            pd.cmbTeam.Items.Add(lblHomeTeam.Text);
+            pd.cmbTeam.Items.Add(lblAwayTeam.Text);
+            pd.Initialize();
+            pd.ShowDialog();
+
+            DataGridViewRow dgv = (DataGridViewRow)dataGridView1.Rows[0].Clone();
+            dgv.Cells[0].Value = SrNo;
+            if (MatchPartStartTime.Year != 0001)
+            {
+                dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+            }
+            else
+            {
+                dgv.Cells[1].Value = "00:00";
+            }
+            dgv.Cells[2].Value = cmbMatchPart.Text;
+            dgv.Cells[3].Value = "Yellow Card";
+            dgv.Cells[4].Value = pd.Team;
+            dgv.Cells[5].Value = pd.SelectedPlayer;
+            dataGridView1.Rows.Add(dgv);
+            _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Yellow Card", pd.Team, pd.SelectedPlayer });
+            SrNo++;
+        }
+
+        private void btnRed_Click(object sender, EventArgs e)
+        {
+            TimeSpan ts = new TimeSpan();
+            if (MatchPartStartTime.Year != 0001)
+            {
+                ts = DateTime.Now.Subtract(MatchPartStartTime);
+            }
+            PlayerDetails pd = new PlayerDetails();
+            pd._objUDTProvider = _objUDT;
+            pd.Parent = "Red Card";
+            pd.Team = lblHomeTeam.Text;
+            pd.cmbTeam.Items.Add(lblHomeTeam.Text);
+            pd.cmbTeam.Items.Add(lblAwayTeam.Text);
+            pd.Initialize();
+            pd.ShowDialog();
+
+            DataGridViewRow dgv = (DataGridViewRow)dataGridView1.Rows[0].Clone();
+            dgv.Cells[0].Value = SrNo;
+            if (MatchPartStartTime.Year != 0001)
+            {
+                dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+            }
+            else
+            {
+                dgv.Cells[1].Value = "00:00";
+            }
+            dgv.Cells[2].Value = cmbMatchPart.Text;
+            dgv.Cells[3].Value = "Red Card";
+            dgv.Cells[4].Value = pd.Team;
+            dgv.Cells[5].Value = pd.SelectedPlayer;
+            dataGridView1.Rows.Add(dgv);
+            _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Red Card", pd.Team, pd.SelectedPlayer });
+            SrNo++;
         }
   
     }

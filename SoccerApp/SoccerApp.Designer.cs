@@ -53,6 +53,12 @@
             this.cmbMatchPart = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.button1 = new System.Windows.Forms.Button();
+            this.btnFoul = new System.Windows.Forms.Button();
+            this.cmbCorner = new System.Windows.Forms.Button();
+            this.btnShots = new System.Windows.Forms.Button();
+            this.btnShotsOff = new System.Windows.Forms.Button();
+            this.btnYellow = new System.Windows.Forms.Button();
+            this.btnRed = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -295,7 +301,7 @@
             // button1
             // 
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Location = new System.Drawing.Point(55, 261);
+            this.button1.Location = new System.Drawing.Point(62, 263);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(98, 32);
             this.button1.TabIndex = 18;
@@ -303,11 +309,83 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // btnFoul
+            // 
+            this.btnFoul.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnFoul.Location = new System.Drawing.Point(172, 263);
+            this.btnFoul.Name = "btnFoul";
+            this.btnFoul.Size = new System.Drawing.Size(80, 32);
+            this.btnFoul.TabIndex = 19;
+            this.btnFoul.Text = "Foul";
+            this.btnFoul.UseVisualStyleBackColor = true;
+            this.btnFoul.Click += new System.EventHandler(this.btnFoul_Click);
+            // 
+            // cmbCorner
+            // 
+            this.cmbCorner.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cmbCorner.Location = new System.Drawing.Point(261, 264);
+            this.cmbCorner.Name = "cmbCorner";
+            this.cmbCorner.Size = new System.Drawing.Size(80, 32);
+            this.cmbCorner.TabIndex = 20;
+            this.cmbCorner.Text = "Corner";
+            this.cmbCorner.UseVisualStyleBackColor = true;
+            this.cmbCorner.Click += new System.EventHandler(this.cmbCorner_Click);
+            // 
+            // btnShots
+            // 
+            this.btnShots.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnShots.Location = new System.Drawing.Point(556, 264);
+            this.btnShots.Name = "btnShots";
+            this.btnShots.Size = new System.Drawing.Size(80, 32);
+            this.btnShots.TabIndex = 21;
+            this.btnShots.Text = "Shots ON";
+            this.btnShots.UseVisualStyleBackColor = true;
+            this.btnShots.Click += new System.EventHandler(this.btnShots_Click);
+            // 
+            // btnShotsOff
+            // 
+            this.btnShotsOff.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnShotsOff.Location = new System.Drawing.Point(651, 264);
+            this.btnShotsOff.Name = "btnShotsOff";
+            this.btnShotsOff.Size = new System.Drawing.Size(80, 32);
+            this.btnShotsOff.TabIndex = 22;
+            this.btnShotsOff.Text = "Shots OFF";
+            this.btnShotsOff.UseVisualStyleBackColor = true;
+            this.btnShotsOff.Click += new System.EventHandler(this.btnShotsOff_Click);
+            // 
+            // btnYellow
+            // 
+            this.btnYellow.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnYellow.Location = new System.Drawing.Point(743, 264);
+            this.btnYellow.Name = "btnYellow";
+            this.btnYellow.Size = new System.Drawing.Size(80, 32);
+            this.btnYellow.TabIndex = 23;
+            this.btnYellow.Text = "Yellow Card";
+            this.btnYellow.UseVisualStyleBackColor = true;
+            this.btnYellow.Click += new System.EventHandler(this.btnYellow_Click);
+            // 
+            // btnRed
+            // 
+            this.btnRed.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRed.Location = new System.Drawing.Point(829, 264);
+            this.btnRed.Name = "btnRed";
+            this.btnRed.Size = new System.Drawing.Size(80, 32);
+            this.btnRed.TabIndex = 24;
+            this.btnRed.Text = "Red Card";
+            this.btnRed.UseVisualStyleBackColor = true;
+            this.btnRed.Click += new System.EventHandler(this.btnRed_Click);
+            // 
             // SoccerApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1155, 949);
+            this.Controls.Add(this.btnRed);
+            this.Controls.Add(this.btnYellow);
+            this.Controls.Add(this.btnShotsOff);
+            this.Controls.Add(this.btnShots);
+            this.Controls.Add(this.cmbCorner);
+            this.Controls.Add(this.btnFoul);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.cmbMatchPart);
@@ -359,6 +437,12 @@
         private System.Windows.Forms.ComboBox cmbMatchPart;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnFoul;
+        private System.Windows.Forms.Button cmbCorner;
+        private System.Windows.Forms.Button btnShots;
+        private System.Windows.Forms.Button btnShotsOff;
+        private System.Windows.Forms.Button btnYellow;
+        private System.Windows.Forms.Button btnRed;
 
     }
 }
