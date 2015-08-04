@@ -9,23 +9,68 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Configuration;
 using UDTProvider;
-
+using Beesys.Wasp.Workflow;
+using BeeSys.Wasp.Communicator;
+using System.Xml.Linq;
+using System.IO;
+using BeeSys.Wasp.KernelController;
+using Beesys.Wasp.WorkFlow;
+using BeeSys.Wasp3D.DesignForms2;
+using System.Xml;
 namespace SoccerApp
 {
     public partial class SoccerApp : Form
     {
         private UDTProvider.UDTProvider _objUDT;
+        CUDTManagerHelper _mObjUdtHandler;
         string ActiveMatch=string.Empty;
         public DateTime CountDownTarget = DateTime.Now;
         private int SrNo = 1;
-        private DateTime MatchPartStartTime = DateTime.Now;
+        private DateTime MatchPartStartTime;
+        CWaspFileHandler objWaspFileHandler;
+        CRemoteHelper _objRemoteHelper;
+        private string _CommonPath;
         public SoccerApp()
         {
             InitializeComponent();
             InitilizeUDT();
             InitializeCombos();
+            objWaspFileHandler = new CWaspFileHandler();
+            InitializeWasp();
         }
 
+        private void InitializeWasp()
+        {
+              _CommonPath =  Environment.GetEnvironmentVariable("Wasp3.5");
+
+              var configfile = Path.Combine(_CommonPath, "CommonConfig.config");
+
+              XDocument xdoc = XDocument.Load(configfile);
+              var url = from lv1 in xdoc.Descendants("add")
+                        where lv1.Attribute("key").Value == "LOCALMANAGERURL"
+                        select lv1.Attribute("value").Value;
+              _objRemoteHelper = new CRemoteHelper(url.ElementAt(0));
+              ConnectionStatus info = _objRemoteHelper.Connect();
+              _mObjUdtHandler = new CUDTManagerHelper(CRemoteHelper.GetDisconnectedUrl("UDTManager"));
+              objWaspFileHandler = new CWaspFileHandler();
+              objWaspFileHandler.Initialize(CRemoteHelper.GetDisconnectedUrl("TemplateManager"));
+              LoadTemplates();
+        }
+        private void LoadTemplates()
+        {
+            XDocument xdoc = XDocument.Load("templates.xml");
+            var templates = xdoc.Descendants("template");
+            foreach (var item in templates)
+            {
+                STemplateDetails obj = objWaspFileHandler.GetTemplatePlayerInfo(item.Attribute("id").Value, "");
+                Form obj1 = Activator.CreateInstance(obj.TemplatePlayerInfo) as Form;
+                obj1.TopLevel = false;
+                obj1.Dock = DockStyle.Fill;
+                tableLayoutPanel1.Controls.Add(obj1);
+                obj1.Show();  
+            }
+
+        }
         private void InitilizeUDT()
         {
             _objUDT = new UDTProvider.UDTProvider();
@@ -140,21 +185,48 @@ namespace SoccerApp
             ActiveMatch = cmbMatch.Text;
             dataGridView1.Rows.Clear();
             FillMatchEvents();
+            UpdateWaspControls();
         }
+        private void UpdateWaspControls()
+        {
+            foreach (Control item in tableLayoutPanel1.Controls)
+            {
+                IAutomationDataEntry obj = (item) as IAutomationDataEntry;
+                string str = obj.GetDataXml();
+                XmlDocument xdDoc = new XmlDocument();
+             //   xdDoc.LoadXml(str);
+               XmlNode xn;//= xdDoc.SelectSingleNode("//data/userdata/requery/connection/query");
+               string str1 = String.Format(str, cmbMatch.Text);
+               CDesignerForm cd = (item) as CDesignerForm;
+              // xdDoc.RemoveAll();
+              // xdDoc = null;
+              // xdDoc = new XmlDocument();
+               xdDoc.LoadXml(str1);
+               //xn.RemoveAll();
+               //xn = null;
+               xn = xdDoc.DocumentElement;
+               cd.SetData(xn);
 
+            }
+        }
         private void FillMatchEvents()
         {
             DataRow[] dr = _objUDT.CurrentDataSet.Tables[12].Select("MatchID= '"+cmbMatch.Text+"'");
             foreach (DataRow item in dr)
             {
                 DataGridViewRow dgv = (DataGridViewRow)dataGridView1.Rows[0].Clone();
-                dgv.Cells[0].Value = item[0].ToString();
-                dgv.Cells[1].Value = item[3].ToString();
-                dgv.Cells[2].Value = item[2].ToString();
-                dgv.Cells[3].Value = item[4].ToString();
-                dgv.Cells[4].Value = item[5].ToString();
-                dgv.Cells[5].Value = item[6].ToString();
+                dgv.Cells[0].Value = item["EventID"].ToString(); //SrNo
+                dgv.Cells[1].Value = item["Time"].ToString(); //Time
+                dgv.Cells[2].Value = item["MatchPart"].ToString(); //Match Part
+                dgv.Cells[3].Value = item["EventType"].ToString(); //Event memo
+                dgv.Cells[4].Value = item["Team"].ToString();//team Name
+                dgv.Cells[5].Value = item["Player"].ToString();//player Name
                 dataGridView1.Rows.Add(dgv);
+                int sr = Convert.ToInt32(item["EventID"].ToString());
+                if(SrNo<sr)
+                {
+                    SrNo = sr;
+                }
             }
             
         }
@@ -210,8 +282,7 @@ namespace SoccerApp
 
         private void btnhomeplus_Click(object sender, EventArgs e)
         {
-            
-             lblHomeScore.Text =( Convert.ToInt32(lblHomeScore.Text) + 1).ToString();
+            lblHomeScore.Text =( Convert.ToInt32(lblHomeScore.Text) + 1).ToString();
             _objUDT.UpdateUDT(10, new string[] { "HomeScore" }, new string[] { lblHomeScore.Text }, "Name", cmbMatch.Text);
             Player p = new Player();
             p.Team = lblHomeTeam.Text;
@@ -322,6 +393,53 @@ namespace SoccerApp
                 timer1.Stop();
                 btnstartstop.Text = "Start";
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            TimeSpan ts=new TimeSpan();
+            if(MatchPartStartTime.Year!=0001)
+            { 
+                ts = DateTime.Now.Subtract(MatchPartStartTime);
+            }
+            
+            Substitution sb = new Substitution();
+            sb._objUDTProvider = _objUDT;
+            sb.HomeTeam = lblHomeTeam.Text;
+            sb.AwayTeam = lblAwayTeam.Text;
+            sb.Team = lblHomeTeam.Text;
+            sb.Initialize();
+            sb.ShowDialog();
+
+            //string selectedInPlayer = p.selectedPlayer;
+            DataGridViewRow dgv = (DataGridViewRow)dataGridView1.Rows[0].Clone();
+            dgv.Cells[0].Value = SrNo;
+            if (MatchPartStartTime.Year != 0001)
+            {
+                dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+            }
+            else
+            {
+                dgv.Cells[1].Value = "00:00";
+            }
+            dgv.Cells[2].Value = cmbMatchPart.Text;
+            dgv.Cells[3].Value = "SubstituteOut";
+            dgv.Cells[4].Value = sb.Team;
+            dgv.Cells[5].Value = sb.SelectedOutPlayer;
+            dataGridView1.Rows.Add(dgv);
+            SrNo++;
+            _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "SubstituteOut", sb.Team, sb.SelectedOutPlayer });
+            dgv = (DataGridViewRow)dataGridView1.Rows[0].Clone();
+            dgv.Cells[0].Value = SrNo;
+            dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+            dgv.Cells[2].Value = cmbMatchPart.Text;
+            dgv.Cells[3].Value = "SubstituteIN";
+            dgv.Cells[4].Value = sb.Team;
+            dgv.Cells[5].Value = sb.SelectedInPlayer;
+            dataGridView1.Rows.Add(dgv);
+            SrNo++;
+            _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "SubstituteIN", sb.Team, sb.SelectedInPlayer });
+            sb = null;
         }
   
     }

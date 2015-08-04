@@ -51,6 +51,8 @@
             this.PlayerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cmbMatch = new System.Windows.Forms.ComboBox();
             this.cmbMatchPart = new System.Windows.Forms.ComboBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -208,7 +210,7 @@
             this.EventMem,
             this.TeamName,
             this.PlayerName});
-            this.dataGridView1.Location = new System.Drawing.Point(12, 467);
+            this.dataGridView1.Location = new System.Drawing.Point(55, 305);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersVisible = false;
@@ -264,6 +266,7 @@
             this.cmbMatch.Name = "cmbMatch";
             this.cmbMatch.Size = new System.Drawing.Size(155, 21);
             this.cmbMatch.TabIndex = 15;
+            this.cmbMatch.SelectedIndexChanged += new System.EventHandler(this.cmbMatch_SelectedIndexChanged);
             // 
             // cmbMatchPart
             // 
@@ -273,12 +276,40 @@
             this.cmbMatchPart.Name = "cmbMatchPart";
             this.cmbMatchPart.Size = new System.Drawing.Size(136, 21);
             this.cmbMatchPart.TabIndex = 16;
+            this.cmbMatchPart.SelectedIndexChanged += new System.EventHandler(this.cmbMatchPart_SelectedIndexChanged);
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 465);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1155, 484);
+            this.tableLayoutPanel1.TabIndex = 17;
+            // 
+            // button1
+            // 
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Location = new System.Drawing.Point(55, 261);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(98, 32);
+            this.button1.TabIndex = 18;
+            this.button1.Text = "Substitute";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // SoccerApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(892, 602);
+            this.ClientSize = new System.Drawing.Size(1155, 949);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.cmbMatchPart);
             this.Controls.Add(this.cmbMatch);
             this.Controls.Add(this.dataGridView1);
@@ -326,6 +357,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn PlayerName;
         private System.Windows.Forms.ComboBox cmbMatch;
         private System.Windows.Forms.ComboBox cmbMatchPart;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Button button1;
 
     }
 }

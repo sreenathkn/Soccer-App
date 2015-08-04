@@ -33,6 +33,30 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BeeSys.Wasp.CommonReference, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\BeeSys.Wasp.CommonReference.dll</HintPath>
+    </Reference>
+    <Reference Include="BeeSys.Wasp.Communicator, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\BeeSys.Wasp.Communicator.dll</HintPath>
+    </Reference>
+    <Reference Include="BeeSys.Wasp.KernelController.IServices, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\BeeSys.Wasp.KernelController.IServices.dll</HintPath>
+    </Reference>
+    <Reference Include="BeeSys.Wasp.KernelController.IUDTManager, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\BeeSys.Wasp.KernelController.IUDTManager.dll</HintPath>
+    </Reference>
+    <Reference Include="BeeSys.Wasp3D.DesignForms2, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\BeeSys.Wasp3D.DesignForms2.dll</HintPath>
+    </Reference>
+    <Reference Include="Player Manager, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\Player Manager.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -65,6 +89,12 @@
     <Compile Include="SoccerApp.Designer.cs">
       <DependentUpon>SoccerApp.cs</DependentUpon>
     </Compile>
+    <Compile Include="Substitution.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Substitution.Designer.cs">
+      <DependentUpon>Substitution.cs</DependentUpon>
+    </Compile>
     <Compile Include="TeamBuilderForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -86,6 +116,9 @@
     </Compile>
     <EmbeddedResource Include="SoccerApp.resx">
       <DependentUpon>SoccerApp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Substitution.resx">
+      <DependentUpon>Substitution.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TeamBuilderForm.resx">
       <DependentUpon>TeamBuilderForm.cs</DependentUpon>
@@ -111,6 +144,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Soccer_revised.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="templates.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
