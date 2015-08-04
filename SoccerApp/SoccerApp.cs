@@ -17,6 +17,7 @@ using BeeSys.Wasp.KernelController;
 using Beesys.Wasp.WorkFlow;
 using BeeSys.Wasp3D.DesignForms2;
 using System.Xml;
+using BeeSys.Wasp3D.FormDesigner2;
 namespace SoccerApp
 {
     public partial class SoccerApp : Form
@@ -197,7 +198,7 @@ namespace SoccerApp
              //   xdDoc.LoadXml(str);
                XmlNode xn;//= xdDoc.SelectSingleNode("//data/userdata/requery/connection/query");
                string str1 = String.Format(str, cmbMatch.Text);
-               CDesignerForm cd = (item) as CDesignerForm;
+               IDataEntry cd = (item) as IDataEntry;
               // xdDoc.RemoveAll();
               // xdDoc = null;
               // xdDoc = new XmlDocument();
