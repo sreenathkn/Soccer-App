@@ -64,11 +64,20 @@ namespace SoccerApp
             foreach (var item in templates)
             {
                 STemplateDetails obj = objWaspFileHandler.GetTemplatePlayerInfo(item.Attribute("id").Value, "");
-                Form obj1 = Activator.CreateInstance(obj.TemplatePlayerInfo) as Form;
-                obj1.TopLevel = false;
-                obj1.Dock = DockStyle.Fill;
-                tableLayoutPanel1.Controls.Add(obj1);
-                obj1.Show();  
+
+                if(obj != null)
+                { 
+                    Form obj1 = Activator.CreateInstance(obj.TemplatePlayerInfo) as Form;
+                    obj1.TopLevel = false;
+                    obj1.Dock = DockStyle.Fill;
+                    tableLayoutPanel1.Controls.Add(obj1);
+                    obj1.Show();
+                }
+                else
+                {
+                    MessageBox.Show("Template " + item.Attribute("id").Value + "Not found");
+                }
+
             }
 
         }
