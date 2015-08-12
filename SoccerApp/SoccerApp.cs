@@ -231,6 +231,7 @@ namespace SoccerApp
             }
             SrNo++;
         }
+
         private void SelectTeams(string ActiveMatch)
         {
             DataRow[] dr = _objUDT.CurrentDataSet.Tables[10].Select("Name= '"+ActiveMatch+"'");
@@ -240,13 +241,15 @@ namespace SoccerApp
                 lblAwayTeam.Text = dr[0]["AwayTeam"].ToString();
                 // Get Team Flag from team Table
                 dr = _objUDT.CurrentDataSet.Tables[6].Select("Name= '" + lblHomeTeam.Text + "'");
-                pnlHomeFlag.BackgroundImage = Image.FromFile(dr[0]["Logo"].ToString());
+                if (File.Exists(dr[0]["Logo"].ToString()))
+                    pnlHomeFlag.BackgroundImage = Image.FromFile(dr[0]["Logo"].ToString());
+
                 dr = _objUDT.CurrentDataSet.Tables[6].Select("Name= '" + lblAwayTeam.Text + "'");
-                pnlAwayFlag.BackgroundImage = Image.FromFile(dr[0]["Logo"].ToString());
+                if (File.Exists(dr[0]["Logo"].ToString()))
+                    pnlAwayFlag.BackgroundImage = Image.FromFile(dr[0]["Logo"].ToString());
                 //Get initial scores for the selected teams from UDT
                 InitializeScores(ActiveMatch);
             }
-      
         }
 
         private void InitializeScores(string ActiveMatch)
