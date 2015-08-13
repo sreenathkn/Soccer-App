@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoccerApp", "SoccerApp\Socc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UDTProvider", "UDTProvider\UDTProvider.csproj", "{BFA81BC4-2ED7-48ED-935B-045265A4D60C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resource", "Resource", "{92B837EB-F452-4533-8611-A0B791FF46A0}"
+	ProjectSection(SolutionItems) = preProject
+		C:\Users\Athira\Desktop\soccer.udt = C:\Users\Athira\Desktop\soccer.udt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
