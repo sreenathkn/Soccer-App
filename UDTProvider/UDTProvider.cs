@@ -63,6 +63,13 @@ namespace UDTProvider
             CurrentDataSet = CurrentUDT.ToDataSet();
         
         }
+        public void RefreshUDT(string UdtName)
+        {
+            _mObjUdtHandler = null;
+            _mObjUdtHandler = new CUDTManagerHelper(CRemoteHelper.GetDisconnectedUrl("UDTManager"));
+            CurrentUDT = _mObjUdtHandler.GetUdtByName(UdtName);
+            CurrentDataSet = CurrentUDT.ToDataSet();
+        }
         public void UpdateUDT(int tableIndex,string[] Columns,string[]Values,string primaryColumn,string PrimaryValue)
         {
             DataTable dtTable = CurrentDataSet.Tables[tableIndex];

@@ -196,6 +196,13 @@ namespace SoccerApp
             dataGridView1.Rows.Clear();
             FillMatchEvents();
             UpdateWaspControls();
+            //If there is no entry in Match Status table, insert new row
+            DataRow[] dr = _objUDT.CurrentDataSet.Tables[17].Select("Match= '" + cmbMatch.Text + "'");
+            if(dr.Length==0)
+            {
+                _objUDT.InsertUDTData(17, new string[] { "Match" }, new string[] { cmbMatch.Text });
+            }
+
         }
         private void UpdateWaspControls()
         {
@@ -315,12 +322,20 @@ namespace SoccerApp
             SrNo++;
             _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Goal", lblHomeTeam.Text, selectedPlayer });
             p = null;
+            updateMatchStats("HomeGoal", 1, "Match", cmbMatch.Text);
         }
-
+        private void updateMatchStats(string Column,int value,string uniqueColumn,string uniqueValue)
+        {
+            _objUDT.RefreshUDT("Soccer"); // It will refresh the UDT and Dataset and get latest values available in UDT
+            DataRow[] dr = _objUDT.CurrentDataSet.Tables[17].Select(uniqueColumn + "= '" + uniqueValue + "'");
+            int val = Convert.ToInt32(dr[0][Column].ToString())+value;
+            _objUDT.UpdateUDT(17, new string[] { Column }, new string[] { val.ToString() }, uniqueColumn, uniqueValue);
+        }
         private void btnHomeminus_Click(object sender, EventArgs e)
         {
             lblHomeScore.Text = (Convert.ToInt32(lblHomeScore.Text) -1).ToString();
             _objUDT.UpdateUDT(10, new string[] { "HomeScore" }, new string[] { lblHomeScore.Text }, "Name", cmbMatch.Text);
+            updateMatchStats("HomeGoal", -1, "Match", cmbMatch.Text);
         }
 
         private void btnawayplus_Click(object sender, EventArgs e)
@@ -347,12 +362,14 @@ namespace SoccerApp
             SrNo++;
             _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Goal", lblAwayTeam.Text, selectedPlayer });
             p = null;
+            updateMatchStats("AwayGoal", 1, "Match", cmbMatch.Text);
         }
-
+         
         private void btnawayminus_Click(object sender, EventArgs e)
         {
             lblAwayScore.Text = (Convert.ToInt32(lblHomeScore.Text) - 1).ToString();
             _objUDT.UpdateUDT(10, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text);
+            updateMatchStats("AwayGoal", -1, "Match", cmbMatch.Text);
         }
 
         private void lblHomeTeam_DoubleClick(object sender, EventArgs e)
@@ -488,6 +505,16 @@ namespace SoccerApp
             dataGridView1.Rows.Add(dgv);
              _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Foul", pd.Team, pd.SelectedPlayer });
              SrNo++;
+             string FoulTeam = "";
+            if(pd.Team==lblHomeTeam.Text)
+            {
+                FoulTeam = "HomeFoul";
+            }
+            else
+            {
+                FoulTeam = "AwayFoul";
+            }
+            updateMatchStats(FoulTeam, 1, "Match", cmbMatch.Text);
         }
 
         private void cmbCorner_Click(object sender, EventArgs e)
@@ -518,6 +545,17 @@ namespace SoccerApp
             dataGridView1.Rows.Add(dgv);
             _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Corner", tms.SelectedTeam, "" });
             SrNo++;
+          
+            string FoulTeam = "";
+            if (tms.SelectedTeam == lblHomeTeam.Text)
+            {
+                FoulTeam = "HomeCorner";
+            }
+            else
+            {
+                FoulTeam = "AwayCorner";
+            }
+            updateMatchStats(FoulTeam, 1, "Match", cmbMatch.Text);
             tms = null;
         }
 
@@ -554,6 +592,16 @@ namespace SoccerApp
             dataGridView1.Rows.Add(dgv);
             _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Shots ON", pd.Team, pd.SelectedPlayer });
             SrNo++;
+            string FoulTeam = "";
+            if (pd.Team == lblHomeTeam.Text)
+            {
+                FoulTeam = "HomeShotsOnGoal";
+            }
+            else
+            {
+                FoulTeam = "AwayShotsOnGoal";
+            }
+            updateMatchStats(FoulTeam, 1, "Match", cmbMatch.Text);
         }
 
         private void btnShotsOff_Click(object sender, EventArgs e)
@@ -589,6 +637,16 @@ namespace SoccerApp
             dataGridView1.Rows.Add(dgv);
             _objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Shots OFF", pd.Team, pd.SelectedPlayer });
             SrNo++;
+            string FoulTeam = "";
+            if (pd.Team == lblHomeTeam.Text)
+            {
+                FoulTeam = "HomeShotsMissed";
+            }
+            else
+            {
+                FoulTeam = "AwayShotsMissed";
+            }
+            updateMatchStats(FoulTeam, 1, "Match", cmbMatch.Text);
         }
 
         private void btnYellow_Click(object sender, EventArgs e)
