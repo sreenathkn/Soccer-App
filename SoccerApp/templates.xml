@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <templates>
-  <template name="Score Bug.w3d" id="1784306E-9FD3-4DE9-AE68-BADE12D99313"/>
-  <template name="Scene1.w3d" id="A825B87A-C71E-46EA-8E18-C21E0532DCCF"/>
- </templates>
+  <template name="Score Bug.w3d" id="1784306E-9FD3-4DE9-AE68-BADE12D99313" description="ScoreBug"/>
+  <template name="Scene1.w3d" id="A825B87A-C71E-46EA-8E18-C21E0532DCCF" description="NameBand"/>
+  <template name="Scene1.w3d" id="A825B87A-C71E-46EA-8E18-C21E0532DCCF" description="NameBand1"/>
+  <template name="Score Bug.w3d" id="1784306E-9FD3-4DE9-AE68-BADE12D99313" description="ScoreBug1"/>
+</templates>
