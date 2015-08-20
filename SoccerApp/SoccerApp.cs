@@ -31,14 +31,17 @@ namespace SoccerApp
         CWaspFileHandler objWaspFileHandler;
         CRemoteHelper _objRemoteHelper;
         private string _CommonPath;
+        SceneHandler _objsceneHandler;
         public SoccerApp()
         {
             InitializeComponent();
             InitilizeUDT();
             InitializeCombos();
             objWaspFileHandler = new CWaspFileHandler();
+            _objsceneHandler = new SceneHandler();
             InitializeWasp();
-        }
+            _objsceneHandler.Initialize();
+         }
 
         private void InitializeWasp()
         {
@@ -56,6 +59,7 @@ namespace SoccerApp
               objWaspFileHandler = new CWaspFileHandler();
               objWaspFileHandler.Initialize(CRemoteHelper.GetDisconnectedUrl("TemplateManager"));
               LoadTemplates();
+              
         }
         private void LoadTemplates()
         {
@@ -276,7 +280,7 @@ namespace SoccerApp
         }
         private void cmbMatchPart_SelectedIndexChanged(object sender, EventArgs e)
         {
-            
+            lblCounter.Enabled = false;
             UdtFilter filter = new UdtFilter();
             filter.FilterColumn = "Name";
             filter.FilterValue = cmbMatch.Text;
@@ -298,10 +302,15 @@ namespace SoccerApp
             timer1.Stop();
             lblCounter.Text = "00:00";
             btnstartstop.Text = "Start";
+            if(cmbMatchPart.Text=="Extra Time")
+            {
+                lblCounter.Enabled = true;
+            }
         }
 
         private void btnhomeplus_Click(object sender, EventArgs e)
         {
+            TimeSpan ts = DateTime.Now.Subtract(MatchPartStartTime);
             lblHomeScore.Text =( Convert.ToInt32(lblHomeScore.Text) + 1).ToString();
             _objUDT.UpdateUDT(10, new string[] { "HomeScore" }, new string[] { lblHomeScore.Text }, "Name", cmbMatch.Text);
             Player p = new Player();
@@ -309,7 +318,7 @@ namespace SoccerApp
             p._objUDTProvider = _objUDT;
             p.FillTeam();
             p.ShowDialog();
-            TimeSpan ts = DateTime.Now.Subtract(MatchPartStartTime);
+          
             string selectedPlayer = p.selectedPlayer;
             DataGridViewRow dgv = (DataGridViewRow)dataGridView1.Rows[0].Clone();
             dgv.Cells[0].Value = SrNo;
@@ -326,7 +335,7 @@ namespace SoccerApp
         }
         private void updateMatchStats(string Column,int value,string uniqueColumn,string uniqueValue)
         {
-            _objUDT.RefreshUDT("Soccer"); // It will refresh the UDT and Dataset and get latest values available in UDT
+            _objUDT.RefreshUDT(ConfigurationSettings.AppSettings["udtname"]); // It will refresh the UDT and Dataset and get latest values available in UDT
             DataRow[] dr = _objUDT.CurrentDataSet.Tables[17].Select(uniqueColumn + "= '" + uniqueValue + "'");
             int val = Convert.ToInt32(dr[0][Column].ToString())+value;
             _objUDT.UpdateUDT(17, new string[] { Column }, new string[] { val.ToString() }, uniqueColumn, uniqueValue);
@@ -410,9 +419,23 @@ namespace SoccerApp
             {
                 if (lblCounter.Text.Trim() == "00:00")
                 {
-                    CountDownTarget = DateTime.Now.AddMinutes(45.00);
+                    if (cmbMatchPart.Text != "Extra Time")
+                    {
+                        CountDownTarget = DateTime.Now.AddMinutes(45.00);
+                        
+                        _objsceneHandler.TimerAction("update", "45,0,0,0");
+                        _objsceneHandler.TimerAction("start", "");
+                    }
+                    else
+                    {
+                        _objsceneHandler.TimerAction("updateextra", lblCounter.Text + ",0,0,0");
+                        _objsceneHandler.TimerAction("extrain", "");
+                        CountDownTarget = DateTime.Now.AddMinutes(Convert.ToInt32(lblCounter.Text));
+                        _objsceneHandler.TimerAction("extrastart", "");
+                    }
                     MatchPartStartTime = DateTime.Now;
                 }
+                
                 timer1.Enabled=true;
                 timer1.Interval = 1000;
                 timer1.Start();
@@ -420,9 +443,19 @@ namespace SoccerApp
             }
             else
             {
+                if (cmbMatchPart.Text != "Extra Time")
+                {
+                    _objsceneHandler.TimerAction("stop", "");
+                }
+                else
+                {
+
+                    _objsceneHandler.TimerAction("stopextratime", "");
+                }
                 timer1.Stop();
                 btnstartstop.Text = "Start";
             }
+            
         }
 
         private void button1_Click(object sender, EventArgs e)

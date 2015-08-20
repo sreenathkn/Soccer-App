@@ -40,7 +40,6 @@
             this.lblHomeScore = new System.Windows.Forms.Label();
             this.lblAwayScore = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.lblCounter = new System.Windows.Forms.Label();
             this.btnstartstop = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.SNO = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -59,6 +58,7 @@
             this.btnShotsOff = new System.Windows.Forms.Button();
             this.btnYellow = new System.Windows.Forms.Button();
             this.btnRed = new System.Windows.Forms.Button();
+            this.lblCounter = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -182,17 +182,6 @@
             // 
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // lblCounter
-            // 
-            this.lblCounter.AutoSize = true;
-            this.lblCounter.Font = new System.Drawing.Font("Segoe UI", 39.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCounter.ForeColor = System.Drawing.Color.DodgerBlue;
-            this.lblCounter.Location = new System.Drawing.Point(361, 175);
-            this.lblCounter.Name = "lblCounter";
-            this.lblCounter.Size = new System.Drawing.Size(164, 71);
-            this.lblCounter.TabIndex = 12;
-            this.lblCounter.Text = "00:00\r\n";
             // 
             // btnstartstop
             // 
@@ -375,11 +364,25 @@
             this.btnRed.UseVisualStyleBackColor = true;
             this.btnRed.Click += new System.EventHandler(this.btnRed_Click);
             // 
+            // lblCounter
+            // 
+            this.lblCounter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblCounter.Enabled = false;
+            this.lblCounter.Font = new System.Drawing.Font("Segoe UI", 39.75F, System.Drawing.FontStyle.Bold);
+            this.lblCounter.ForeColor = System.Drawing.Color.DodgerBlue;
+            this.lblCounter.Location = new System.Drawing.Point(380, 177);
+            this.lblCounter.Name = "lblCounter";
+            this.lblCounter.Size = new System.Drawing.Size(164, 78);
+            this.lblCounter.TabIndex = 25;
+            this.lblCounter.Text = "00:00";
+            this.lblCounter.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // SoccerApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1155, 949);
+            this.Controls.Add(this.lblCounter);
             this.Controls.Add(this.btnRed);
             this.Controls.Add(this.btnYellow);
             this.Controls.Add(this.btnShotsOff);
@@ -392,7 +395,6 @@
             this.Controls.Add(this.cmbMatch);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.btnstartstop);
-            this.Controls.Add(this.lblCounter);
             this.Controls.Add(this.lblAwayScore);
             this.Controls.Add(this.lblHomeScore);
             this.Controls.Add(this.btnawayminus);
@@ -424,7 +426,6 @@
         private System.Windows.Forms.Label lblHomeScore;
         private System.Windows.Forms.Label lblAwayScore;
         private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.Label lblCounter;
         private System.Windows.Forms.Button btnstartstop;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewTextBoxColumn SNO;
@@ -443,6 +444,7 @@
         private System.Windows.Forms.Button btnShotsOff;
         private System.Windows.Forms.Button btnYellow;
         private System.Windows.Forms.Button btnRed;
+        private System.Windows.Forms.TextBox lblCounter;
 
     }
 }
