@@ -200,6 +200,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\soccer.w3d" />
+    <None Include="Resources\Soccer_Final.udt" />
     <None Include="Resources\Soccer_revised.png" />
   </ItemGroup>
   <ItemGroup>
