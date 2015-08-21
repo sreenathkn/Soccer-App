@@ -70,8 +70,6 @@ namespace SoccerApp
             _mObjUdtHandler = new CUDTManagerHelper(CRemoteHelper.GetDisconnectedUrl("UDTManager"));
             objWaspFileHandler = new CWaspFileHandler();
             objWaspFileHandler.Initialize(CRemoteHelper.GetDisconnectedUrl("TemplateManager"));
-           
-
         }
         private void listBox1_DoubleClick(object sender, EventArgs e)
         {
@@ -89,7 +87,6 @@ namespace SoccerApp
                     //First play out the graphic.
                     //then delete the gfx
                     tableLayoutPanel1.Controls.Remove(ctl);
-
                 }
                 tableLayoutPanel1.Controls.Add(obj1,1,RowPos);
                 if (RowPos == 1)

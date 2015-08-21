@@ -17,27 +17,21 @@ namespace SoccerApp
        ShotBox _objPlayer1;
        LinkManager _objLinkManager;
        Link _objLink;
-
        public void Initialize()
        {
            isInitialized = false;
-          
-
            if (ConfigurationManager.AppSettings["w3dscene"] != null)
            {
                if (File.Exists(ConfigurationManager.AppSettings["w3dscene"]))
                {
                    if (ConfigurationManager.AppSettings["stingserver"] != null)
                    {
-                      
-                       string sLinkID = string.Empty;
+                        string sLinkID = string.Empty;
                        _objLinkManager = new LinkManager();
                        _objLink = _objLinkManager.GetLink(LINKTYPE.TCP, out sLinkID);
                        _objLink.OnEngineConnected += _objLink_OnEngineConnected;
                        _objLink.Connect(ConfigurationManager.AppSettings["stingserver"]);
                        _objLinkManager.OnEngineDisConnected += _objLinkManager_OnEngineDisConnected;
-                      
-
                    }
                }
 
@@ -49,7 +43,6 @@ namespace SoccerApp
            string sShotBoxID = null;
            bool isTicker;
            string filetype = string.Empty;
-
            sXml = Util.getSGFromWSL(ConfigurationManager.AppSettings["w3dscene"]);
            filetype = Path.GetExtension(ConfigurationManager.AppSettings["w3dscene"]).Split(new string[] { "." }, StringSplitOptions.None)[1];
            if (!string.IsNullOrEmpty(sXml))
@@ -67,7 +60,6 @@ namespace SoccerApp
            }
            
        }
-
        void _objPlayer1_OnShotBoxStatus(object sender, SHOTBOXARGS e)
        {
            if(e.SHOTBOXRESPONSE== SHOTBOXMSG.PREPARED)
