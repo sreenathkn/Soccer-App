@@ -188,6 +188,7 @@
     <EmbeddedResource Include="TeamSelection.resx">
       <DependentUpon>TeamSelection.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="Docs\soccer doc.odt" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
