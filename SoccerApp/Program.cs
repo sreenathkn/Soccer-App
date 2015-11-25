@@ -16,7 +16,7 @@ namespace SoccerApp
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new PlayerHandler());
+            Application.Run(new SoccerApp());
             //Issue #1
         }
     }

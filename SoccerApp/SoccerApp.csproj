@@ -42,8 +42,12 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="BeeSys.Wasp.Communicator, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\BeeSys.Wasp.Communicator.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\OutPut\BeeSys.Wasp.Communicator.dll</HintPath>
+    </Reference>
+    <Reference Include="BeeSys.Wasp.IWaspPlayers, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Build\BeeSys.Wasp.IWaspPlayers.dll</HintPath>
     </Reference>
     <Reference Include="BeeSys.Wasp.KernelController.IServices, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\BeeSys.Wasp.KernelController.IServices.dll</HintPath>
@@ -51,7 +55,7 @@
     </Reference>
     <Reference Include="BeeSys.Wasp.KernelController.IUDTManager, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\BeeSys.Wasp.KernelController.IUDTManager.dll</HintPath>
+      <HintPath>..\OutPut\BeeSys.Wasp.KernelController.IUDTManager.dll</HintPath>
     </Reference>
     <Reference Include="Beesys.Wasp.SceneReader, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Beesys.Wasp.SceneReader.dll</HintPath>
@@ -64,6 +68,10 @@
     <Reference Include="Beesys.Wasp.Workflow.CommunicationHandler, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Beesys.Wasp.Workflow.CommunicationHandler.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="BeeSys.Wasp3D.Controls2, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\BeeSys.Wasp3D.Controls2.dll</HintPath>
     </Reference>
     <Reference Include="BeeSys.Wasp3D.DesignForms2, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
