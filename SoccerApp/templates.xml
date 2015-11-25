@@ -1,7 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <templates>
-  <template name="Score Bug.w3d" id="1784306E-9FD3-4DE9-AE68-BADE12D99313" description="ScoreBug"/>
-  <template name="Scene1.w3d" id="A825B87A-C71E-46EA-8E18-C21E0532DCCF" description="NameBand"/>
-  <template name="Scene1.w3d" id="A825B87A-C71E-46EA-8E18-C21E0532DCCF" description="NameBand1"/>
-  <template name="Score Bug.w3d" id="1784306E-9FD3-4DE9-AE68-BADE12D99313" description="ScoreBug1"/>
+  <template name="Counddown To Transmission.wsp" id="f541b573-e0af-409c-a161-16523d4234ef" description="Counddown To Transmission"/>
+  <template name="\testcmb.wsp" id="7088d336-43fc-4d21-93d4-fbfde3168b40" description="tstcmb"/>
+  <template name="Head To Head.wsp" id="aaa235e3-f9d2-4450-9c5e-aff79f259ba0" description="Head To Head"/>
+  <template name="League Table.wsp" id="9e6185f2-b2f3-4349-bf0b-344c7d893072" description="League Table"/>
+  <template name="Match FT Summary Statistics.wsp" id="5bf23e1e-6485-406c-ac81-77d9dab0bcdb" description="Match FT Summary Statistics"/>
+  <template name="Match Id_LT.wsp" id="e12360e7-555d-4b5a-91de-d48153e9e772" description="Match Id_LT"/>
+  <template name="Match Schedule.wsp" id="cc2a6156-451d-4a76-87da-ff1d3c9cd2e2" description="Match Schedule"/>
+  <template name="Match Scores.wsp" id="5293bf99-2bb6-4b00-a0ca-d0db6457a037" description="Match Scores"/>
+  <template name="Player Profile.wsp" id="38e8783a-11d6-4a15-b10c-e37dc96a97c0" description="Player Profile"/>
+  <template name="Score Bug.wsp" id="9aa1810c-250b-40b4-9591-9092311a576d" description="Score Bug"/>
+  <template name="Substitute Presentation.wsp" id="cfe4260d-2770-41f0-bba6-4e7b7b75a7eb" description="Substitute Presentation"/>
+  <template name="Team Line Up.wsp" id="bbc6fc3d-8212-4b6c-9655-8f0b927e6bad" description="Team Line Up"/>
+  <template name="Team Line Up_Player.wsp" id="e39de028-7776-459f-b8c4-04e9175f5f6e" description="Team Line Up_Player"/>
+  <template name="Team Line Up_Substitutes.wsp" id="31e75e4c-c689-4f58-9a8d-9598d163ec85" description="Team Line Up_Substitutes"/>
+  <template name="Team Name.wsp" id="5b48ec31-f8b1-47a0-a55c-7bf13974a0b1" description="Team Name"/>
+  <template name="Team Roaster.wsp" id="200da59b-f8f7-4ae6-a58d-bd5665a887c9" description="Team Roaster"/>
+  <template name="Team Tactical Line Up.wsp" id="e722f610-d2ce-4933-ae70-50333dc25c50" description="Team Tactical Line Up"/>
+  <template name="Weather Conditions.wsp" id="704f3cce-3261-4664-92a5-114d9eb45c60" description="Weather Conditions"/>
+  <template name="Officials Band.wsp" id="9aeb0c7c-2b25-46e0-aa2d-d40d54f5000a" description="Officials Band"/>
+  <template name="Refree Band.wsp" id="f586d574-5542-4e92-b320-e0eddb8903ae" description="Refree Band"/>
 </templates>
