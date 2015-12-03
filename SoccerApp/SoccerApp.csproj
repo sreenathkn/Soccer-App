@@ -120,6 +120,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExtraTimeEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExtraTimeEditor.Designer.cs">
+      <DependentUpon>ExtraTimeEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Player.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -165,6 +171,9 @@
     <Compile Include="TeamSelection.Designer.cs">
       <DependentUpon>TeamSelection.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="ExtraTimeEditor.resx">
+      <DependentUpon>ExtraTimeEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Player.resx">
       <DependentUpon>Player.cs</DependentUpon>
     </EmbeddedResource>

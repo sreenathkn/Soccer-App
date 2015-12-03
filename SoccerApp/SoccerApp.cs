@@ -664,6 +664,7 @@ namespace SoccerApp
                 p.Team = lblHomeTeam2.Text;
                 p._objUDTProvider = m_objUDT;
                 p.FillTeam();
+                p.StartPosition = FormStartPosition.CenterParent;
                 p.ShowDialog();
 
                 string selectedPlayer = p.selectedPlayer;
@@ -740,6 +741,7 @@ namespace SoccerApp
             tf.Team = lblHomeTeam2.Text;
             tf._objUDTProvider = m_objUDT;
             tf.FIllTeam();
+            tf.StartPosition = FormStartPosition.CenterParent;
             tf.ShowDialog();
             tf = null;
         }
@@ -750,6 +752,7 @@ namespace SoccerApp
             tf.Team = lblAwayTeam.Text;
             tf._objUDTProvider = m_objUDT;
             tf.FIllTeam();
+            tf.StartPosition = FormStartPosition.CenterParent;
             tf.ShowDialog();
             tf = null;
         }
@@ -768,8 +771,8 @@ namespace SoccerApp
 
         private void btnstartstop_Click(object sender, EventArgs e)
         {
-            string str = null;
-
+            //string str = null;
+            bool bneedStart = false;
             if (btnstartstop.Text == "Start")
             {
                 if (lblCounter.Text.Trim() == "00:00")
@@ -779,25 +782,36 @@ namespace SoccerApp
                         CountDownTarget = DateTime.Now.AddMinutes(45.00);                       
                         m_objsceneHandler.TimerAction("update", "45,0,0,0", m_objPlayer);
                         m_objsceneHandler.TimerAction("start", "", m_objPlayer);
+                        bneedStart = true;
                     }
                     else
                     {
-                        m_objsceneHandler.TimerAction("updateextra", lblCounter.Text + ",0,0,0", m_objPlayer);
-                        m_objsceneHandler.TimerAction("extrain", "", m_objPlayer);
-                        str = lblCounter.Text;
-                        string[] splitted = str.Split(new[] { ":" }, StringSplitOptions.None);
-                        string decimaljoin = String.Join(".", splitted);
-                        CountDownTarget = DateTime.Now.AddMinutes(Convert.ToDouble(decimaljoin));
-                        // CountDownTarget = DateTime.Now.AddMinutes(Convert.ToDouble(lblCounter.Text));
-                        m_objsceneHandler.TimerAction("extrastart", "", m_objPlayer);
+                        ExtraTimeEditor ete = new ExtraTimeEditor();
+                        ete.StartPosition = FormStartPosition.CenterParent;
+                        ete.ShowDialog();
+                        if (ete.extraTime > 0)
+                        {
+                            m_objsceneHandler.TimerAction("updateextra", ete.extraTime + ",0,0,0", m_objPlayer);
+                            m_objsceneHandler.TimerAction("extrain", "", m_objPlayer);
+                            CountDownTarget = DateTime.Now.AddMinutes(ete.extraTime);
+                            m_objsceneHandler.TimerAction("extrastart", "", m_objPlayer);
+                            bneedStart = true;
+                        }
+                        ete = null;
                     }
                     MatchPartStartTime = DateTime.Now;
                 }
-
-                timer1.Enabled = true;
-                timer1.Interval = 1000;
-                timer1.Start();
-                btnstartstop.Text = "Stop";
+                else
+                {
+                    bneedStart = true;
+                }
+                if (bneedStart)
+                {
+                    timer1.Enabled = true;
+                    timer1.Interval = 1000;
+                    timer1.Start();
+                    btnstartstop.Text = "Stop";
+                }
             }
             else
             {
@@ -830,6 +844,7 @@ namespace SoccerApp
             sb.AwayTeam = lblAwayTeam.Text;
             sb.Team = lblHomeTeam2.Text;
             sb.Initialize();
+            sb.StartPosition = FormStartPosition.CenterParent;
             sb.ShowDialog();
 
             //string selectedInPlayer = p.selectedPlayer;
@@ -877,6 +892,7 @@ namespace SoccerApp
             pd.cmbTeam.Items.Add(lblHomeTeam2.Text);
             pd.cmbTeam.Items.Add(lblAwayTeam.Text);
             pd.Initialize();
+            pd.StartPosition = FormStartPosition.CenterParent;
             pd.ShowDialog();
 
             DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
@@ -918,6 +934,7 @@ namespace SoccerApp
             TeamSelection tms = new TeamSelection();
             tms.cmbTeam.Items.Add(lblHomeTeam2.Text);
             tms.cmbTeam.Items.Add(lblAwayTeam.Text);
+            tms.StartPosition = FormStartPosition.CenterParent;
             tms.ShowDialog();
             DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
             dgv.Cells[0].Value = SrNo;
@@ -964,6 +981,7 @@ namespace SoccerApp
             pd.cmbTeam.Items.Add(lblHomeTeam2.Text);
             pd.cmbTeam.Items.Add(lblAwayTeam.Text);
             pd.Initialize();
+            pd.StartPosition = FormStartPosition.CenterParent;
             pd.ShowDialog();
 
             DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
@@ -1009,6 +1027,7 @@ namespace SoccerApp
             pd.cmbTeam.Items.Add(lblHomeTeam2.Text);
             pd.cmbTeam.Items.Add(lblAwayTeam.Text);
             pd.Initialize();
+            pd.StartPosition = FormStartPosition.CenterParent;
             pd.ShowDialog();
 
             DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
@@ -1054,6 +1073,7 @@ namespace SoccerApp
             pd.cmbTeam.Items.Add(lblHomeTeam2.Text);
             pd.cmbTeam.Items.Add(lblAwayTeam.Text);
             pd.Initialize();
+            pd.StartPosition = FormStartPosition.CenterParent;
             pd.ShowDialog();
 
             DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
@@ -1089,6 +1109,7 @@ namespace SoccerApp
             pd.cmbTeam.Items.Add(lblHomeTeam2.Text);
             pd.cmbTeam.Items.Add(lblAwayTeam.Text);
             pd.Initialize();
+            pd.StartPosition = FormStartPosition.CenterParent;
             pd.ShowDialog();
 
             DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
