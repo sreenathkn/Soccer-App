@@ -350,18 +350,28 @@ namespace SoccerApp
         {
             try
             {
-                m_objUDT.RefreshUDT(ConfigurationSettings.AppSettings["udtname"]); // It will refresh the UDT and Dataset and get latest values available in UDT
+                m_objUDT.RefreshUDT(ConfigurationManager.AppSettings["udtname"]); // It will refresh the UDT and Dataset and get latest values available in UDT
                 if (m_objUDT.CurrentDataSet != null)
                 {
                     DataRow[] dr = m_objUDT.CurrentDataSet.Tables[17].Select(uniqueColumn + "= '" + uniqueValue + "'");
-                    if (dr != null && dr.Length > 0)
+                    if (dr != null && dr.Length > 0 && (Convert.ToInt32(dr[0][Column])>0 ||value==1))
                     {
                         int val = Convert.ToInt32(dr[0][Column].ToString()) + value;
                         m_objUDT.UpdateUDT(17, new string[] { Column }, new string[] { val.ToString() }, uniqueColumn, uniqueValue);
                     }
-
+                    else if(value!=-1)
+                    {
+                        DataRow drlast=m_objUDT.CurrentDataSet.Tables[17].Rows[m_objUDT.CurrentDataSet.Tables[17].Rows.Count - 1];
+                        int id = 0;
+                        if(drlast!=null)
+                        {
+                            int.TryParse(Convert.ToString(drlast["ID"]), out id);
+                        }
+                        id++;
+                        int val =value;
+                        m_objUDT.InsertUDTData(17, new string[] { "ID", uniqueColumn, Column }, new string[] { id.ToString(),uniqueValue, val.ToString() });
+                    }
                 }
-
             }
             catch (Exception ex)
             {
@@ -678,21 +688,25 @@ namespace SoccerApp
 
         private void btnHomeminus_Click(object sender, EventArgs e)
         {
-            lblHomeScore.Text = (Convert.ToInt32(lblHomeScore.Text) - 1).ToString();
-            m_objUDT.UpdateUDT(10, new string[] { "HomeScore" }, new string[] { lblHomeScore.Text }, "Name", cmbMatch.Text);
-            updateMatchStats("HomeGoal", -1, "Match", cmbMatch.Text);
+            if (Convert.ToInt32(lblHomeScore.Text) != 0)
+            {
+                lblHomeScore.Text = (Convert.ToInt32(lblHomeScore.Text) - 1).ToString();
+                m_objUDT.UpdateUDT(10, new string[] { "HomeScore" }, new string[] { lblHomeScore.Text }, "Name", cmbMatch.Text);
+                updateMatchStats("HomeGoal", -1, "Match", cmbMatch.Text);
+            }
         }//end(btnHomeminus_Click)
 
         private void btnawayplus_Click(object sender, EventArgs e)
         {
             lblAwayScore.Text = (Convert.ToInt32(lblAwayScore.Text) + 1).ToString();
             m_objUDT.UpdateUDT(10, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text);
-            lblAwayScore.Text = (Convert.ToInt32(lblHomeScore.Text) + 1).ToString();
-            m_objUDT.UpdateUDT(10, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text);
+            //lblAwayScore.Text = (Convert.ToInt32(lblHomeScore.Text) + 1).ToString();
+            //m_objUDT.UpdateUDT(10, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text);
             Player p = new Player();
             p.Team = lblAwayTeam.Text;
             p._objUDTProvider = m_objUDT;
             p.FillTeam();
+            p.StartPosition = FormStartPosition.CenterParent;
             p.ShowDialog();
             TimeSpan ts = DateTime.Now.Subtract(MatchPartStartTime);
             string selectedPlayer = p.selectedPlayer;
@@ -712,9 +726,12 @@ namespace SoccerApp
 
         private void btnawayminus_Click(object sender, EventArgs e)
         {
-            lblAwayScore.Text = (Convert.ToInt32(lblHomeScore.Text) - 1).ToString();
-            m_objUDT.UpdateUDT(10, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text);
-            updateMatchStats("AwayGoal", -1, "Match", cmbMatch.Text);
+            if (Convert.ToInt32(lblAwayScore.Text) != 0)
+            {
+                lblAwayScore.Text = (Convert.ToInt32(lblAwayScore.Text) - 1).ToString();
+                m_objUDT.UpdateUDT(10, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text);
+                updateMatchStats("AwayGoal", -1, "Match", cmbMatch.Text);
+            }
         }
 
         private void lblHomeTeam_DoubleClick(object sender, EventArgs e)
@@ -827,21 +844,21 @@ namespace SoccerApp
                 dgv.Cells[1].Value = "00:00";
             }
             dgv.Cells[2].Value = cmbMatchPart.Text;
-            dgv.Cells[3].Value = "SubstituteOut";
+            dgv.Cells[3].Value = "Substitution Out";
             dgv.Cells[4].Value = sb.Team;
             dgv.Cells[5].Value = sb.SelectedOutPlayer;
             dgvMatchevents.Rows.Add(dgv);
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "SubstituteOut", sb.Team, sb.SelectedOutPlayer });
+            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Substitution Out", sb.Team, sb.SelectedOutPlayer });
             SrNo++;
             dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
             dgv.Cells[0].Value = SrNo;
             dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
             dgv.Cells[2].Value = cmbMatchPart.Text;
-            dgv.Cells[3].Value = "SubstituteIN";
+            dgv.Cells[3].Value = "Substitution In";
             dgv.Cells[4].Value = sb.Team;
             dgv.Cells[5].Value = sb.SelectedInPlayer;
             dgvMatchevents.Rows.Add(dgv);
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "SubstituteIN", sb.Team, sb.SelectedInPlayer });
+            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Substitution In", sb.Team, sb.SelectedInPlayer });
             SrNo++;
             sb = null;
         }
@@ -873,11 +890,11 @@ namespace SoccerApp
                 dgv.Cells[1].Value = "00:00";
             }
             dgv.Cells[2].Value = cmbMatchPart.Text;
-            dgv.Cells[3].Value = "Foul";
+            dgv.Cells[3].Value = "Fouls";
             dgv.Cells[4].Value = pd.Team;
             dgv.Cells[5].Value = pd.SelectedPlayer;
             dgvMatchevents.Rows.Add(dgv);
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Foul", pd.Team, pd.SelectedPlayer });
+            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Fouls", pd.Team, pd.SelectedPlayer });
             SrNo++;
             string FoulTeam = "";
             if (pd.Team == lblHomeTeam2.Text)
@@ -913,11 +930,11 @@ namespace SoccerApp
                 dgv.Cells[1].Value = "00:00";
             }
             dgv.Cells[2].Value = cmbMatchPart.Text;
-            dgv.Cells[3].Value = "Corner";
+            dgv.Cells[3].Value = "Corner kicks";
             dgv.Cells[4].Value = tms.SelectedTeam;
             dgv.Cells[5].Value = "";
             dgvMatchevents.Rows.Add(dgv);
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Corner", tms.SelectedTeam, "" });
+            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Corner kicks", tms.SelectedTeam, "" });
             SrNo++;
 
             string FoulTeam = "";
@@ -960,11 +977,11 @@ namespace SoccerApp
                 dgv.Cells[1].Value = "00:00";
             }
             dgv.Cells[2].Value = cmbMatchPart.Text;
-            dgv.Cells[3].Value = "Shots ON";
+            dgv.Cells[3].Value = "Shots On Goal";
             dgv.Cells[4].Value = pd.Team;
             dgv.Cells[5].Value = pd.SelectedPlayer;
             dgvMatchevents.Rows.Add(dgv);
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Shots ON", pd.Team, pd.SelectedPlayer });
+            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Shots On Goal", pd.Team, pd.SelectedPlayer });
             SrNo++;
             string FoulTeam = "";
             if (pd.Team == lblHomeTeam2.Text)
@@ -1005,11 +1022,11 @@ namespace SoccerApp
                 dgv.Cells[1].Value = "00:00";
             }
             dgv.Cells[2].Value = cmbMatchPart.Text;
-            dgv.Cells[3].Value = "Shots OFF";
+            dgv.Cells[3].Value = "Shots Off Goal";
             dgv.Cells[4].Value = pd.Team;
             dgv.Cells[5].Value = pd.SelectedPlayer;
             dgvMatchevents.Rows.Add(dgv);
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Shots OFF", pd.Team, pd.SelectedPlayer });
+            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Shots Off Goal", pd.Team, pd.SelectedPlayer });
             SrNo++;
             string FoulTeam = "";
             if (pd.Team == lblHomeTeam2.Text)
@@ -1050,11 +1067,11 @@ namespace SoccerApp
                 dgv.Cells[1].Value = "00:00";
             }
             dgv.Cells[2].Value = cmbMatchPart.Text;
-            dgv.Cells[3].Value = "Yellow Card";
+            dgv.Cells[3].Value = "Yellow Cards";
             dgv.Cells[4].Value = pd.Team;
             dgv.Cells[5].Value = pd.SelectedPlayer;
             dgvMatchevents.Rows.Add(dgv);
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Yellow Card", pd.Team, pd.SelectedPlayer });
+            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Yellow Cards", pd.Team, pd.SelectedPlayer });
             SrNo++;
         }
 
@@ -1085,11 +1102,11 @@ namespace SoccerApp
                 dgv.Cells[1].Value = "00:00";
             }
             dgv.Cells[2].Value = cmbMatchPart.Text;
-            dgv.Cells[3].Value = "Red Card";
+            dgv.Cells[3].Value = "Red Cards";
             dgv.Cells[4].Value = pd.Team;
             dgv.Cells[5].Value = pd.SelectedPlayer;
             dgvMatchevents.Rows.Add(dgv);
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Red Card", pd.Team, pd.SelectedPlayer });
+            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Red Cards", pd.Team, pd.SelectedPlayer });
             SrNo++;
         }
 

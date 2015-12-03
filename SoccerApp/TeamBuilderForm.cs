@@ -77,14 +77,17 @@ namespace SoccerApp
             if (listBox2.Items.Count == 0)
                 return;
             int index = listBox2.IndexFromPoint(e.X, e.Y);
-            string s = listBox2.Items[index].ToString();
-            DragDropEffects dde1 = DoDragDrop(s,
-                DragDropEffects.All);
-
-            if (dde1 == DragDropEffects.All)
+            if (index != -1)
             {
-                listBox2.Items.RemoveAt(listBox2.IndexFromPoint(e.X, e.Y));
-            } 
+                string s = listBox2.Items[index].ToString();
+                DragDropEffects dde1 = DoDragDrop(s,
+                    DragDropEffects.All);
+
+                if (dde1 == DragDropEffects.All)
+                {
+                    listBox2.Items.RemoveAt(listBox2.IndexFromPoint(e.X, e.Y));
+                }
+            }
         }
         public TeamBuilderForm(UDTProvider.UDTProvider UDTProvider)
         {

@@ -95,6 +95,21 @@ namespace UDTProvider
                 dr[Columns[i]] = Values[i];
                 //delete this
             }
+            if(string.IsNullOrEmpty(Convert.ToString(dr["Visibility"])))
+            {
+                dr["Visibility"] = true;
+            }
+            if (!Columns.Contains("ID") && dtTable.Columns.Contains("ID"))
+            {
+               DataRow drlast= dtTable.Rows[dtTable.Rows.Count - 1];
+               int id = 0;
+               if (drlast != null && drlast["ID"] != null)
+               {
+                   int.TryParse(Convert.ToString(drlast["ID"]), out id);
+               }
+               id++;
+               dr["ID"] = id;
+            }
             var udtTable = new UdtTable();
             udtTable.UDTPREVIOUSROWDATA = null;
             udtTable.UDTROWDATA = dr.ItemArray.Select(o => o.ToString()).ToList();
