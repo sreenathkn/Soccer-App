@@ -10,11 +10,12 @@ using System.Windows.Forms;
 
 namespace SoccerApp
 {
-    public partial class ExtraTimeEditor : Form
+    public partial class MatchGraphicPlayerSelector : Form
     {
-        public int EXTRATIME { get { return Convert.ToInt32(ExtraTime.Value); } }
+        public bool P1 { get { return chkP1.Checked; } set { chkP1.Checked = value; } }
+        public bool P2 { get { return chkP2.Checked; } set { chkP2.Checked = value; } }
 
-        public ExtraTimeEditor()
+        public MatchGraphicPlayerSelector()
         {
             InitializeComponent();
         }

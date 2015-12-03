@@ -37,9 +37,12 @@ namespace SoccerApp
         SceneHandler m_objsceneHandler = null;
         List<ScenInfo> m_lstSceneCollection = null;
         IPlayer m_objPlayer = null;
-        protected static LINKTYPE m_objLinkType = LINKTYPE.TCP;     
+        protected static LINKTYPE m_objLinkType = LINKTYPE.TCP;
         private const string m_surl = "net.tcp://192.168.1.192:50011/TcpBinding/WcfTcpLink";
         string m_sEngineUrl = null;
+        string ID = string.Empty;
+        string EVENTID = string.Empty;
+        string MATCHNAME = string.Empty;
 
         #endregion
 
@@ -49,7 +52,7 @@ namespace SoccerApp
         {
             try
             {
-                InitializeComponent();         
+                InitializeComponent();
                 Init();
             }
             catch (Exception ex)
@@ -136,7 +139,7 @@ namespace SoccerApp
 
         private void LoadTemplates()
         {
-           
+
             XDocument xdoc = XDocument.Load("templates.xml");
             var templates = xdoc.Descendants("template");
             foreach (var item in templates)
@@ -147,7 +150,7 @@ namespace SoccerApp
                 sc.Description = item.Attribute("description").Value;
                 sc.inuse = false;
                 m_lstSceneCollection.Add(sc);
-               
+
             }
         }
 
@@ -243,7 +246,7 @@ namespace SoccerApp
         /// Update the Data Xml with the current match Id
         /// </summary>
         /// <param name="objfrm"></param>
-        private void UpdateWaspControls(Form item)
+        private void UpdateWaspControls(Form item,bool IsID)
         {
 
             try
@@ -259,30 +262,43 @@ namespace SoccerApp
 
 
                     XElement xe = xdoc.Descendants("query").FirstOrDefault();
-                    string str = xe.Value;
 
-                    XElement tablenodes = XElement.Parse(str);
-                    IEnumerable<XElement> elements = tablenodes.Descendants("table").Where(x => x.Attribute("name").Value == "13");
-
-                    foreach (XElement node in elements)
+                    if (xe != null)
                     {
-                        //Update ID  here.....                
-                        node.Attribute("customfilter").SetValue("(T1_ID In (  1 )) AND (([ID] =" + ID + "))");
-                        node.Attribute("filter").SetValue("([ID] = " + ID + ")");
-                        node.Attribute("actionfilter").SetValue("[ID] =" + ID);
-                        //XAttribute attribute = new XAttribute("sort", "");
-                        //node.Add(attribute);
-                    }
-                    xe.ReplaceNodes(new XCData(tablenodes.ToString()));                    
-                    string updatedxml = xdoc.ToString();
-                    XmlNode xn;
-                    IDataEntry _objDataEntry = (item) as IDataEntry;
-                    XmlDocument objdoc = new XmlDocument();
-                    objdoc.LoadXml(updatedxml);
-                    xn = objdoc.DocumentElement;
-                    _objDataEntry.SetData(xn);
-                }
+                        string str = xe.Value;
 
+                        XElement tablenodes = XElement.Parse(str);
+                        IEnumerable<XElement> elements = tablenodes.Descendants("table").Where(x => x.Attribute("name").Value == "13");
+
+                        foreach (XElement node in elements)
+                        {
+                            if (IsID)
+                            {
+                                //Update ID  here.....    
+                                node.Attribute("customfilter").SetValue("(T1_ID In (  1 )) AND (([ID] =" + ID + "))");
+                                node.Attribute("filter").SetValue("([ID] = " + ID + ")");
+                                node.Attribute("actionfilter").SetValue("[ID] =" + ID);
+                                //XAttribute attribute = new XAttribute("sort", "");
+                                //node.Add(attribute);
+                            }
+                            else
+                            {
+                                //Update EVENTID and MATCHNAME  here.....    
+                                node.Attribute("customfilter").SetValue("(T1_ID In ( 1)) AND ((([EventID] = " + EVENTID + ") And ([MatchID] = '" + MATCHNAME + "')))");
+                                node.Attribute("filter").SetValue("(([EventID] = " + EVENTID + ") And ([MatchID] ='" + MATCHNAME + "'))");
+                                node.Attribute("actionfilter").SetValue("(([EventID] = " + EVENTID + ") And ([MatchID] ='" + MATCHNAME + "'))");
+                            }
+                        }
+                        xe.ReplaceNodes(new XCData(tablenodes.ToString()));
+                        string updatedxml = xdoc.ToString();
+                        XmlNode xn;
+                        IDataEntry _objDataEntry = (item) as IDataEntry;
+                        XmlDocument objdoc = new XmlDocument();
+                        objdoc.LoadXml(updatedxml);
+                        xn = objdoc.DocumentElement;
+                        _objDataEntry.SetData(xn);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -354,22 +370,22 @@ namespace SoccerApp
                 if (m_objUDT.CurrentDataSet != null)
                 {
                     DataRow[] dr = m_objUDT.CurrentDataSet.Tables[17].Select(uniqueColumn + "= '" + uniqueValue + "'");
-                    if (dr != null && dr.Length > 0 && (Convert.ToInt32(dr[0][Column])>0 ||value==1))
+                    if (dr != null && dr.Length > 0 && (Convert.ToInt32(dr[0][Column]) > 0 || value == 1))
                     {
                         int val = Convert.ToInt32(dr[0][Column].ToString()) + value;
                         m_objUDT.UpdateUDT(17, new string[] { Column }, new string[] { val.ToString() }, uniqueColumn, uniqueValue);
                     }
-                    else if(value!=-1)
+                    else if (value != -1)
                     {
-                        DataRow drlast=m_objUDT.CurrentDataSet.Tables[17].Rows[m_objUDT.CurrentDataSet.Tables[17].Rows.Count - 1];
+                        DataRow drlast = m_objUDT.CurrentDataSet.Tables[17].Rows[m_objUDT.CurrentDataSet.Tables[17].Rows.Count - 1];
                         int id = 0;
-                        if(drlast!=null)
+                        if (drlast != null)
                         {
                             int.TryParse(Convert.ToString(drlast["ID"]), out id);
                         }
                         id++;
-                        int val =value;
-                        m_objUDT.InsertUDTData(17, new string[] { "ID", uniqueColumn, Column }, new string[] { id.ToString(),uniqueValue, val.ToString() });
+                        int val = value;
+                        m_objUDT.InsertUDTData(17, new string[] { "ID", uniqueColumn, Column }, new string[] { id.ToString(), uniqueValue, val.ToString() });
                     }
                 }
             }
@@ -437,7 +453,7 @@ namespace SoccerApp
         /// </summary>
         /// <param name="str"></param>
         /// <param name="column"></param>
-        private void GetTemplate(string str, string column)
+        private void GetTemplate(string str, string column,bool IsID)
         {
             try
             {
@@ -449,7 +465,20 @@ namespace SoccerApp
                     m_objPlayer = Activator.CreateInstance(obj.TemplatePlayerInfo) as IPlayer;
 
                     Form objfrm = m_objPlayer as Form;
-                    UpdateWaspControls(objfrm);
+                    UpdateWaspControls(objfrm,IsID);
+
+                    //var playercontols = GetAll(objfrm, typeof(BeeSys.Wasp3D.Controls2.NumericTextBox));
+                    //if (playercontols != null && playercontols.Count() > 0)
+                    //{
+                    //    foreach(BeeSys.Wasp3D.Controls2.NumericTextBox ctrl in playercontols)
+                    //    {
+                    //       if(ctrl.Tag.Equals("MATCHID"))
+                    //       {
+                    //           ctrl.Value = 2;
+                    //       }
+                    //    }
+                    //}
+
 
                     string sLinkID = string.Empty;
                     if (m_objPlayer != null)
@@ -476,7 +505,7 @@ namespace SoccerApp
                         m_objPlayer.Prepare(m_sEngineUrl, Convert.ToInt32(m_objPlayer.ZORDER), string.Empty, RENDERMODE.PROGRAM);
                     }
                     objfrm.TopLevel = false;
-                    objfrm.Visible = false;            
+                    objfrm.Visible = false;
                     objfrm.Dock = DockStyle.Fill;
                     Control ctl = null;
                     Control ctl2 = null;
@@ -487,7 +516,7 @@ namespace SoccerApp
                         {
                             //First play out the graphic.
                             //then delete the gfx                            
-                            tableLayoutPanel1.Controls.Remove(ctl);                      
+                            tableLayoutPanel1.Controls.Remove(ctl);
                             (ctl as IPlayer).DeleteSg();
                             tableLayoutPanel1.Controls.Add(objfrm, 0, 0);
                         }
@@ -529,6 +558,15 @@ namespace SoccerApp
 
         }//end(GetTemplates)
 
+        //private IEnumerable<Control> GetAll(Control control, Type type)
+        //{
+        //    var controls = control.Controls.Cast<Control>();
+
+        //    return controls.SelectMany(ctrl => GetAll(ctrl, type))
+        //                              .Concat(controls)
+        //                              .Where(c => c.GetType() == type);
+        //}
+
         void SoccerApp_OnUnloadPlayer(object sender, PlayerArgs e)
         {
 
@@ -553,7 +591,7 @@ namespace SoccerApp
 
         #region Events
 
-        string ID = string.Empty;
+        
 
         /// <summary>
         /// 
@@ -644,7 +682,7 @@ namespace SoccerApp
             if (cmbMatchPart.Text == "Extra Time")
             {
                 lblCounter.Enabled = true;
-                
+
             }
         }//end(cmbMatchPart_SelectedIndexChanged)
 
@@ -779,7 +817,7 @@ namespace SoccerApp
                 {
                     if (cmbMatchPart.Text != "Extra Time")
                     {
-                        CountDownTarget = DateTime.Now.AddMinutes(45.00);                       
+                        CountDownTarget = DateTime.Now.AddMinutes(45.00);
                         m_objsceneHandler.TimerAction("update", "45,0,0,0", m_objPlayer);
                         m_objsceneHandler.TimerAction("start", "", m_objPlayer);
                         bneedStart = true;
@@ -789,11 +827,11 @@ namespace SoccerApp
                         ExtraTimeEditor ete = new ExtraTimeEditor();
                         ete.StartPosition = FormStartPosition.CenterParent;
                         ete.ShowDialog();
-                        if (ete.extraTime > 0)
+                        if (ete.EXTRATIME > 0)
                         {
-                            m_objsceneHandler.TimerAction("updateextra", ete.extraTime + ",0,0,0", m_objPlayer);
+                            m_objsceneHandler.TimerAction("updateextra", ete.EXTRATIME + ",0,0,0", m_objPlayer);
                             m_objsceneHandler.TimerAction("extrain", "", m_objPlayer);
-                            CountDownTarget = DateTime.Now.AddMinutes(ete.extraTime);
+                            CountDownTarget = DateTime.Now.AddMinutes(ete.EXTRATIME);
                             m_objsceneHandler.TimerAction("extrastart", "", m_objPlayer);
                             bneedStart = true;
                         }
@@ -1190,7 +1228,7 @@ namespace SoccerApp
                     {
                         string sTemplate = dgvSelectPlayer.Rows[e.RowIndex].Cells["Name"].Value.ToString();
                         string sCol = "Column2";
-                        GetTemplate(sTemplate, sCol);
+                        GetTemplate(sTemplate, sCol,true);
                     }
                 }
 
@@ -1200,7 +1238,7 @@ namespace SoccerApp
                     {
                         string sTemplate = dgvSelectPlayer.Rows[e.RowIndex].Cells["Name"].Value.ToString();
                         string sCol2 = "Column3";
-                        GetTemplate(sTemplate, sCol2);
+                        GetTemplate(sTemplate, sCol2,true);
                     }
                 }
 
@@ -1232,6 +1270,80 @@ namespace SoccerApp
             {
                 //objPlayer.DeleteSg();
             }
+        }
+
+        /// <summary>
+        /// Matchevents cell click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dgvMatchevents_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                int eventid = Convert.ToInt32(dgvMatchevents.Rows[e.RowIndex].Cells[0].Value);
+                if (eventid > 0)
+                {
+                    LoadMatchEventGrahicPlayer(eventid);
+                }
+            }
+        }
+
+        private void LoadMatchEventGrahicPlayer(int eventid)
+        {
+            bool oldP1 = false;
+            bool oldP2 = false;
+            MatchGraphicPlayerSelector mgps = new MatchGraphicPlayerSelector();
+            oldP1 = PlayerControlCheck(1, 0);
+            oldP2 = PlayerControlCheck(2, 1);
+            mgps.P1 = oldP1;
+            mgps.P2 = oldP2;
+            mgps.StartPosition = FormStartPosition.CenterParent;
+            mgps.ShowDialog();
+            if(mgps.P1)
+            {
+                foreach (DataGridViewRow dr in dgvSelectPlayer.Rows)
+                {
+                    dr.Cells[1].Value = false;
+                }
+                if(oldP1!=mgps.P1)
+                {
+                    GetTemplate( "Test","Column2", false);
+                }
+            }
+            if (mgps.P2)
+            {
+                foreach (DataGridViewRow dr in dgvSelectPlayer.Rows)
+                {
+                    dr.Cells[2].Value = false;
+                }
+                if (oldP2 != mgps.P2)
+                {
+                    GetTemplate("Test", "Column3", false);
+                }
+            }
+        }
+
+        private bool PlayerControlCheck(int columnindex,int columnpos)
+        {
+            bool isAllfalse = true;
+
+            foreach (DataGridViewRow dr in dgvSelectPlayer.Rows)
+            {
+                if ((bool)dr.Cells[columnindex].Value != false)
+                {
+                    isAllfalse = false;
+                    break;
+                }
+            }
+            if (isAllfalse)
+            {
+                if (tableLayoutPanel1.GetControlFromPosition(columnpos, 0) != null)
+                {
+                   return true;
+                }
+            }
+            return false;
         }
 
         #endregion
@@ -1297,15 +1409,6 @@ namespace SoccerApp
 
         void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            foreach (DataGridViewRow row in dgvSelectPlayer.Rows)
-            {
-
-                if (Convert.ToBoolean(row.Cells[1].Value))
-                {
-                    // what you want to do
-                }
-            }
-
 
         }
         //if (e.RowType == DataControlRowType.DataRow)
@@ -1429,5 +1532,7 @@ namespace SoccerApp
 
 
         #endregion
+
+
     }
 }
