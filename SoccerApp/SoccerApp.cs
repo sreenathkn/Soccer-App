@@ -63,10 +63,11 @@ namespace SoccerApp
 
         #endregion
 
-
-
         #region Private Methods
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void Init()
         {
             try
@@ -88,6 +89,9 @@ namespace SoccerApp
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void SetUI()
         {
             lblCounter.ForeColor = Color.FromArgb(0, 142, 188);
@@ -116,8 +120,9 @@ namespace SoccerApp
             pnlMatch.BackColor = Color.FromArgb(196, 196, 196);
         }
 
-
-
+        /// <summary>
+        /// 
+        /// </summary>
         private void InitializeWasp()
         {
             m_sCommonPath = Environment.GetEnvironmentVariable("Wasp3.5");
@@ -137,6 +142,9 @@ namespace SoccerApp
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void LoadTemplates()
         {
 
@@ -154,6 +162,9 @@ namespace SoccerApp
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void InitilizeUDT()
         {
             m_objUDT = new UDTProvider.UDTProvider();
@@ -161,6 +172,9 @@ namespace SoccerApp
             m_objUDT.InitializeUDT(ConfigurationManager.AppSettings["udtname"]);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void InitializeCombos()
         {
             cmbMatch.AutoCompleteMode = AutoCompleteMode.Suggest;
@@ -176,6 +190,9 @@ namespace SoccerApp
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void FillMatchPart()
         {
             AutoCompleteStringCollection cmbstr1 = new AutoCompleteStringCollection();
@@ -209,6 +226,9 @@ namespace SoccerApp
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void FillMatchList()
         {
 
@@ -242,6 +262,7 @@ namespace SoccerApp
 
             }
         }
+      
         /// <summary>
         /// Update the Data Xml with the current match Id
         /// </summary>
@@ -308,7 +329,9 @@ namespace SoccerApp
 
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         private void FillMatchEvents()
         {
             DataRow[] dr = m_objUDT.CurrentDataSet.Tables[12].Select("MatchID= '" + cmbMatch.Text + "'");
@@ -355,6 +378,10 @@ namespace SoccerApp
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ActiveMatch"></param>
         private void InitializeScores(string ActiveMatch)
         {
             DataRow[] dr = m_objUDT.CurrentDataSet.Tables[10].Select("Name= '" + ActiveMatch + "'");
@@ -362,6 +389,13 @@ namespace SoccerApp
             lblAwayScore.Text = dr[0]["AwayScore"].ToString();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Column"></param>
+        /// <param name="value"></param>
+        /// <param name="uniqueColumn"></param>
+        /// <param name="uniqueValue"></param>
         private void updateMatchStats(string Column, int value, string uniqueColumn, string uniqueValue)
         {
             try
@@ -467,19 +501,6 @@ namespace SoccerApp
                     Form objfrm = m_objPlayer as Form;
                     UpdateWaspControls(objfrm,IsID);
 
-                    //var playercontols = GetAll(objfrm, typeof(BeeSys.Wasp3D.Controls2.NumericTextBox));
-                    //if (playercontols != null && playercontols.Count() > 0)
-                    //{
-                    //    foreach(BeeSys.Wasp3D.Controls2.NumericTextBox ctrl in playercontols)
-                    //    {
-                    //       if(ctrl.Tag.Equals("MATCHID"))
-                    //       {
-                    //           ctrl.Value = 2;
-                    //       }
-                    //    }
-                    //}
-
-
                     string sLinkID = string.Empty;
                     if (m_objPlayer != null)
                     {
@@ -558,15 +579,11 @@ namespace SoccerApp
 
         }//end(GetTemplates)
 
-        //private IEnumerable<Control> GetAll(Control control, Type type)
-        //{
-        //    var controls = control.Controls.Cast<Control>();
-
-        //    return controls.SelectMany(ctrl => GetAll(ctrl, type))
-        //                              .Concat(controls)
-        //                              .Where(c => c.GetType() == type);
-        //}
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void SoccerApp_OnUnloadPlayer(object sender, PlayerArgs e)
         {
 
@@ -587,11 +604,76 @@ namespace SoccerApp
             }
         }
 
+        /// <summary>
+        /// Loading match events player 
+        /// </summary>
+        /// <param name="eventid"></param>
+        private void LoadMatchEventGrahicPlayer(int eventid)
+        {
+            bool oldP1 = false;
+            bool oldP2 = false;
+            MatchGraphicPlayerSelector mgps = new MatchGraphicPlayerSelector();
+            oldP1 = PlayerControlCheck(1, 0);
+            oldP2 = PlayerControlCheck(2, 1);
+            mgps.P1 = oldP1;
+            mgps.P2 = oldP2;
+            mgps.StartPosition = FormStartPosition.CenterParent;
+            mgps.ShowDialog();
+            if (mgps.P1)
+            {
+                foreach (DataGridViewRow dr in dgvSelectPlayer.Rows)
+                {
+                    dr.Cells[1].Value = false;
+                }
+                if (oldP1 != mgps.P1)
+                {
+                    GetTemplate("Test", "Column2", false);
+                }
+            }
+            if (mgps.P2)
+            {
+                foreach (DataGridViewRow dr in dgvSelectPlayer.Rows)
+                {
+                    dr.Cells[2].Value = false;
+                }
+                if (oldP2 != mgps.P2)
+                {
+                    GetTemplate("Test", "Column3", false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// check player controls
+        /// </summary>
+        /// <param name="columnindex"></param>
+        /// <param name="columnpos"></param>
+        /// <returns></returns>
+        private bool PlayerControlCheck(int columnindex, int columnpos)
+        {
+            bool isAllfalse = true;
+
+            foreach (DataGridViewRow dr in dgvSelectPlayer.Rows)
+            {
+                if ((bool)dr.Cells[columnindex].Value != false)
+                {
+                    isAllfalse = false;
+                    break;
+                }
+            }
+            if (isAllfalse)
+            {
+                if (tableLayoutPanel1.GetControlFromPosition(columnpos, 0) != null)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         #endregion
 
         #region Events
-
-        
 
         /// <summary>
         /// 
@@ -655,6 +737,11 @@ namespace SoccerApp
             }
         }//end(cmbMatch_SelectedIndexChanged)
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cmbMatchPart_SelectedIndexChanged(object sender, EventArgs e)
         {
             lblCounter.Enabled = false;
@@ -725,6 +812,11 @@ namespace SoccerApp
             }
         }//end(btnhomeplus_Click)
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnHomeminus_Click(object sender, EventArgs e)
         {
             if (Convert.ToInt32(lblHomeScore.Text) != 0)
@@ -735,6 +827,11 @@ namespace SoccerApp
             }
         }//end(btnHomeminus_Click)
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnawayplus_Click(object sender, EventArgs e)
         {
             lblAwayScore.Text = (Convert.ToInt32(lblAwayScore.Text) + 1).ToString();
@@ -763,6 +860,11 @@ namespace SoccerApp
             updateMatchStats("AwayGoal", 1, "Match", cmbMatch.Text);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnawayminus_Click(object sender, EventArgs e)
         {
             if (Convert.ToInt32(lblAwayScore.Text) != 0)
@@ -773,6 +875,11 @@ namespace SoccerApp
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void lblHomeTeam_DoubleClick(object sender, EventArgs e)
         {
             TeamBuilderForm tf = new TeamBuilderForm();
@@ -784,6 +891,11 @@ namespace SoccerApp
             tf = null;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void lblAwayTeam_DoubleClick(object sender, EventArgs e)
         {
             TeamBuilderForm tf = new TeamBuilderForm();
@@ -795,6 +907,11 @@ namespace SoccerApp
             tf = null;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (CountDownTarget < DateTime.Now)
@@ -807,6 +924,11 @@ namespace SoccerApp
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnstartstop_Click(object sender, EventArgs e)
         {
             //string str = null;
@@ -868,6 +990,11 @@ namespace SoccerApp
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
             TimeSpan ts = new TimeSpan();
@@ -916,6 +1043,11 @@ namespace SoccerApp
             sb = null;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnFoul_Click(object sender, EventArgs e)
         {
             TimeSpan ts = new TimeSpan();
@@ -962,6 +1094,11 @@ namespace SoccerApp
             updateMatchStats(FoulTeam, 1, "Match", cmbMatch.Text);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cmbCorner_Click(object sender, EventArgs e)
         {
             TimeSpan ts = new TimeSpan();
@@ -1005,6 +1142,11 @@ namespace SoccerApp
             tms = null;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnShots_Click(object sender, EventArgs e)
         {
             TimeSpan ts = new TimeSpan();
@@ -1051,6 +1193,11 @@ namespace SoccerApp
             updateMatchStats(FoulTeam, 1, "Match", cmbMatch.Text);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnShotsOff_Click(object sender, EventArgs e)
         {
             TimeSpan ts = new TimeSpan();
@@ -1097,6 +1244,11 @@ namespace SoccerApp
             updateMatchStats(FoulTeam, 1, "Match", cmbMatch.Text);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnYellow_Click(object sender, EventArgs e)
         {
             TimeSpan ts = new TimeSpan();
@@ -1133,6 +1285,11 @@ namespace SoccerApp
             SrNo++;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnRed_Click(object sender, EventArgs e)
         {
             TimeSpan ts = new TimeSpan();
@@ -1169,6 +1326,11 @@ namespace SoccerApp
             SrNo++;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void dataGridView2_CurrentCellDirtyStateChanged(object sender, EventArgs e)
         {
             try
@@ -1192,7 +1354,6 @@ namespace SoccerApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-
         void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             try
@@ -1252,6 +1413,11 @@ namespace SoccerApp
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void objPlayer_OnShotBoxControllerStatus(object sender, SHOTBOXARGS e)
         {
             if (e.SHOTBOXRESPONSE == SHOTBOXMSG.SGDELETED)
@@ -1260,6 +1426,11 @@ namespace SoccerApp
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void objPlayer_OnShotBoxStatus(object sender, SHOTBOXARGS e)
         {
             if (e.SHOTBOXRESPONSE == SHOTBOXMSG.PLAYCOMPLETE)
@@ -1287,63 +1458,6 @@ namespace SoccerApp
                     LoadMatchEventGrahicPlayer(eventid);
                 }
             }
-        }
-
-        private void LoadMatchEventGrahicPlayer(int eventid)
-        {
-            bool oldP1 = false;
-            bool oldP2 = false;
-            MatchGraphicPlayerSelector mgps = new MatchGraphicPlayerSelector();
-            oldP1 = PlayerControlCheck(1, 0);
-            oldP2 = PlayerControlCheck(2, 1);
-            mgps.P1 = oldP1;
-            mgps.P2 = oldP2;
-            mgps.StartPosition = FormStartPosition.CenterParent;
-            mgps.ShowDialog();
-            if(mgps.P1)
-            {
-                foreach (DataGridViewRow dr in dgvSelectPlayer.Rows)
-                {
-                    dr.Cells[1].Value = false;
-                }
-                if(oldP1!=mgps.P1)
-                {
-                    GetTemplate( "Test","Column2", false);
-                }
-            }
-            if (mgps.P2)
-            {
-                foreach (DataGridViewRow dr in dgvSelectPlayer.Rows)
-                {
-                    dr.Cells[2].Value = false;
-                }
-                if (oldP2 != mgps.P2)
-                {
-                    GetTemplate("Test", "Column3", false);
-                }
-            }
-        }
-
-        private bool PlayerControlCheck(int columnindex,int columnpos)
-        {
-            bool isAllfalse = true;
-
-            foreach (DataGridViewRow dr in dgvSelectPlayer.Rows)
-            {
-                if ((bool)dr.Cells[columnindex].Value != false)
-                {
-                    isAllfalse = false;
-                    break;
-                }
-            }
-            if (isAllfalse)
-            {
-                if (tableLayoutPanel1.GetControlFromPosition(columnpos, 0) != null)
-                {
-                   return true;
-                }
-            }
-            return false;
         }
 
         #endregion
