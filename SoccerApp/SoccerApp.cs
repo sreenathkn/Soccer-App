@@ -156,6 +156,9 @@ namespace SoccerApp
                 sc.Id = item.Attribute("id").Value;
                 sc.Name = item.Attribute("name").Value;
                 sc.Description = item.Attribute("description").Value;
+                bool ismanual = false;
+                bool.TryParse(item.Attribute("ismanual").Value, out ismanual);
+                sc.ismanual = ismanual;
                 sc.inuse = false;
                 m_lstSceneCollection.Add(sc);
 
@@ -437,6 +440,7 @@ namespace SoccerApp
             public string Id;
             public string Description;
             public bool inuse;
+            public bool ismanual;
         }
 
         /// <summary>
@@ -451,11 +455,14 @@ namespace SoccerApp
             dt.Columns.Add("Column3", typeof(bool));
             foreach (var item in m_lstSceneCollection)
             {
-                dr = dt.NewRow();
-                dr["Name"] = item.Description;
-                dr["Column2"] = false;
-                dr["Column3"] = false;
-                dt.Rows.Add(dr);
+                if (item.ismanual)
+                {
+                    dr = dt.NewRow();
+                    dr["Name"] = item.Description;
+                    dr["Column2"] = false;
+                    dr["Column3"] = false;
+                    dt.Rows.Add(dr);
+                }
             }
             dgvSelectPlayer.DataSource = dt;
             dgvSelectPlayer.CellContentClick += dataGridView2_CellContentClick;
@@ -491,7 +498,8 @@ namespace SoccerApp
         {
             try
             {
-                ScenInfo si = m_lstSceneCollection.Where(s => s.Description == str).FirstOrDefault();
+                ScenInfo si =  m_lstSceneCollection.Where(s => s.Description == str).FirstOrDefault(); ;
+
                 STemplateDetails obj = m_objWaspFileHandler.GetTemplatePlayerInfo(si.Id, "");
 
                 if (obj != null)
@@ -627,7 +635,7 @@ namespace SoccerApp
                 }
                 if (oldP1 != mgps.P1)
                 {
-                    GetTemplate("Test", "Column2", false);
+                    GetTemplate("matchevent", "Column2", false);
                 }
             }
             if (mgps.P2)
@@ -638,7 +646,7 @@ namespace SoccerApp
                 }
                 if (oldP2 != mgps.P2)
                 {
-                    GetTemplate("Test", "Column3", false);
+                    GetTemplate("matchevent", "Column3", false);
                 }
             }
         }
