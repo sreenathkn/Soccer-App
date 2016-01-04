@@ -241,6 +241,9 @@
     <None Include="Resources\Soccer_revised.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\BeeSys.Wasp.IWaspPlayers.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="templates.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
