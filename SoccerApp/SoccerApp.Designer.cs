@@ -260,7 +260,7 @@
             this.dgvMatchevents.RowHeadersVisible = false;
             this.dgvMatchevents.Size = new System.Drawing.Size(1486, 259);
             this.dgvMatchevents.TabIndex = 14;
-            this.dgvMatchevents.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMatchevents_CellClick);
+            this.dgvMatchevents.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMatchevents_CellDoubleClick);
             // 
             // SNO
             // 

@@ -118,6 +118,9 @@ namespace SoccerApp
             pnlLabels.BackColor = Color.FromArgb(86, 109, 123);
             lblMatchevents.ForeColor = Color.FromArgb(51, 51, 51);
             pnlMatch.BackColor = Color.FromArgb(196, 196, 196);
+
+            cmbMatch.SelectedIndex = -1;
+            cmbMatchPart.SelectedIndex = -1;
         }
 
         /// <summary>
@@ -199,25 +202,31 @@ namespace SoccerApp
         private void FillMatchPart()
         {
             AutoCompleteStringCollection cmbstr1 = new AutoCompleteStringCollection();
-            var t = m_objUDT.CurrentDataSet.Tables[11];
-            foreach (DataRow item in m_objUDT.CurrentDataSet.Tables[11].Rows)
+            var dtmatchpart = m_objUDT.CurrentDataSet.Tables[15];
+            foreach (DataRow item in dtmatchpart.Rows)
             {
                 cmbstr1.Add(item["Name"].ToString());
                 cmbMatchPart.Items.Add(item["Name"].ToString());
             }
             cmbMatchPart.AutoCompleteCustomSource = cmbstr1;
-            DataRow[] dr = m_objUDT.CurrentDataSet.Tables[11].Select("Active=true");
+            DataRow[] dr = dtmatchpart.Select("Active=true");
             if (dr.Count() > 0)
             {
-
                 int index = cmbMatchPart.FindString(dr[0]["Name"].ToString());
-                if (index != -1)
+               if (index != -1)
                 {
-                    cmbMatchPart.SelectedIndex = index;
+                    try
+                    {
+                      cmbMatchPart.SelectedIndex = index;
+                    }
+                    catch(Exception ex)
+                    {
+
+                    }
                     UdtFilter filter = new UdtFilter();
                     filter.FilterColumn = "Name";
                     filter.FilterValue = cmbMatchPart.Text;
-                    filter.TableIndex = 11;
+                    filter.TableIndex = 5;
                     if (!m_objUDT.UdtFilters.ContainsKey("Match Part"))
                         m_objUDT.UdtFilters.Add("Match Part", filter);
                     else
@@ -236,26 +245,33 @@ namespace SoccerApp
         {
 
             DataSet dt = m_objUDT.CurrentDataSet;
-            var t = dt.Tables[10];
+            var dtmatch = dt.Tables[1];
             AutoCompleteStringCollection cmbstr = new AutoCompleteStringCollection();
-            foreach (DataRow item in m_objUDT.CurrentDataSet.Tables[10].Rows)
+            foreach (DataRow item in dtmatch.Rows)
             {
                 cmbstr.Add(item["Name"].ToString());
                 cmbMatch.Items.Add(item["Name"].ToString());
             }
             cmbMatch.AutoCompleteCustomSource = cmbstr;
-            DataRow[] dr = m_objUDT.CurrentDataSet.Tables[10].Select("Active=true");
+            DataRow[] dr = dtmatch.Select("Active=true");
             if (dr.Count() > 0)
             {
 
                 int index = cmbMatch.FindString(dr[0]["Name"].ToString());
                 if (index != -1)
                 {
-                    cmbMatch.SelectedIndex = index;
+                    try
+                    {
+                        cmbMatch.SelectedIndex = index;
+                    }
+                    catch(Exception ex)
+                    {
+
+                    }
                     UdtFilter filter = new UdtFilter();
                     filter.FilterColumn = "Name";
                     filter.FilterValue = cmbMatch.Text;
-                    filter.TableIndex = 10;
+                    filter.TableIndex = 5;
                     if (!m_objUDT.UdtFilters.ContainsKey("Active Match"))
                         m_objUDT.UdtFilters.Add("Active Match", filter);
                     else
@@ -337,7 +353,7 @@ namespace SoccerApp
         /// </summary>
         private void FillMatchEvents()
         {
-            DataRow[] dr = m_objUDT.CurrentDataSet.Tables[12].Select("MatchID= '" + cmbMatch.Text + "'");
+            DataRow[] dr = m_objUDT.CurrentDataSet.Tables[9].Select("MatchID= '" + cmbMatch.Text + "'");
             foreach (DataRow item in dr)
             {
                 DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
@@ -363,19 +379,22 @@ namespace SoccerApp
         /// <param name="ActiveMatch"></param>
         private void SelectTeams(string ActiveMatch)
         {
-            DataRow[] dr = m_objUDT.CurrentDataSet.Tables[10].Select("Name= '" + ActiveMatch + "'");
+            DataTable dtmatch = m_objUDT.CurrentDataSet.Tables[5];
+            DataRow[] dr = dtmatch.Select("Name= '" + ActiveMatch + "'");
             if (dr.Count() > 0)
             {
                 lblHomeTeam2.Text = dr[0]["HomeTeam"].ToString();
                 lblAwayTeam.Text = dr[0]["AwayTeam"].ToString();
                 // Get Team Flag from team Table
-                dr = m_objUDT.CurrentDataSet.Tables[6].Select("Name= '" + lblHomeTeam2.Text + "'");
-                if (File.Exists(dr[0]["Logo"].ToString()))
-                    pnlHomeFlag.BackgroundImage = Image.FromFile(dr[0]["Logo"].ToString());
-
-                dr = m_objUDT.CurrentDataSet.Tables[6].Select("Name= '" + lblAwayTeam.Text + "'");
-                if (File.Exists(dr[0]["Logo"].ToString()))
-                    pnlAwayFlag.BackgroundImage = Image.FromFile(dr[0]["Logo"].ToString());
+                //dr = m_objUDT.CurrentDataSet.Tables[6].Select("Name= '" + lblHomeTeam2.Text + "'");
+                //if (File.Exists(dr[0]["Logo"].ToString()))
+                //    pnlHomeFlag.BackgroundImage = Image.FromFile(dr[0]["Logo"].ToString());
+                pnlHomeFlag.BackgroundImage = Image.FromFile(dr[0]["HomeTeam Logo"].ToString());
+                pnlAwayFlag.BackgroundImage = Image.FromFile(dr[0]["AwayTem_Logo"].ToString());
+                //dr = m_objUDT.CurrentDataSet.Tables[6].Select("Name= '" + lblAwayTeam.Text + "'");
+                //if (File.Exists(dr[0]["Logo"].ToString()))
+                //    pnlAwayFlag.BackgroundImage = Image.FromFile(dr[0]["Logo"].ToString());
+               
                 //Get initial scores for the selected teams from UDT
                 InitializeScores(ActiveMatch);
             }
@@ -387,7 +406,7 @@ namespace SoccerApp
         /// <param name="ActiveMatch"></param>
         private void InitializeScores(string ActiveMatch)
         {
-            DataRow[] dr = m_objUDT.CurrentDataSet.Tables[10].Select("Name= '" + ActiveMatch + "'");
+            DataRow[] dr = m_objUDT.CurrentDataSet.Tables[5].Select("Name= '" + ActiveMatch + "'");
             lblHomeScore.Text = dr[0]["HomeScore"].ToString();
             lblAwayScore.Text = dr[0]["AwayScore"].ToString();
         }
@@ -696,7 +715,7 @@ namespace SoccerApp
                 filter = new UdtFilter();
                 filter.FilterColumn = "Name";
                 filter.FilterValue = cmbMatch.Text;
-                filter.TableIndex = 10;
+                filter.TableIndex = 5;
                 if (!m_objUDT.UdtFilters.ContainsKey("Active Match"))
                     m_objUDT.UdtFilters.Add("Active Match", filter);
                 else
@@ -707,9 +726,9 @@ namespace SoccerApp
                     System.Diagnostics.Trace.WriteLine(item);
 
                     if (item == cmbMatch.Text)
-                        m_objUDT.UpdateUDT(10, new string[] { "Active" }, new string[] { "true" }, "Name", cmbMatch.Text);
+                        m_objUDT.UpdateUDT(5, new string[] { "Active" }, new string[] { "true" }, "Name", cmbMatch.Text);
                     else
-                        m_objUDT.UpdateUDT(10, new string[] { "Active" }, new string[] { "false" }, "Name", item);
+                        m_objUDT.UpdateUDT(5, new string[] { "Active" }, new string[] { "false" }, "Name", item);
                 }
                 m_objUDT.Notify("Active Match");
                 ActiveMatch = cmbMatch.Text;
@@ -1452,11 +1471,11 @@ namespace SoccerApp
         }
 
         /// <summary>
-        /// Matchevents cell click
+        /// Match events double click event to open the player selection 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void dgvMatchevents_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void dgvMatchevents_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
             {
