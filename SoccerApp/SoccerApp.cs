@@ -25,7 +25,8 @@ namespace SoccerApp
     {
         #region Class Members
 
-        private UDTProvider.UDTProvider m_objUDT;
+        private UDTProvider.UDTProvider m_objUDTMatchSchedule;
+        private UDTProvider.UDTProvider m_objUDTMatch;
         CUDTManagerHelper m_ObjUdtHandler;
         string ActiveMatch = string.Empty;
         public DateTime CountDownTarget = DateTime.Now;
@@ -40,7 +41,7 @@ namespace SoccerApp
         protected static LINKTYPE m_objLinkType = LINKTYPE.TCP;
         private const string m_surl = "net.tcp://192.168.1.192:50011/TcpBinding/WcfTcpLink";
         string m_sEngineUrl = null;
-        string ID = string.Empty;
+        string NAME = string.Empty;
         string EVENTID = string.Empty;
         string MATCHNAME = string.Empty;
 
@@ -73,7 +74,7 @@ namespace SoccerApp
             try
             {
                 SetUI();
-                InitilizeUDT();
+                InitilizeMatchScheduleUDT();
                 InitializeCombos();
                 m_objWaspFileHandler = new CWaspFileHandler();
                 m_objsceneHandler = new SceneHandler();
@@ -171,11 +172,21 @@ namespace SoccerApp
         /// <summary>
         /// 
         /// </summary>
-        private void InitilizeUDT()
+        private void InitilizeMatchScheduleUDT()
         {
-            m_objUDT = new UDTProvider.UDTProvider();
-            m_objUDT.InitializeConnection();
-            m_objUDT.InitializeUDT(ConfigurationManager.AppSettings["udtname"]);
+            m_objUDTMatchSchedule = new UDTProvider.UDTProvider();
+            m_objUDTMatchSchedule.InitializeConnection();
+            m_objUDTMatchSchedule.InitializeUDT(ConfigurationManager.AppSettings["udtname"]);
+        }
+
+        private void InitializeMatchUDT(string udtname)
+        {
+            if (!string.IsNullOrEmpty(udtname))
+            {
+                m_objUDTMatch = new UDTProvider.UDTProvider();
+                m_objUDTMatch.InitializeConnection();
+                m_objUDTMatch.InitializeUDT(udtname);
+            }
         }
 
         /// <summary>
@@ -192,7 +203,7 @@ namespace SoccerApp
 
 
             // Get the Match part List from UDT and add to cmbstr1, Fill the Combo, and set the selected Item
-            FillMatchPart();
+            //FillMatchPart();
 
         }
 
@@ -202,7 +213,7 @@ namespace SoccerApp
         private void FillMatchPart()
         {
             AutoCompleteStringCollection cmbstr1 = new AutoCompleteStringCollection();
-            var dtmatchpart = m_objUDT.CurrentDataSet.Tables[15];
+            var dtmatchpart = m_objUDTMatchSchedule.CurrentDataSet.Tables[15];
             foreach (DataRow item in dtmatchpart.Rows)
             {
                 cmbstr1.Add(item["Name"].ToString());
@@ -227,11 +238,11 @@ namespace SoccerApp
                     filter.FilterColumn = "Name";
                     filter.FilterValue = cmbMatchPart.Text;
                     filter.TableIndex = 5;
-                    if (!m_objUDT.UdtFilters.ContainsKey("Match Part"))
-                        m_objUDT.UdtFilters.Add("Match Part", filter);
+                    if (!m_objUDTMatchSchedule.UdtFilters.ContainsKey("Match Part"))
+                        m_objUDTMatchSchedule.UdtFilters.Add("Match Part", filter);
                     else
-                        m_objUDT.UdtFilters["Match Part"] = filter;
-                    m_objUDT.Notify("Match Part");
+                        m_objUDTMatchSchedule.UdtFilters["Match Part"] = filter;
+                    m_objUDTMatchSchedule.Notify("Match Part");
                 }
 
             }
@@ -244,7 +255,7 @@ namespace SoccerApp
         private void FillMatchList()
         {
 
-            DataSet dt = m_objUDT.CurrentDataSet;
+            DataSet dt = m_objUDTMatchSchedule.CurrentDataSet;
             var dtmatch = dt.Tables[1];
             AutoCompleteStringCollection cmbstr = new AutoCompleteStringCollection();
             foreach (DataRow item in dtmatch.Rows)
@@ -256,7 +267,7 @@ namespace SoccerApp
             DataRow[] dr = dtmatch.Select("Active=true");
             if (dr.Count() > 0)
             {
-
+                InitializeMatchUDT(dr[0]["UDT Name"].ToString());
                 int index = cmbMatch.FindString(dr[0]["Name"].ToString());
                 if (index != -1)
                 {
@@ -272,11 +283,11 @@ namespace SoccerApp
                     filter.FilterColumn = "Name";
                     filter.FilterValue = cmbMatch.Text;
                     filter.TableIndex = 5;
-                    if (!m_objUDT.UdtFilters.ContainsKey("Active Match"))
-                        m_objUDT.UdtFilters.Add("Active Match", filter);
+                    if (!m_objUDTMatchSchedule.UdtFilters.ContainsKey("Active Match"))
+                        m_objUDTMatchSchedule.UdtFilters.Add("Active Match", filter);
                     else
-                        m_objUDT.UdtFilters["Active Match"] = filter;
-                    m_objUDT.Notify("Active Match");
+                        m_objUDTMatchSchedule.UdtFilters["Active Match"] = filter;
+                    m_objUDTMatchSchedule.Notify("Active Match");
                 }
 
             }
@@ -315,9 +326,9 @@ namespace SoccerApp
                             if (IsID)
                             {
                                 //Update ID  here.....    
-                                node.Attribute("customfilter").SetValue("(T1_ID In (  1 )) AND (([ID] =" + ID + "))");
-                                node.Attribute("filter").SetValue("([ID] = " + ID + ")");
-                                node.Attribute("actionfilter").SetValue("[ID] =" + ID);
+                                node.Attribute("customfilter").SetValue("(T1_ID In (  1 )) AND (([NAME] =" + NAME + "))");
+                                node.Attribute("filter").SetValue("([NAME] = " + NAME + ")");
+                                node.Attribute("actionfilter").SetValue("[NAME] =" + NAME);
                                 //XAttribute attribute = new XAttribute("sort", "");
                                 //node.Add(attribute);
                             }
@@ -353,8 +364,9 @@ namespace SoccerApp
         /// </summary>
         private void FillMatchEvents()
         {
-            DataRow[] dr = m_objUDT.CurrentDataSet.Tables[9].Select("MatchID= '" + cmbMatch.Text + "'");
-            foreach (DataRow item in dr)
+            
+            DataTable dt = m_objUDTMatch.CurrentDataSet.Tables[5];
+            foreach (DataRow item in dt.Rows)
             {
                 DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
                 dgv.Cells[0].Value = item["EventID"].ToString(); //SrNo
@@ -379,18 +391,24 @@ namespace SoccerApp
         /// <param name="ActiveMatch"></param>
         private void SelectTeams(string ActiveMatch)
         {
-            DataTable dtmatch = m_objUDT.CurrentDataSet.Tables[5];
+            DataTable dtmatch = m_objUDTMatchSchedule.CurrentDataSet.Tables[1];
             DataRow[] dr = dtmatch.Select("Name= '" + ActiveMatch + "'");
             if (dr.Count() > 0)
             {
-                lblHomeTeam2.Text = dr[0]["HomeTeam"].ToString();
-                lblAwayTeam.Text = dr[0]["AwayTeam"].ToString();
+                lblHomeTeam2.Text = dr[0]["Home Team"].ToString();
+                lblAwayTeam.Text = dr[0]["Away Team"].ToString();
                 // Get Team Flag from team Table
                 //dr = m_objUDT.CurrentDataSet.Tables[6].Select("Name= '" + lblHomeTeam2.Text + "'");
                 //if (File.Exists(dr[0]["Logo"].ToString()))
                 //    pnlHomeFlag.BackgroundImage = Image.FromFile(dr[0]["Logo"].ToString());
-                pnlHomeFlag.BackgroundImage = Image.FromFile(dr[0]["HomeTeam Logo"].ToString());
-                pnlAwayFlag.BackgroundImage = Image.FromFile(dr[0]["AwayTem_Logo"].ToString());
+                if (File.Exists(dr[0]["HomeTeam_Logo"].ToString()))
+                {
+                    pnlHomeFlag.BackgroundImage = Image.FromFile(dr[0]["HomeTeam_Logo"].ToString());
+                }
+                if (File.Exists(dr[0]["AwayTeam_Logo"].ToString()))
+                {
+                    pnlAwayFlag.BackgroundImage = Image.FromFile(dr[0]["AwayTeam_Logo"].ToString());
+                }
                 //dr = m_objUDT.CurrentDataSet.Tables[6].Select("Name= '" + lblAwayTeam.Text + "'");
                 //if (File.Exists(dr[0]["Logo"].ToString()))
                 //    pnlAwayFlag.BackgroundImage = Image.FromFile(dr[0]["Logo"].ToString());
@@ -406,9 +424,9 @@ namespace SoccerApp
         /// <param name="ActiveMatch"></param>
         private void InitializeScores(string ActiveMatch)
         {
-            DataRow[] dr = m_objUDT.CurrentDataSet.Tables[5].Select("Name= '" + ActiveMatch + "'");
-            lblHomeScore.Text = dr[0]["HomeScore"].ToString();
-            lblAwayScore.Text = dr[0]["AwayScore"].ToString();
+            DataRow[] dr = m_objUDTMatch.CurrentDataSet.Tables[4].Select("Match= '" + ActiveMatch + "'");
+            lblHomeScore.Text = dr[0]["HomeGoal"].ToString();
+            lblAwayScore.Text = dr[0]["AwayGoal"].ToString();
         }
 
         /// <summary>
@@ -422,18 +440,18 @@ namespace SoccerApp
         {
             try
             {
-                m_objUDT.RefreshUDT(ConfigurationManager.AppSettings["udtname"]); // It will refresh the UDT and Dataset and get latest values available in UDT
-                if (m_objUDT.CurrentDataSet != null)
+                m_objUDTMatchSchedule.RefreshUDT(ConfigurationManager.AppSettings["udtname"]); // It will refresh the UDT and Dataset and get latest values available in UDT
+                if (m_objUDTMatchSchedule.CurrentDataSet != null)
                 {
-                    DataRow[] dr = m_objUDT.CurrentDataSet.Tables[17].Select(uniqueColumn + "= '" + uniqueValue + "'");
+                    DataRow[] dr = m_objUDTMatchSchedule.CurrentDataSet.Tables[17].Select(uniqueColumn + "= '" + uniqueValue + "'");
                     if (dr != null && dr.Length > 0 && (Convert.ToInt32(dr[0][Column]) > 0 || value == 1))
                     {
                         int val = Convert.ToInt32(dr[0][Column].ToString()) + value;
-                        m_objUDT.UpdateUDT(17, new string[] { Column }, new string[] { val.ToString() }, uniqueColumn, uniqueValue);
+                        m_objUDTMatchSchedule.UpdateUDT(17, new string[] { Column }, new string[] { val.ToString() }, uniqueColumn, uniqueValue);
                     }
                     else if (value != -1)
                     {
-                        DataRow drlast = m_objUDT.CurrentDataSet.Tables[17].Rows[m_objUDT.CurrentDataSet.Tables[17].Rows.Count - 1];
+                        DataRow drlast = m_objUDTMatchSchedule.CurrentDataSet.Tables[17].Rows[m_objUDTMatchSchedule.CurrentDataSet.Tables[17].Rows.Count - 1];
                         int id = 0;
                         if (drlast != null)
                         {
@@ -441,7 +459,7 @@ namespace SoccerApp
                         }
                         id++;
                         int val = value;
-                        m_objUDT.InsertUDTData(17, new string[] { "ID", uniqueColumn, Column }, new string[] { id.ToString(), uniqueValue, val.ToString() });
+                        m_objUDTMatchSchedule.InsertUDTData(17, new string[] { "ID", uniqueColumn, Column }, new string[] { id.ToString(), uniqueValue, val.ToString() });
                     }
                 }
             }
@@ -715,32 +733,32 @@ namespace SoccerApp
                 filter = new UdtFilter();
                 filter.FilterColumn = "Name";
                 filter.FilterValue = cmbMatch.Text;
-                filter.TableIndex = 5;
-                if (!m_objUDT.UdtFilters.ContainsKey("Active Match"))
-                    m_objUDT.UdtFilters.Add("Active Match", filter);
+                filter.TableIndex = 1;
+                if (!m_objUDTMatchSchedule.UdtFilters.ContainsKey("Active Match"))
+                    m_objUDTMatchSchedule.UdtFilters.Add("Active Match", filter);
                 else
-                    m_objUDT.UdtFilters["Active Match"] = filter;
+                    m_objUDTMatchSchedule.UdtFilters["Active Match"] = filter;
 
                 foreach (string item in cmbMatch.Items)
                 {
                     System.Diagnostics.Trace.WriteLine(item);
 
                     if (item == cmbMatch.Text)
-                        m_objUDT.UpdateUDT(5, new string[] { "Active" }, new string[] { "true" }, "Name", cmbMatch.Text);
+                        m_objUDTMatchSchedule.UpdateUDT(1, new string[] { "Active" }, new string[] { "true" }, "Name", cmbMatch.Text);
                     else
-                        m_objUDT.UpdateUDT(5, new string[] { "Active" }, new string[] { "false" }, "Name", item);
+                        m_objUDTMatchSchedule.UpdateUDT(1, new string[] { "Active" }, new string[] { "false" }, "Name", item);
                 }
-                m_objUDT.Notify("Active Match");
+                m_objUDTMatchSchedule.Notify("Active Match");
                 ActiveMatch = cmbMatch.Text;
-                if (m_objUDT != null)
+                if (m_objUDTMatchSchedule != null)
                 {
-                    DataTable dt = m_objUDT.CurrentDataSet.Tables["13"];
+                    DataTable dt = m_objUDTMatchSchedule.CurrentDataSet.Tables["13"];
                     {
                         foreach (DataRow row in dt.Rows)
                         {
                             if ((bool)row["Active"])
                             {
-                                ID = row["ID"].ToString();
+                                NAME = row["NAME"].ToString();
                             }
                         }
                     }
@@ -752,10 +770,10 @@ namespace SoccerApp
                 FillMatchEvents();
                 //UpdateWaspControls(m_objfrm);
                 //If there is no entry in Match Status table, insert new row
-                DataRow[] dr = m_objUDT.CurrentDataSet.Tables[17].Select("Match= '" + ActiveMatch + "'");
+                DataRow[] dr = m_objUDTMatchSchedule.CurrentDataSet.Tables[17].Select("Match= '" + ActiveMatch + "'");
                 if (dr.Length == 0)
                 {
-                    m_objUDT.InsertUDTData(17, new string[] { "Match" }, new string[] { ActiveMatch });
+                    m_objUDTMatchSchedule.InsertUDTData(17, new string[] { "Match" }, new string[] { ActiveMatch });
                 }
 
             }
@@ -772,24 +790,24 @@ namespace SoccerApp
         private void cmbMatchPart_SelectedIndexChanged(object sender, EventArgs e)
         {
             lblCounter.Enabled = false;
-            UdtFilter filter = new UdtFilter();
-            filter.FilterColumn = "Name";
-            filter.FilterValue = cmbMatch.Text;
-            filter.TableIndex = 11;
-            if (!m_objUDT.UdtFilters.ContainsKey("Match Part"))
-                m_objUDT.UdtFilters.Add("Match Part", filter);
-            else
-                m_objUDT.UdtFilters["Match Part"] = filter;
+            //UdtFilter filter = new UdtFilter();
+            //filter.FilterColumn = "Name";
+            //filter.FilterValue = cmbMatch.Text;
+            //filter.TableIndex = 11;
+            //if (!m_objUDTMatchSchedule.UdtFilters.ContainsKey("Match Part"))
+            //    m_objUDTMatchSchedule.UdtFilters.Add("Match Part", filter);
+            //else
+            //    m_objUDTMatchSchedule.UdtFilters["Match Part"] = filter;
 
-            foreach (string item in cmbMatchPart.Items)
-            {
-                if (item == cmbMatchPart.Text)
-                    m_objUDT.UpdateUDT(11, new string[] { "Active" }, new string[] { "true" }, "Name", cmbMatchPart.Text);
-                else
-                    m_objUDT.UpdateUDT(11, new string[] { "Active" }, new string[] { "false" }, "Name", item);
-            }
+            //foreach (string item in cmbMatchPart.Items)
+            //{
+            //    if (item == cmbMatchPart.Text)
+            //        m_objUDTMatchSchedule.UpdateUDT(11, new string[] { "Active" }, new string[] { "true" }, "Name", cmbMatchPart.Text);
+            //    else
+            //        m_objUDTMatchSchedule.UpdateUDT(11, new string[] { "Active" }, new string[] { "false" }, "Name", item);
+            //}
 
-            m_objUDT.Notify("Match Part");
+            //m_objUDTMatchSchedule.Notify("Match Part");
             timer1.Stop();
             lblCounter.Text = "00:00";
             btnstartstop.Text = "Start";
@@ -811,10 +829,10 @@ namespace SoccerApp
             {
                 TimeSpan ts = DateTime.Now.Subtract(MatchPartStartTime);
                 lblHomeScore.Text = (Convert.ToInt32(lblHomeScore.Text) + 1).ToString();
-                m_objUDT.UpdateUDT(10, new string[] { "HomeScore" }, new string[] { lblHomeScore.Text }, "Name", cmbMatch.Text);
+                m_objUDTMatch.UpdateUDT(10, new string[] { "HomeScore" }, new string[] { lblHomeScore.Text }, "Name", cmbMatch.Text);
                 Player p = new Player();
                 p.Team = lblHomeTeam2.Text;
-                p._objUDTProvider = m_objUDT;
+                p._objUDTProvider = m_objUDTMatchSchedule;
                 p.FillTeam();
                 p.StartPosition = FormStartPosition.CenterParent;
                 p.ShowDialog();
@@ -829,7 +847,7 @@ namespace SoccerApp
                 dgv.Cells[5].Value = selectedPlayer;
                 dgvMatchevents.Rows.Add(dgv);
                 SrNo++;
-                m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Goal", lblHomeTeam2.Text, selectedPlayer });
+                m_objUDTMatch.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Goal", lblHomeTeam2.Text, selectedPlayer });
                 p = null;
                 updateMatchStats("HomeGoal", 1, "Match", cmbMatch.Text);
             }
@@ -849,7 +867,7 @@ namespace SoccerApp
             if (Convert.ToInt32(lblHomeScore.Text) != 0)
             {
                 lblHomeScore.Text = (Convert.ToInt32(lblHomeScore.Text) - 1).ToString();
-                m_objUDT.UpdateUDT(10, new string[] { "HomeScore" }, new string[] { lblHomeScore.Text }, "Name", cmbMatch.Text);
+                m_objUDTMatchSchedule.UpdateUDT(10, new string[] { "HomeScore" }, new string[] { lblHomeScore.Text }, "Name", cmbMatch.Text);
                 updateMatchStats("HomeGoal", -1, "Match", cmbMatch.Text);
             }
         }//end(btnHomeminus_Click)
@@ -862,12 +880,12 @@ namespace SoccerApp
         private void btnawayplus_Click(object sender, EventArgs e)
         {
             lblAwayScore.Text = (Convert.ToInt32(lblAwayScore.Text) + 1).ToString();
-            m_objUDT.UpdateUDT(10, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text);
+            m_objUDTMatchSchedule.UpdateUDT(10, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text);
             //lblAwayScore.Text = (Convert.ToInt32(lblHomeScore.Text) + 1).ToString();
             //m_objUDT.UpdateUDT(10, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text);
             Player p = new Player();
             p.Team = lblAwayTeam.Text;
-            p._objUDTProvider = m_objUDT;
+            p._objUDTProvider = m_objUDTMatchSchedule;
             p.FillTeam();
             p.StartPosition = FormStartPosition.CenterParent;
             p.ShowDialog();
@@ -882,7 +900,7 @@ namespace SoccerApp
             dgv.Cells[5].Value = selectedPlayer;
             dgvMatchevents.Rows.Add(dgv);
             SrNo++;
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Goal", lblAwayTeam.Text, selectedPlayer });
+            m_objUDTMatchSchedule.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Goal", lblAwayTeam.Text, selectedPlayer });
             p = null;
             updateMatchStats("AwayGoal", 1, "Match", cmbMatch.Text);
         }
@@ -897,7 +915,7 @@ namespace SoccerApp
             if (Convert.ToInt32(lblAwayScore.Text) != 0)
             {
                 lblAwayScore.Text = (Convert.ToInt32(lblAwayScore.Text) - 1).ToString();
-                m_objUDT.UpdateUDT(10, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text);
+                m_objUDTMatchSchedule.UpdateUDT(10, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text);
                 updateMatchStats("AwayGoal", -1, "Match", cmbMatch.Text);
             }
         }
@@ -911,7 +929,7 @@ namespace SoccerApp
         {
             TeamBuilderForm tf = new TeamBuilderForm();
             tf.Team = lblHomeTeam2.Text;
-            tf._objUDTProvider = m_objUDT;
+            tf._objUDTProvider = m_objUDTMatchSchedule;
             tf.FIllTeam();
             tf.StartPosition = FormStartPosition.CenterParent;
             tf.ShowDialog();
@@ -927,7 +945,7 @@ namespace SoccerApp
         {
             TeamBuilderForm tf = new TeamBuilderForm();
             tf.Team = lblAwayTeam.Text;
-            tf._objUDTProvider = m_objUDT;
+            tf._objUDTProvider = m_objUDTMatchSchedule;
             tf.FIllTeam();
             tf.StartPosition = FormStartPosition.CenterParent;
             tf.ShowDialog();
@@ -1031,7 +1049,7 @@ namespace SoccerApp
             }
 
             Substitution sb = new Substitution();
-            sb._objUDTProvider = m_objUDT;
+            sb._objUDTProvider = m_objUDTMatchSchedule;
             sb.HomeTeam = lblHomeTeam2.Text;
             sb.AwayTeam = lblAwayTeam.Text;
             sb.Team = lblHomeTeam2.Text;
@@ -1055,7 +1073,7 @@ namespace SoccerApp
             dgv.Cells[4].Value = sb.Team;
             dgv.Cells[5].Value = sb.SelectedOutPlayer;
             dgvMatchevents.Rows.Add(dgv);
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Substitution Out", sb.Team, sb.SelectedOutPlayer });
+            m_objUDTMatchSchedule.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Substitution Out", sb.Team, sb.SelectedOutPlayer });
             SrNo++;
             dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
             dgv.Cells[0].Value = SrNo;
@@ -1065,7 +1083,7 @@ namespace SoccerApp
             dgv.Cells[4].Value = sb.Team;
             dgv.Cells[5].Value = sb.SelectedInPlayer;
             dgvMatchevents.Rows.Add(dgv);
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Substitution In", sb.Team, sb.SelectedInPlayer });
+            m_objUDTMatchSchedule.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Substitution In", sb.Team, sb.SelectedInPlayer });
             SrNo++;
             sb = null;
         }
@@ -1083,7 +1101,7 @@ namespace SoccerApp
                 ts = DateTime.Now.Subtract(MatchPartStartTime);
             }
             PlayerDetails pd = new PlayerDetails();
-            pd._objUDTProvider = m_objUDT;
+            pd._objUDTProvider = m_objUDTMatchSchedule;
             pd.Parent = "Foul";
             pd.Team = lblHomeTeam2.Text;
             pd.cmbTeam.Items.Add(lblHomeTeam2.Text);
@@ -1107,7 +1125,7 @@ namespace SoccerApp
             dgv.Cells[4].Value = pd.Team;
             dgv.Cells[5].Value = pd.SelectedPlayer;
             dgvMatchevents.Rows.Add(dgv);
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Fouls", pd.Team, pd.SelectedPlayer });
+            m_objUDTMatchSchedule.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Fouls", pd.Team, pd.SelectedPlayer });
             SrNo++;
             string FoulTeam = "";
             if (pd.Team == lblHomeTeam2.Text)
@@ -1153,7 +1171,7 @@ namespace SoccerApp
             dgv.Cells[4].Value = tms.SelectedTeam;
             dgv.Cells[5].Value = "";
             dgvMatchevents.Rows.Add(dgv);
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Corner kicks", tms.SelectedTeam, "" });
+            m_objUDTMatchSchedule.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Corner kicks", tms.SelectedTeam, "" });
             SrNo++;
 
             string FoulTeam = "";
@@ -1182,7 +1200,7 @@ namespace SoccerApp
                 ts = DateTime.Now.Subtract(MatchPartStartTime);
             }
             PlayerDetails pd = new PlayerDetails();
-            pd._objUDTProvider = m_objUDT;
+            pd._objUDTProvider = m_objUDTMatchSchedule;
             pd.Parent = "Shots ON";
             pd.Team = lblHomeTeam2.Text;
             pd.cmbTeam.Items.Add(lblHomeTeam2.Text);
@@ -1206,7 +1224,7 @@ namespace SoccerApp
             dgv.Cells[4].Value = pd.Team;
             dgv.Cells[5].Value = pd.SelectedPlayer;
             dgvMatchevents.Rows.Add(dgv);
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Shots On Goal", pd.Team, pd.SelectedPlayer });
+            m_objUDTMatchSchedule.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Shots On Goal", pd.Team, pd.SelectedPlayer });
             SrNo++;
             string FoulTeam = "";
             if (pd.Team == lblHomeTeam2.Text)
@@ -1233,7 +1251,7 @@ namespace SoccerApp
                 ts = DateTime.Now.Subtract(MatchPartStartTime);
             }
             PlayerDetails pd = new PlayerDetails();
-            pd._objUDTProvider = m_objUDT;
+            pd._objUDTProvider = m_objUDTMatchSchedule;
             pd.Parent = "Shots OFF";
             pd.Team = lblHomeTeam2.Text;
             pd.cmbTeam.Items.Add(lblHomeTeam2.Text);
@@ -1257,7 +1275,7 @@ namespace SoccerApp
             dgv.Cells[4].Value = pd.Team;
             dgv.Cells[5].Value = pd.SelectedPlayer;
             dgvMatchevents.Rows.Add(dgv);
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Shots Off Goal", pd.Team, pd.SelectedPlayer });
+            m_objUDTMatchSchedule.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Shots Off Goal", pd.Team, pd.SelectedPlayer });
             SrNo++;
             string FoulTeam = "";
             if (pd.Team == lblHomeTeam2.Text)
@@ -1284,7 +1302,7 @@ namespace SoccerApp
                 ts = DateTime.Now.Subtract(MatchPartStartTime);
             }
             PlayerDetails pd = new PlayerDetails();
-            pd._objUDTProvider = m_objUDT;
+            pd._objUDTProvider = m_objUDTMatchSchedule;
             pd.Parent = "Yellow Card";
             pd.Team = lblHomeTeam2.Text;
             pd.cmbTeam.Items.Add(lblHomeTeam2.Text);
@@ -1308,7 +1326,7 @@ namespace SoccerApp
             dgv.Cells[4].Value = pd.Team;
             dgv.Cells[5].Value = pd.SelectedPlayer;
             dgvMatchevents.Rows.Add(dgv);
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Yellow Cards", pd.Team, pd.SelectedPlayer });
+            m_objUDTMatchSchedule.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Yellow Cards", pd.Team, pd.SelectedPlayer });
             SrNo++;
         }
 
@@ -1325,7 +1343,7 @@ namespace SoccerApp
                 ts = DateTime.Now.Subtract(MatchPartStartTime);
             }
             PlayerDetails pd = new PlayerDetails();
-            pd._objUDTProvider = m_objUDT;
+            pd._objUDTProvider = m_objUDTMatchSchedule;
             pd.Parent = "Red Card";
             pd.Team = lblHomeTeam2.Text;
             pd.cmbTeam.Items.Add(lblHomeTeam2.Text);
@@ -1349,7 +1367,7 @@ namespace SoccerApp
             dgv.Cells[4].Value = pd.Team;
             dgv.Cells[5].Value = pd.SelectedPlayer;
             dgvMatchevents.Rows.Add(dgv);
-            m_objUDT.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Red Cards", pd.Team, pd.SelectedPlayer });
+            m_objUDTMatchSchedule.InsertUDTData(12, new string[] { "EventID", "MatchID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatch.Text, cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Red Cards", pd.Team, pd.SelectedPlayer });
             SrNo++;
         }
 
