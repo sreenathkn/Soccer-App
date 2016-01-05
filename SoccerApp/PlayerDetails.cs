@@ -27,24 +27,28 @@ namespace SoccerApp
             setFormHeader();
             AutoCompleteStringCollection cmbstrName = new AutoCompleteStringCollection();
             AutoCompleteStringCollection cmbstrJer = new AutoCompleteStringCollection();
-            DataRow[] t = _objUDTProvider.CurrentDataSet.Tables[7].Select("Team = '" + Team + "' AND Playing=true");
-            cmbPlayerJer.Items.Clear();
-            cmbPlayerName.Items.Clear();
-            foreach (DataRow item in t)
+            DataRow drTeam = _objUDTProvider.CurrentDataSet.Tables[2].Select("Name = '" + Team+"'").FirstOrDefault();
+            if (drTeam != null)
             {
-                cmbPlayerName.Items.Add(item["Name"]);
-                cmbstrName.Add(item["Name"].ToString());
-                cmbPlayerJer.Items.Add(item["JerseyNo"]);
-                cmbstrJer.Add(item["JerseyNo"].ToString());
+                DataRow[] drPlayers = _objUDTProvider.CurrentDataSet.Tables[3].Select("T24_ID = '" + drTeam["T24_ID"] + "' AND Playing=true");
+                cmbPlayerJer.Items.Clear();
+                cmbPlayerName.Items.Clear();
+                foreach (DataRow item in drPlayers)
+                {
+                    cmbPlayerName.Items.Add(item["First Name"]);
+                    cmbstrName.Add(item["First Name"].ToString());
+                    cmbPlayerJer.Items.Add(item["Jersey No"]);
+                    cmbstrJer.Add(item["Jersey No"].ToString());
+                }
+                cmbPlayerName.SelectedIndex = 1;
+                cmbPlayerJer.SelectedIndex = 1;
+                cmbPlayerName.AutoCompleteMode = AutoCompleteMode.Suggest;
+                cmbPlayerName.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                cmbPlayerName.AutoCompleteCustomSource = cmbstrName;
+                cmbPlayerJer.AutoCompleteMode = AutoCompleteMode.Suggest;
+                cmbPlayerJer.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                cmbPlayerJer.AutoCompleteCustomSource = cmbstrJer;
             }
-            cmbPlayerName.SelectedIndex = 1;
-            cmbPlayerJer.SelectedIndex = 1;
-            cmbPlayerName.AutoCompleteMode = AutoCompleteMode.Suggest;
-            cmbPlayerName.AutoCompleteSource = AutoCompleteSource.CustomSource;
-            cmbPlayerName.AutoCompleteCustomSource = cmbstrName;
-            cmbPlayerJer.AutoCompleteMode = AutoCompleteMode.Suggest;
-            cmbPlayerJer.AutoCompleteSource = AutoCompleteSource.CustomSource;
-            cmbPlayerJer.AutoCompleteCustomSource = cmbstrJer;
         }
 
         private void setFormHeader()

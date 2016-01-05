@@ -21,13 +21,16 @@ namespace SoccerApp
         }
         public void FillTeam()
         {
-            DataRow[] dtTeams = _objUDTProvider.CurrentDataSet.Tables[7].Select("Team = '" + Team + "' AND Playing=true");
-            foreach (var item in dtTeams)
+            DataRow drTeam = _objUDTProvider.CurrentDataSet.Tables[2].Select("Name = '" + Team+"'").FirstOrDefault();
+            if (drTeam != null)
             {
-                lstPlayers.Items.Add(item["Name"]);
+                DataRow[] drPlayers = _objUDTProvider.CurrentDataSet.Tables[3].Select("T24_ID = '" + drTeam["T24_ID"] + "' AND Playing=true");
+                foreach (var item in drPlayers)
+                {
+                    lstPlayers.Items.Add(item["First Name"]);
+                }
             }
         }
-
         private void lstPlayers_DoubleClick(object sender, EventArgs e)
         {
             selectedPlayer = lstPlayers.SelectedItem.ToString();

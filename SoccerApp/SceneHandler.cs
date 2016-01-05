@@ -36,9 +36,9 @@ namespace SoccerApp
 
             isInitialized = false;
 
-            if (ConfigurationManager.AppSettings["w3dscene"] != null)
+            //if (ConfigurationManager.AppSettings["w3dscene"] != null)
             {
-                if (File.Exists(ConfigurationManager.AppSettings["w3dscene"]))
+               // if (File.Exists(ConfigurationManager.AppSettings["w3dscene"]))
                 {
                     if (ConfigurationManager.AppSettings["stingserverip"] != null)
                     {

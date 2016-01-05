@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>soccer_ball.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Beesys.Wasp.AddIn.ILinkCommandManager, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Beesys.Wasp.AddIn.ILinkCommandManager.dll</HintPath>
@@ -236,14 +239,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Soccer League Table.udt" />
+    <None Include="Resources\Soccer Match Schedule.udt" />
     <None Include="Resources\soccer.w3d" />
-    <None Include="Resources\Soccer_Final.udt" />
+    <None Include="Resources\SoccerMatch.udt" />
     <None Include="Resources\Soccer_revised.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\BeeSys.Wasp.IWaspPlayers.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Resources\BeeSys.Wasp.IWaspPlayers.dll" />
+    <Content Include="Resources\soccer_ball.ico" />
+    <Content Include="soccer_ball.ico" />
     <Content Include="templates.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

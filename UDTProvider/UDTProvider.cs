@@ -95,7 +95,7 @@ namespace UDTProvider
                 dr[Columns[i]] = Values[i];
                 //delete this
             }
-            if(string.IsNullOrEmpty(Convert.ToString(dr["Visibility"])))
+            if(dr.Table.Columns.Contains("Visibility") && string.IsNullOrEmpty(Convert.ToString(dr["Visibility"])))
             {
                 dr["Visibility"] = true;
             }

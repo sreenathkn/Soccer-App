@@ -29,9 +29,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SoccerApp));
             this.lblHomeTeam2 = new System.Windows.Forms.Label();
             this.lblAwayTeam = new System.Windows.Forms.Label();
             this.pnlHomeFlag = new System.Windows.Forms.Panel();
@@ -52,9 +53,9 @@
             this.cmbMatch = new System.Windows.Forms.ComboBox();
             this.cmbMatchPart = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnSubstitute = new System.Windows.Forms.Button();
             this.btnFoul = new System.Windows.Forms.Button();
-            this.cmbCorner = new System.Windows.Forms.Button();
+            this.btnCorner = new System.Windows.Forms.Button();
             this.btnShots = new System.Windows.Forms.Button();
             this.btnShotsOff = new System.Windows.Forms.Button();
             this.btnYellow = new System.Windows.Forms.Button();
@@ -109,7 +110,7 @@
             this.lblHomeTeam2.ForeColor = System.Drawing.Color.Black;
             this.lblHomeTeam2.Location = new System.Drawing.Point(57, 37);
             this.lblHomeTeam2.Name = "lblHomeTeam2";
-            this.lblHomeTeam2.Size = new System.Drawing.Size(272, 32);
+            this.lblHomeTeam2.Size = new System.Drawing.Size(260, 32);
             this.lblHomeTeam2.TabIndex = 2;
             this.lblHomeTeam2.Text = "lblHome";
             this.lblHomeTeam2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -122,7 +123,7 @@
             this.lblAwayTeam.BackColor = System.Drawing.Color.Gray;
             this.lblAwayTeam.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.lblAwayTeam.ForeColor = System.Drawing.Color.Black;
-            this.lblAwayTeam.Location = new System.Drawing.Point(140, 31);
+            this.lblAwayTeam.Location = new System.Drawing.Point(140, 34);
             this.lblAwayTeam.Name = "lblAwayTeam";
             this.lblAwayTeam.Size = new System.Drawing.Size(272, 32);
             this.lblAwayTeam.TabIndex = 3;
@@ -148,9 +149,10 @@
             // 
             // btnawayplus
             // 
+            this.btnawayplus.Enabled = false;
             this.btnawayplus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnawayplus.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnawayplus.Location = new System.Drawing.Point(107, 31);
+            this.btnawayplus.Location = new System.Drawing.Point(107, 35);
             this.btnawayplus.Name = "btnawayplus";
             this.btnawayplus.Size = new System.Drawing.Size(27, 30);
             this.btnawayplus.TabIndex = 7;
@@ -161,9 +163,10 @@
             // 
             // btnawayminus
             // 
+            this.btnawayminus.Enabled = false;
             this.btnawayminus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnawayminus.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnawayminus.Location = new System.Drawing.Point(3, 31);
+            this.btnawayminus.Location = new System.Drawing.Point(3, 35);
             this.btnawayminus.Name = "btnawayminus";
             this.btnawayminus.Size = new System.Drawing.Size(27, 30);
             this.btnawayminus.TabIndex = 9;
@@ -178,9 +181,9 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.lblHomeScore.BackColor = System.Drawing.Color.Transparent;
             this.lblHomeScore.Font = new System.Drawing.Font("Segoe UI", 50F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.lblHomeScore.Location = new System.Drawing.Point(368, 18);
+            this.lblHomeScore.Location = new System.Drawing.Point(360, 18);
             this.lblHomeScore.Name = "lblHomeScore";
-            this.lblHomeScore.Size = new System.Drawing.Size(75, 62);
+            this.lblHomeScore.Size = new System.Drawing.Size(97, 62);
             this.lblHomeScore.TabIndex = 10;
             this.lblHomeScore.Text = "12";
             this.lblHomeScore.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -221,14 +224,14 @@
             this.dgvMatchevents.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.dgvMatchevents.BackgroundColor = System.Drawing.SystemColors.ControlLight;
             this.dgvMatchevents.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvMatchevents.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvMatchevents.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dgvMatchevents.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvMatchevents.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.SNO,
@@ -237,26 +240,26 @@
             this.EventMem,
             this.TeamName,
             this.PlayerName});
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvMatchevents.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvMatchevents.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgvMatchevents.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.dgvMatchevents.Location = new System.Drawing.Point(0, 34);
             this.dgvMatchevents.Name = "dgvMatchevents";
             this.dgvMatchevents.ReadOnly = true;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvMatchevents.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvMatchevents.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dgvMatchevents.RowHeadersVisible = false;
             this.dgvMatchevents.Size = new System.Drawing.Size(1486, 259);
             this.dgvMatchevents.TabIndex = 14;
@@ -352,22 +355,24 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1306, 456);
             this.tableLayoutPanel1.TabIndex = 17;
             // 
-            // button1
+            // btnSubstitute
             // 
-            this.button1.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(1127, 0);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(96, 33);
-            this.button1.TabIndex = 18;
-            this.button1.Text = "Substitute";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnSubstitute.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnSubstitute.Enabled = false;
+            this.btnSubstitute.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSubstitute.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSubstitute.Location = new System.Drawing.Point(1127, 0);
+            this.btnSubstitute.Name = "btnSubstitute";
+            this.btnSubstitute.Size = new System.Drawing.Size(96, 33);
+            this.btnSubstitute.TabIndex = 18;
+            this.btnSubstitute.Text = "Substitute";
+            this.btnSubstitute.UseVisualStyleBackColor = false;
+            this.btnSubstitute.Click += new System.EventHandler(this.button1_Click);
             // 
             // btnFoul
             // 
             this.btnFoul.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnFoul.Enabled = false;
             this.btnFoul.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnFoul.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnFoul.Location = new System.Drawing.Point(515, 0);
@@ -378,22 +383,24 @@
             this.btnFoul.UseVisualStyleBackColor = false;
             this.btnFoul.Click += new System.EventHandler(this.btnFoul_Click);
             // 
-            // cmbCorner
+            // btnCorner
             // 
-            this.cmbCorner.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.cmbCorner.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmbCorner.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cmbCorner.Location = new System.Drawing.Point(821, 0);
-            this.cmbCorner.Name = "cmbCorner";
-            this.cmbCorner.Size = new System.Drawing.Size(96, 33);
-            this.cmbCorner.TabIndex = 20;
-            this.cmbCorner.Text = "Corner";
-            this.cmbCorner.UseVisualStyleBackColor = false;
-            this.cmbCorner.Click += new System.EventHandler(this.cmbCorner_Click);
+            this.btnCorner.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnCorner.Enabled = false;
+            this.btnCorner.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCorner.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCorner.Location = new System.Drawing.Point(821, 0);
+            this.btnCorner.Name = "btnCorner";
+            this.btnCorner.Size = new System.Drawing.Size(96, 33);
+            this.btnCorner.TabIndex = 20;
+            this.btnCorner.Text = "Corner";
+            this.btnCorner.UseVisualStyleBackColor = false;
+            this.btnCorner.Click += new System.EventHandler(this.cmbCorner_Click);
             // 
             // btnShots
             // 
             this.btnShots.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnShots.Enabled = false;
             this.btnShots.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnShots.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnShots.Location = new System.Drawing.Point(923, 0);
@@ -407,6 +414,7 @@
             // btnShotsOff
             // 
             this.btnShotsOff.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnShotsOff.Enabled = false;
             this.btnShotsOff.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnShotsOff.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnShotsOff.Location = new System.Drawing.Point(1025, 0);
@@ -420,6 +428,7 @@
             // btnYellow
             // 
             this.btnYellow.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnYellow.Enabled = false;
             this.btnYellow.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnYellow.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnYellow.Location = new System.Drawing.Point(617, 1);
@@ -433,6 +442,7 @@
             // btnRed
             // 
             this.btnRed.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnRed.Enabled = false;
             this.btnRed.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRed.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnRed.Location = new System.Drawing.Point(719, 1);
@@ -511,9 +521,10 @@
             // 
             this.btnhomeplus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnhomeplus.Enabled = false;
             this.btnhomeplus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnhomeplus.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnhomeplus.Location = new System.Drawing.Point(436, 38);
+            this.btnhomeplus.Location = new System.Drawing.Point(450, 38);
             this.btnhomeplus.Name = "btnhomeplus";
             this.btnhomeplus.Size = new System.Drawing.Size(27, 30);
             this.btnhomeplus.TabIndex = 6;
@@ -526,9 +537,10 @@
             // 
             this.btnHomeminus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnHomeminus.Enabled = false;
             this.btnHomeminus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnHomeminus.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnHomeminus.Location = new System.Drawing.Point(335, 38);
+            this.btnHomeminus.Location = new System.Drawing.Point(329, 38);
             this.btnHomeminus.Name = "btnHomeminus";
             this.btnHomeminus.Size = new System.Drawing.Size(27, 30);
             this.btnHomeminus.TabIndex = 8;
@@ -591,8 +603,8 @@
             this.pnlbuttons.Controls.Add(this.btnYellow);
             this.pnlbuttons.Controls.Add(this.cmbMatch);
             this.pnlbuttons.Controls.Add(this.btnRed);
-            this.pnlbuttons.Controls.Add(this.cmbCorner);
-            this.pnlbuttons.Controls.Add(this.button1);
+            this.pnlbuttons.Controls.Add(this.btnCorner);
+            this.pnlbuttons.Controls.Add(this.btnSubstitute);
             this.pnlbuttons.Controls.Add(this.btnShots);
             this.pnlbuttons.Controls.Add(this.btnFoul);
             this.pnlbuttons.Controls.Add(this.btnShotsOff);
@@ -755,6 +767,7 @@
             this.Controls.Add(this.pnlMActions);
             this.Controls.Add(this.pnlPlay);
             this.DoubleBuffered = true;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SoccerApp";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -799,9 +812,9 @@
         private System.Windows.Forms.ComboBox cmbMatch;
         private System.Windows.Forms.ComboBox cmbMatchPart;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnSubstitute;
         private System.Windows.Forms.Button btnFoul;
-        private System.Windows.Forms.Button cmbCorner;
+        private System.Windows.Forms.Button btnCorner;
         private System.Windows.Forms.Button btnShots;
         private System.Windows.Forms.Button btnShotsOff;
         private System.Windows.Forms.Button btnYellow;
