@@ -22,4 +22,5 @@
   <template name="Officials Band.wsp" id="9aeb0c7c-2b25-46e0-aa2d-d40d54f5000a" description="Officials Band" ismanual="true"/>
   <template name="Refree Band.wsp" id="f586d574-5542-4e92-b320-e0eddb8903ae" description="Refree Band" ismanual="true"/>-->
   <template name="TestScene.wsp" id="4bc95beb-3c9c-4295-9af9-fe670e4f4c9b" description="matchevent" ismanual="false"/>
+  <template name="TestScene.wsp" id="3DBFD041-8F20-4A21-B592-F155FFC83B01" description="test" ismanual="true"/>
 </templates>

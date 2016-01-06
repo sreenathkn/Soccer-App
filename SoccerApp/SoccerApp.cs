@@ -46,6 +46,8 @@ namespace SoccerApp
         string EVENTID = string.Empty;
         string MATCHNAME = string.Empty;
         string MATCHUDTNAME = string.Empty;
+        string MATCHUDTID = string.Empty;
+        IPlayer m_objplayertodelete = null;
 
         #endregion
 
@@ -75,15 +77,17 @@ namespace SoccerApp
         {
             try
             {
-                SetUI();
-                InitilizeMatchScheduleUDT();
-                InitializeCombos();
                 m_objWaspFileHandler = new CWaspFileHandler();
                 m_objsceneHandler = new SceneHandler();
-                m_lstSceneCollection = new List<ScenInfo>();
+                SetUI();
                 InitializeWasp();
+                InitilizeMatchScheduleUDT();
+                InitializeCombos();
+                InitializeMatchUDT();
+                FillMatchDetails();
+                //m_lstSceneCollection = new List<ScenInfo>();
+                //FillPlayerList();
                 fillgrid();
-                FillPlayerList();
                 m_objsceneHandler.Initialize();
             }
             finally
@@ -139,13 +143,15 @@ namespace SoccerApp
 
                 XDocument xdoc = XDocument.Load(configfile);
                 var url = from lv1 in xdoc.Descendants("add")
-                          where lv1.Attribute("key").Value == "LOCALMANAGERURL"
+                          where lv1.Attribute("key").Value == "REMOTEMANAGERURL"
                           select lv1.Attribute("value").Value;
                 m_objRemoteHelper = new CRemoteHelper(url.ElementAt(0));
                 ConnectionStatus info = m_objRemoteHelper.Connect();
-                m_ObjUdtHandler = new CUDTManagerHelper(CRemoteHelper.GetDisconnectedUrl("UDTManager"));
+                ServiceUrl udtmgrserviceurl = CRemoteHelper.GetDisconnectedUrl("UDTManager");
+                m_ObjUdtHandler = new CUDTManagerHelper(udtmgrserviceurl);
+                ServiceUrl templatemgrserviceurl = CRemoteHelper.GetDisconnectedUrl("TemplateManager");
                 m_objWaspFileHandler = new CWaspFileHandler();
-                m_objWaspFileHandler.Initialize(CRemoteHelper.GetDisconnectedUrl("TemplateManager"));
+                m_objWaspFileHandler.Initialize(templatemgrserviceurl);
                 LoadTemplates();
             }
             catch (Exception ex)
@@ -161,6 +167,10 @@ namespace SoccerApp
         {
             try
             {
+                if (m_lstSceneCollection == null)
+                {
+                    m_lstSceneCollection = new List<ScenInfo>();
+                }
                 XDocument xdoc = XDocument.Load("templates.xml");
                 var templates = xdoc.Descendants("template");
                 foreach (var item in templates)
@@ -196,14 +206,19 @@ namespace SoccerApp
             }
         }
 
-        private void InitializeMatchUDT(string udtname)
+        private void InitializeMatchUDT()
         {
-            if (!string.IsNullOrEmpty(udtname))
+            if (!string.IsNullOrEmpty(MATCHUDTNAME))
             {
-                MATCHUDTNAME = udtname;
+                var udtargs = m_ObjUdtHandler.GetUdtByName(MATCHUDTNAME);
+                if (udtargs != null)
+                {
+                    MATCHUDTID = udtargs.ID;
+                }
                 m_objUDTMatch = new UDTProvider.UDTProvider();
                 m_objUDTMatch.InitializeConnection();
-                m_objUDTMatch.InitializeUDT(udtname);
+                m_objUDTMatch.InitializeUDT(MATCHUDTNAME);
+
             }
         }
 
@@ -286,7 +301,7 @@ namespace SoccerApp
                 DataRow[] dr = dtmatch.Select("Active=true");
                 if (dr.Count() > 0)
                 {
-                    InitializeMatchUDT(dr[0]["UDT Name"].ToString());
+                    MATCHUDTNAME = dr[0]["UDT Name"].ToString();
                     int index = cmbMatch.FindString(dr[0]["Name"].ToString());
                     if (index != -1)
                     {
@@ -310,6 +325,22 @@ namespace SoccerApp
                     }
 
                 }
+            }
+            catch (Exception ex)
+            {
+                LogWriter.WriteLog(ex);
+            }
+        }
+
+        private void SetMatchUDTName(string matchname)
+        {
+            try
+            {
+                DataSet dt = m_objUDTMatchSchedule.CurrentDataSet;
+                var dtmatch = dt.Tables[1];
+                DataRow[] dr = dtmatch.Select("Active=true");
+                MATCHUDTNAME = dr[0]["UDT Name"].ToString();
+                InitializeMatchUDT();
             }
             catch (Exception ex)
             {
@@ -599,6 +630,8 @@ namespace SoccerApp
                     m_objPlayer = Activator.CreateInstance(obj.TemplatePlayerInfo) as IPlayer;
                     Form objfrm = m_objPlayer as Form;
 
+                    SetMatchUDT(objfrm);
+
                     //UpdateWaspControls(objfrm, IsID);
 
                     string sLinkID = string.Empty;
@@ -609,7 +642,10 @@ namespace SoccerApp
                         //S. No 116: Added for AddIn
                         //S.No.	: -	128
                         if (m_objPlayer is IAddinInfo)
-                            (m_objPlayer as IAddinInfo).Init(new InstanceInfo() { Type = "wsp", InstanceId = "", TemplateId = si.Id, ThemeId = "Default", });
+                            (m_objPlayer as IAddinInfo).Init(new InstanceInfo() { InstanceId = si.Id });
+                        //    (m_objPlayer as IAddinInfo).Init(new InstanceInfo() { Type = "wsp", InstanceId = "", TemplateId = si.Id, ThemeId = "Default", });
+
+
 
 
                         IChannelShotBox objChannelShotBox = m_objPlayer as IChannelShotBox;
@@ -679,13 +715,41 @@ namespace SoccerApp
 
         }//end(GetTemplates)
 
-        private IEnumerable<Component> EnumerateComponents(Form frmobj)
+        /// <summary>
+        /// Set match udt name in the udt sequecer object
+        /// </summary>
+        /// <param name="frmobj"></param>
+        private void SetMatchUDT(Form frmobj)
         {
-            return from field in frmobj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                   where typeof(Component).IsAssignableFrom(field.FieldType)
-                   let component = (Component)field.GetValue(this)
-                   where component != null
-                   select component;
+
+            Control ctrl = frmobj as Control;
+            //foreach (Control ctrl in frmobj.Controls)
+            {
+                FieldInfo[] objfieldinfo = ctrl.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                foreach (var objfield in objfieldinfo)
+                {
+                    Type objFieldType = objfield.FieldType;
+                    // if (string.Compare(objFieldType.Name, "UDT", StringComparison.OrdinalIgnoreCase) == 0)
+                    {
+                        object o = objfield.GetValue(ctrl);
+                        if (o != null)
+                        {
+                            Component objComponent = o as Component;
+                            if (objComponent != null && objComponent is UDT)
+                            {
+                                if (!string.IsNullOrEmpty(MATCHUDTID))
+                                {
+                                    UDT objudt = (UDT)objComponent;
+                                    objudt.SelectedUdtId = MATCHUDTID;
+                                    objudt.UDTNames = MATCHUDTNAME;
+                                    objudt.ExecuteQuery(MATCHUDTID, objudt.Filter);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -799,10 +863,21 @@ namespace SoccerApp
         /// <param name="e"></param>
         private void cmbMatch_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UdtFilter filter;
             try
             {
-                filter = new UdtFilter();
+                FillMatchDetails();
+            }
+            catch (Exception ex)
+            {
+                LogWriter.WriteLog(ex);
+            }
+        }//end(cmbMatch_SelectedIndexChanged)
+
+        private void FillMatchDetails()
+        {
+            try
+            {
+                UdtFilter filter = new UdtFilter();
                 filter.FilterColumn = "Name";
                 filter.FilterValue = cmbMatch.Text;
                 filter.TableIndex = 1;
@@ -831,10 +906,12 @@ namespace SoccerApp
                             if ((bool)row["Active"])
                             {
                                 NAME = row["NAME"].ToString();
+                                SetMatchUDTName(NAME);
                             }
                         }
                     }
                 }
+
                 //Select Teams based on the selected Match
                 SelectTeams(ActiveMatch);
 
@@ -854,7 +931,7 @@ namespace SoccerApp
             {
                 LogWriter.WriteLog(ex);
             }
-        }//end(cmbMatch_SelectedIndexChanged)
+        }
 
         /// <summary>
         /// 
@@ -1685,9 +1762,38 @@ namespace SoccerApp
         /// <param name="e"></param>
         void objPlayer_OnShotBoxControllerStatus(object sender, SHOTBOXARGS e)
         {
-            if (e.SHOTBOXRESPONSE == SHOTBOXMSG.SGDELETED)
+            switch (e.SHOTBOXRESPONSE)
             {
-                //objPlayer.DeleteSg();
+                case SHOTBOXMSG.PLAYCOMPLETE:
+                    m_objplayertodelete = sender as IPlayer;
+                    if (m_objplayertodelete != null)
+                    {
+                        m_objplayertodelete.DeleteSg();
+                    }
+                    break;
+                case SHOTBOXMSG.SGDELETED:
+                    if (m_objplayertodelete != null && m_objplayertodelete.Equals(sender as IPlayer))
+                    {
+                        TableLayoutPanelCellPosition position = tableLayoutPanel1.GetPositionFromControl(m_objplayertodelete as Form);
+                        tableLayoutPanel1.Controls.Remove(m_objplayertodelete as Form);
+                        switch (position.Column)
+                        {
+                            case 0:
+                                foreach (DataGridViewRow dr in dgvSelectPlayer.Rows)
+                                {
+                                    dr.Cells[1].Value = false;
+                                }
+                                break;
+                            case 1:
+                                foreach (DataGridViewRow dr in dgvSelectPlayer.Rows)
+                                {
+                                    dr.Cells[2].Value = false;
+                                }
+                                break;
+                        }
+                        break;
+                    }
+                    break;
             }
         }
 
@@ -1726,7 +1832,7 @@ namespace SoccerApp
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 LogWriter.WriteLog(ex);
             }
