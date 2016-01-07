@@ -230,7 +230,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\UDTProvider\UDTProvider.csproj">
@@ -241,7 +243,9 @@
   <ItemGroup>
     <None Include="Resources\Soccer League Table.udt" />
     <None Include="Resources\Soccer Match Schedule.udt" />
-    <None Include="Resources\soccer.w3d" />
+    <None Include="Resources\soccer.w3d">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\SoccerMatch.udt" />
     <None Include="Resources\Soccer_revised.png" />
   </ItemGroup>

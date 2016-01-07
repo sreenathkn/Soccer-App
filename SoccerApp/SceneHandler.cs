@@ -16,11 +16,11 @@ namespace SoccerApp
         #region Class Variables
         public bool isInitialized { get; set; }
         public bool isSceneLoaded { get; set; }
-        ShotBox _objPlayer1;
+        ShotBox m_objBugPlayer;
         LinkManager _objLinkManager;
         const string m_surl = "net.tcp://{0}:{1}/TcpBinding/WcfTcpLink";
         const string m_sport = "50011";
-        const string m_IP = "192.168.1.192";       
+        const string m_IP = "192.168.1.192";
         string m_serverip = string.Format(m_surl, ConfigurationManager.AppSettings["stingserverip"], m_sport);
         #endregion
         public Link AppLink
@@ -29,28 +29,32 @@ namespace SoccerApp
             set;
         }
 
-        
+
 
         public void Initialize()
         {
-
             isInitialized = false;
-
-            //if (ConfigurationManager.AppSettings["w3dscene"] != null)
+            string w3dscenepath = string.Empty;
+            if (File.Exists(ConfigurationManager.AppSettings["w3dscene"]))
             {
-               // if (File.Exists(ConfigurationManager.AppSettings["w3dscene"]))
-                {
-                    if (ConfigurationManager.AppSettings["stingserverip"] != null)
-                    {
-                        string sLinkID = string.Empty;
-                        _objLinkManager = new LinkManager();
-                        AppLink = _objLinkManager.GetLink(LINKTYPE.TCP, out sLinkID);
-                        //AppLink.OnEngineConnected += new EventHandler<EngineArgs>(_objLink_OnEngineConnected);
-                        //AppLink.Connect(m_surl1);
-                        //_objLinkManager.OnEngineDisConnected += _objLinkManager_OnEngineDisConnected;
-                    }
-                }
+                w3dscenepath = ConfigurationManager.AppSettings["w3dscene"];
+            }
+            else if (File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "soccer.w3d")))
+            {
+                w3dscenepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "soccer.w3d");
+            }
 
+            if (!string.IsNullOrEmpty(w3dscenepath))
+            {
+                if (ConfigurationManager.AppSettings["stingserverip"] != null)
+                {
+                    string sLinkID = string.Empty;
+                    _objLinkManager = new LinkManager();
+                    AppLink = _objLinkManager.GetLink(LINKTYPE.TCP, out sLinkID);
+                    AppLink.OnEngineConnected += new EventHandler<EngineArgs>(_objLink_OnEngineConnected);
+                    AppLink.Connect(m_serverip);
+                    _objLinkManager.OnEngineDisConnected += _objLinkManager_OnEngineDisConnected;
+                }
             }
         }
 
@@ -137,22 +141,23 @@ namespace SoccerApp
             string sShotBoxID = null;
             bool isTicker;
             string filetype = string.Empty;
-            //sXml = Util.getSGFromWSL(ConfigurationManager.AppSettings["w3dscene"]);
-            sXml = Util.getSGFromWSL(@"d:\sphere.wsp");
+            sXml = Util.getSGFromWSL(ConfigurationManager.AppSettings["w3dscene"]);
+            //sXml = Util.getSGFromWSL(@"d:\sphere.wsp");
             filetype = Path.GetExtension(ConfigurationManager.AppSettings["w3dscene"]).Split(new string[] { "." }, StringSplitOptions.None)[1];
             if (!string.IsNullOrEmpty(sXml))
             {
 
-                _objPlayer1 = AppLink.GetShotBox(sXml, out sShotBoxID, out isTicker) as ShotBox;
-                if (!Equals(_objPlayer1, null))
+                m_objBugPlayer = AppLink.GetShotBox(sXml, out sShotBoxID, out isTicker) as ShotBox;
+                if (!Equals(m_objBugPlayer, null))
                 {
                     // _objPlayer1.SetEngineUrl(ConfigurationManager.AppSettings["stingserver"]);
-                    _objPlayer1.SetEngineUrl(m_serverip);
+                    m_objBugPlayer.SetEngineUrl(m_serverip);
 
-                    //InstanceInfo o = new InstanceInfo() { Type = filetype, InstanceId = string.Empty, TemplateId = ConfigurationManager.AppSettings["w3dscene"], ThemeId = "default" };
+                    InstanceInfo o = new InstanceInfo() { Type = filetype, InstanceId = string.Empty, TemplateId = ConfigurationManager.AppSettings["w3dscene"], ThemeId = "default" };
 
-                    if (_objPlayer1 is IAddinInfo)
-                        (_objPlayer1 as IAddinInfo).Init(new InstanceInfo() { Type = "wsp", InstanceId = string.Empty, TemplateId = "57abeb14-4e41-4247-9808-18b73ae52f8f", ThemeId = "default" });
+                    if (m_objBugPlayer is IAddinInfo)
+                        (m_objBugPlayer as IAddinInfo).Init(o);
+                    //(_objPlayer1 as IAddinInfo).Init(new InstanceInfo() { Type = "wsp", InstanceId = string.Empty, TemplateId = "57abeb14-4e41-4247-9808-18b73ae52f8f", ThemeId = "default" });
 
                     //if (m_objPlayer == null)
                     //{
@@ -162,12 +167,12 @@ namespace SoccerApp
                     //}
 
 
-                    _objPlayer1.OnShotBoxStatus += _objPlayer1_OnShotBoxStatus;
-                    _objPlayer1.OnShotBoxControllerStatus += _objPlayer1_OnShotBoxControllerStatus;
+                    m_objBugPlayer.OnShotBoxStatus += _objPlayer1_OnShotBoxStatus;
+                    m_objBugPlayer.OnShotBoxControllerStatus += _objPlayer1_OnShotBoxControllerStatus;
 
 
                     //_objPlayer1.Prepare(ConfigurationManager.AppSettings["stingserverip"], 0, RENDERMODE.PROGRAM);
-                    _objPlayer1.Prepare(m_serverip, 0, RENDERMODE.PROGRAM);
+                    m_objBugPlayer.Prepare(m_serverip, 0, RENDERMODE.PROGRAM);
 
                 }//end (if)
             }
@@ -184,7 +189,7 @@ namespace SoccerApp
             }
             else if (e.SHOTBOXRESPONSE == SHOTBOXMSG.PLAYCOMPLETE)
             {
-                _objPlayer1.DeleteSg();
+                m_objBugPlayer.DeleteSg();
             }
         }
         void _objPlayer1_OnShotBoxStatus(object sender, SHOTBOXARGS e)
@@ -248,49 +253,49 @@ namespace SoccerApp
         //        }
         //    }
         //}
-        public void TimerAction(string actiontype, string counter, IPlayer player)
+        public void TimerAction(string actiontype, string counter)
         {
-           
+
             try
             {
-                    TagData tg = new TagData();                   
-                    switch (actiontype.ToLower())
-                    {
-                        case "start":                        
-                            player.PlayActionSet(ConfigurationManager.AppSettings["counterstartaction"]);
-                            break;
-                        case "stop":
-                            player.PlayActionSet(ConfigurationManager.AppSettings["counterstopaction"]);
-                            break;
-                        case "update":
-                            tg.UserTags = new string[] { ConfigurationManager.AppSettings["counterusertag"] };
-                            tg.Values = new string[] { counter };
+                TagData tg = new TagData();
+                switch (actiontype.ToLower())
+                {
+                    case "start":
+                        m_objBugPlayer.PlayActionSet(ConfigurationManager.AppSettings["counterstartaction"]);
+                        break;
+                    case "stop":
+                        m_objBugPlayer.PlayActionSet(ConfigurationManager.AppSettings["counterstopaction"]);
+                        break;
+                    case "update":
+                        tg.UserTags = new string[] { ConfigurationManager.AppSettings["counterusertag"] };
+                        tg.Values = new string[] { counter };
 
-                            player.UpdateSceneGraph(tg);
+                        m_objBugPlayer.UpdateSceneGraph(tg);
 
-                            break;
-                        case "updateextra":
-                            tg.UserTags = new string[] { ConfigurationManager.AppSettings["extratimeusertag"] };
-                            tg.Values = new string[] { counter };                            
-                            player.UpdateSceneGraph(tg);
-                            break;
-                        case "extrain":
-                            player.PlayActionSet(ConfigurationManager.AppSettings["extratimein"]);
-                            break;
-                        case "extraout":
-                            player.PlayActionSet(ConfigurationManager.AppSettings["extratimeout"]);
-                            break;
-                        case "extrastart":
-                            player.PlayActionSet(ConfigurationManager.AppSettings["startextratime"]);
-                            break;
-                        case "extrastop":                           
-                            player.PlayActionSet(ConfigurationManager.AppSettings["stopextratime"]);
-                            break;
-                        default:
-                            break;
-                    }
+                        break;
+                    case "updateextra":
+                        tg.UserTags = new string[] { ConfigurationManager.AppSettings["extratimeusertag"] };
+                        tg.Values = new string[] { counter };
+                        m_objBugPlayer.UpdateSceneGraph(tg);
+                        break;
+                    case "extrain":
+                        m_objBugPlayer.PlayActionSet(ConfigurationManager.AppSettings["extratimein"]);
+                        break;
+                    case "extraout":
+                        m_objBugPlayer.PlayActionSet(ConfigurationManager.AppSettings["extratimeout"]);
+                        break;
+                    case "extrastart":
+                        m_objBugPlayer.PlayActionSet(ConfigurationManager.AppSettings["startextratime"]);
+                        break;
+                    case "extrastop":
+                        m_objBugPlayer.PlayActionSet(ConfigurationManager.AppSettings["stopextratime"]);
+                        break;
+                    default:
+                        break;
+                }
 
-                
+
             }
             catch (Exception ex)
             {

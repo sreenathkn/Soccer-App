@@ -33,7 +33,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SoccerApp));
-            this.lblHomeTeam2 = new System.Windows.Forms.Label();
+            this.lblHomeTeam = new System.Windows.Forms.Label();
             this.lblAwayTeam = new System.Windows.Forms.Label();
             this.pnlHomeFlag = new System.Windows.Forms.Panel();
             this.pnlAwayFlag = new System.Windows.Forms.Panel();
@@ -62,7 +62,7 @@
             this.btnRed = new System.Windows.Forms.Button();
             this.lblCounter = new System.Windows.Forms.TextBox();
             this.pnlMatch = new System.Windows.Forms.Panel();
-            this.label4 = new System.Windows.Forms.Label();
+            this.lblMatchname = new System.Windows.Forms.Label();
             this.pnlAwayTeam = new System.Windows.Forms.Panel();
             this.pnlHmTeam = new System.Windows.Forms.Panel();
             this.btnhomeplus = new System.Windows.Forms.Button();
@@ -103,18 +103,18 @@
             this.pnlMActions.SuspendLayout();
             this.SuspendLayout();
             // 
-            // lblHomeTeam2
+            // lblHomeTeam
             // 
-            this.lblHomeTeam2.BackColor = System.Drawing.Color.Gray;
-            this.lblHomeTeam2.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.lblHomeTeam2.ForeColor = System.Drawing.Color.Black;
-            this.lblHomeTeam2.Location = new System.Drawing.Point(57, 37);
-            this.lblHomeTeam2.Name = "lblHomeTeam2";
-            this.lblHomeTeam2.Size = new System.Drawing.Size(260, 32);
-            this.lblHomeTeam2.TabIndex = 2;
-            this.lblHomeTeam2.Text = "lblHome";
-            this.lblHomeTeam2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lblHomeTeam2.DoubleClick += new System.EventHandler(this.lblHomeTeam_DoubleClick);
+            this.lblHomeTeam.BackColor = System.Drawing.Color.Gray;
+            this.lblHomeTeam.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.lblHomeTeam.ForeColor = System.Drawing.Color.Black;
+            this.lblHomeTeam.Location = new System.Drawing.Point(57, 37);
+            this.lblHomeTeam.Name = "lblHomeTeam";
+            this.lblHomeTeam.Size = new System.Drawing.Size(260, 32);
+            this.lblHomeTeam.TabIndex = 2;
+            this.lblHomeTeam.Text = "lblHome";
+            this.lblHomeTeam.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblHomeTeam.DoubleClick += new System.EventHandler(this.lblHomeTeam_DoubleClick);
             // 
             // lblAwayTeam
             // 
@@ -469,22 +469,22 @@
             // 
             // pnlMatch
             // 
-            this.pnlMatch.Controls.Add(this.label4);
+            this.pnlMatch.Controls.Add(this.lblMatchname);
             this.pnlMatch.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlMatch.Location = new System.Drawing.Point(10, 10);
             this.pnlMatch.Name = "pnlMatch";
             this.pnlMatch.Size = new System.Drawing.Size(1486, 30);
             this.pnlMatch.TabIndex = 27;
             // 
-            // label4
+            // lblMatchname
             // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Tahoma", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(736, 3);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(61, 24);
-            this.label4.TabIndex = 0;
-            this.label4.Text = "NAME";
+            this.lblMatchname.AutoSize = true;
+            this.lblMatchname.Font = new System.Drawing.Font("Tahoma", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.lblMatchname.Location = new System.Drawing.Point(736, 3);
+            this.lblMatchname.Name = "lblMatchname";
+            this.lblMatchname.Size = new System.Drawing.Size(61, 24);
+            this.lblMatchname.TabIndex = 0;
+            this.lblMatchname.Text = "NAME";
             // 
             // pnlAwayTeam
             // 
@@ -506,7 +506,7 @@
             this.pnlHmTeam.BackColor = System.Drawing.Color.Transparent;
             this.pnlHmTeam.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pnlHmTeam.Controls.Add(this.btnhomeplus);
-            this.pnlHmTeam.Controls.Add(this.lblHomeTeam2);
+            this.pnlHmTeam.Controls.Add(this.lblHomeTeam);
             this.pnlHmTeam.Controls.Add(this.pnlHomeFlag);
             this.pnlHmTeam.Controls.Add(this.lblHomeScore);
             this.pnlHmTeam.Controls.Add(this.btnHomeminus);
@@ -798,7 +798,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Label lblHomeTeam2;
+        private System.Windows.Forms.Label lblHomeTeam;
         private System.Windows.Forms.Label lblAwayTeam;
         private System.Windows.Forms.Panel pnlHomeFlag;
         private System.Windows.Forms.Panel pnlAwayFlag;
@@ -844,7 +844,7 @@
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Panel pnlteamcntrs;
         private System.Windows.Forms.Label lblMatchevents;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lblMatchname;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Panel pnlLabels;
         private System.Windows.Forms.Label label3;
