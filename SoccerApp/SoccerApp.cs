@@ -627,7 +627,7 @@ namespace SoccerApp
                 {
                     m_objPlayer = Activator.CreateInstance(obj.TemplatePlayerInfo) as IPlayer;
                     Form objfrm = m_objPlayer as Form;
-
+                   
                     SetMatchUDT(objfrm);
 
                     //UpdateWaspControls(objfrm, IsID);
@@ -644,7 +644,11 @@ namespace SoccerApp
                         //    (m_objPlayer as IAddinInfo).Init(new InstanceInfo() { Type = "wsp", InstanceId = "", TemplateId = si.Id, ThemeId = "Default", });
 
 
-
+                        IDataEntry objDataentry = m_objPlayer as IDataEntry;
+                        if(objDataentry!=null)
+                        {
+                            objDataentry.PostData+=objDataentry_PostData;
+                        }
 
                         IChannelShotBox objChannelShotBox = m_objPlayer as IChannelShotBox;
                         if (objChannelShotBox != null)
@@ -654,8 +658,9 @@ namespace SoccerApp
                             //newplaylistinstance.ActiveServer.GetUrl(CConstants.Constants.TCP);
                             //S.No.: -	147
                             objChannelShotBox.SetEngineUrl(ConfigurationManager.AppSettings["stingserver"]);
+
                         }
-                        m_objPlayer.OnShotBoxStatus += objPlayer_OnShotBoxStatus;
+                        
                         m_objPlayer.OnShotBoxControllerStatus += objPlayer_OnShotBoxControllerStatus;
                         m_objPlayer.Prepare(m_sEngineUrl, Convert.ToInt32(m_objPlayer.ZORDER), string.Empty, RENDERMODE.PROGRAM);
                     }
@@ -711,7 +716,16 @@ namespace SoccerApp
                 LogWriter.WriteLog(ex);
             }
 
-        }//end(GetTemplates)
+        }
+
+        void objDataentry_PostData(object sender, XmlNode objNodeXml)
+        {
+            IPlayer objPlayer = sender as IPlayer;
+            if (objNodeXml != null && objPlayer!=null)
+            {
+                objPlayer.UpdateSceneGraph(objNodeXml.InnerXml, true);
+            }
+        }
 
         /// <summary>
         /// Set match udt name in the udt sequecer object
@@ -1828,23 +1842,6 @@ namespace SoccerApp
                         break;
                     }
                     break;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void objPlayer_OnShotBoxStatus(object sender, SHOTBOXARGS e)
-        {
-            if (e.SHOTBOXRESPONSE == SHOTBOXMSG.PLAYCOMPLETE)
-            {
-                //objPlayer.DeleteSg();
-            }
-            if (e.SHOTBOXRESPONSE == SHOTBOXMSG.SGDELETED)
-            {
-                //objPlayer.DeleteSg();
             }
         }
 

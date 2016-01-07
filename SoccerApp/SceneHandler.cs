@@ -22,6 +22,7 @@ namespace SoccerApp
         const string m_sport = "50011";
         const string m_IP = "192.168.1.192";
         string m_serverip = string.Format(m_surl, ConfigurationManager.AppSettings["stingserverip"], m_sport);
+        string m_sW3dscenepath = string.Empty;
         #endregion
         public Link AppLink
         {
@@ -34,17 +35,16 @@ namespace SoccerApp
         public void Initialize()
         {
             isInitialized = false;
-            string w3dscenepath = string.Empty;
             if (File.Exists(ConfigurationManager.AppSettings["w3dscene"]))
             {
-                w3dscenepath = ConfigurationManager.AppSettings["w3dscene"];
+                m_sW3dscenepath = ConfigurationManager.AppSettings["w3dscene"];
             }
             else if (File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "soccer.w3d")))
             {
-                w3dscenepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "soccer.w3d");
+                m_sW3dscenepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "soccer.w3d");
             }
 
-            if (!string.IsNullOrEmpty(w3dscenepath))
+            if (!string.IsNullOrEmpty(m_sW3dscenepath))
             {
                 if (ConfigurationManager.AppSettings["stingserverip"] != null)
                 {
@@ -141,9 +141,9 @@ namespace SoccerApp
             string sShotBoxID = null;
             bool isTicker;
             string filetype = string.Empty;
-            sXml = Util.getSGFromWSL(ConfigurationManager.AppSettings["w3dscene"]);
+            sXml = Util.getSGFromWSL(m_sW3dscenepath);
             //sXml = Util.getSGFromWSL(@"d:\sphere.wsp");
-            filetype = Path.GetExtension(ConfigurationManager.AppSettings["w3dscene"]).Split(new string[] { "." }, StringSplitOptions.None)[1];
+            filetype = Path.GetExtension(m_sW3dscenepath).Split(new string[] { "." }, StringSplitOptions.None)[1];
             if (!string.IsNullOrEmpty(sXml))
             {
 
