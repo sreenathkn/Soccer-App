@@ -13,14 +13,7 @@
   <template name="Player Profile.wsp" id="B93E5BB2-4C97-4B36-BA16-CA5B901E3C95" description="Player Profile" ismanual="true"/>
   <template name="Team Roster.wsp" id="B9F6A35F-CDF2-4958-B4AF-D6A59F3B2C12" description="Team Roster" ismanual="true"/>
   <template name="League Table.wsp" id="2E12D224-A801-41EA-9D3E-EFC9D0930764" description="League Table" ismanual="true"/>
-  
-  <!--<template name="Team Line Up_Substitutes.wsp" id="31e75e4c-c689-4f58-9a8d-9598d163ec85" description="Team Line Up_Substitutes" ismanual="true"/>
-  <template name="Team Name.wsp" id="5b48ec31-f8b1-47a0-a55c-7bf13974a0b1" description="Team Name" ismanual="true"/>
-  <template name="Team Roaster.wsp" id="200da59b-f8f7-4ae6-a58d-bd5665a887c9" description="Team Roaster" ismanual="true"/>
-  <template name="Team Tactical Line Up.wsp" id="e722f610-d2ce-4933-ae70-50333dc25c50" description="Team Tactical Line Up" ismanual="true"/>
-  <template name="Weather Conditions.wsp" id="704f3cce-3261-4664-92a5-114d9eb45c60" description="Weather Conditions" ismanual="true"/>
-  <template name="Officials Band.wsp" id="9aeb0c7c-2b25-46e0-aa2d-d40d54f5000a" description="Officials Band" ismanual="true"/>
-  <template name="Refree Band.wsp" id="f586d574-5542-4e92-b320-e0eddb8903ae" description="Refree Band" ismanual="true"/>-->
+  <template name="BackGround.wsp" id="E2B43941-E2B9-4A08-B9C7-C68794CFA234" description="bg" ismanual="false"/>
   <template name="TestScene.wsp" id="4bc95beb-3c9c-4295-9af9-fe670e4f4c9b" description="matchevent" ismanual="false"/>
-  <template name="TestScene.wsp" id="3DBFD041-8F20-4A21-B592-F155FFC83B01" description="test" ismanual="true"/>
+  <template name="TestScene.wsp" id="3DBFD041-8F20-4A21-B592-F155FFC83B01" description="Test" ismanual="true"/>
 </templates>

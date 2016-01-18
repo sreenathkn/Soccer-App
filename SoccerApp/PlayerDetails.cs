@@ -19,7 +19,6 @@ namespace SoccerApp
         public PlayerDetails()
         {
             InitializeComponent();
-            //Initialize();
         }
 
         public void Initialize()

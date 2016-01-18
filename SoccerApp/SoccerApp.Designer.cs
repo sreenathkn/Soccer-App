@@ -85,6 +85,7 @@
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.pnlMActions = new System.Windows.Forms.Panel();
             this.splitter1 = new System.Windows.Forms.Splitter();
+            this.BtnLoadBG = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMatchevents)).BeginInit();
             this.pnlMatch.SuspendLayout();
             this.pnlAwayTeam.SuspendLayout();
@@ -599,6 +600,7 @@
             // 
             // pnlbuttons
             // 
+            this.pnlbuttons.Controls.Add(this.BtnLoadBG);
             this.pnlbuttons.Controls.Add(this.cmbMatchPart);
             this.pnlbuttons.Controls.Add(this.btnYellow);
             this.pnlbuttons.Controls.Add(this.cmbMatch);
@@ -757,6 +759,19 @@
             this.splitter1.TabIndex = 30;
             this.splitter1.TabStop = false;
             // 
+            // BtnLoadBG
+            // 
+            this.BtnLoadBG.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.BtnLoadBG.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnLoadBG.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnLoadBG.Location = new System.Drawing.Point(1387, 2);
+            this.BtnLoadBG.Name = "BtnLoadBG";
+            this.BtnLoadBG.Size = new System.Drawing.Size(96, 33);
+            this.BtnLoadBG.TabIndex = 25;
+            this.BtnLoadBG.Text = "Load BG";
+            this.BtnLoadBG.UseVisualStyleBackColor = false;
+            this.BtnLoadBG.Click += new System.EventHandler(this.BtnLoadBG_Click);
+            // 
             // SoccerApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -850,6 +865,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button BtnLoadBG;
 
     }
 }

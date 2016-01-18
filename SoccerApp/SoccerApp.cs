@@ -40,7 +40,6 @@ namespace SoccerApp
         List<ScenInfo> m_lstSceneCollection = null;
         IPlayer m_objPlayer = null;
         protected static LINKTYPE m_objLinkType = LINKTYPE.TCP;
-        //private const string m_surl = "net.tcp://192.168.1.192:50011/TcpBinding/WcfTcpLink";
         string m_sEngineUrl = null;
         string NAME = string.Empty;
         string EVENTID = string.Empty;
@@ -48,6 +47,7 @@ namespace SoccerApp
         string MATCHUDTNAME = string.Empty;
         string MATCHUDTID = string.Empty;
         IPlayer m_objplayertodelete = null;
+        IPlayer m_objplayerbg = null;
 
         #endregion
 
@@ -87,8 +87,10 @@ namespace SoccerApp
                 FillMatchDetails();
                 //m_lstSceneCollection = new List<ScenInfo>();
                 //FillPlayerList();
-                fillgrid();
-                m_objsceneHandler.Initialize();
+                Fillgrid();
+                //m_objsceneHandler.Initialize();
+                m_objsceneHandler.FileHandler = m_objWaspFileHandler;
+                m_objsceneHandler.Init();
             }
             finally
             {
@@ -106,7 +108,6 @@ namespace SoccerApp
             pnlAwayTeam.BackColor = Color.FromArgb(228, 228, 228);
             pnlcntr.BackColor = Color.FromArgb(228, 228, 228);
             pnlMActions.BackColor = Color.FromArgb(86, 110, 123);
-            //lblAwayScore.BackColor = Color.FromArgb(255, 255, 255);
             btnFoul.BackColor = Color.FromArgb(182, 182, 182);
             btnYellow.BackColor = Color.FromArgb(182, 182, 182);
             btnShots.BackColor = Color.FromArgb(182, 182, 182);
@@ -206,6 +207,9 @@ namespace SoccerApp
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void InitializeMatchUDT()
         {
             if (!string.IsNullOrEmpty(MATCHUDTNAME))
@@ -243,48 +247,6 @@ namespace SoccerApp
             //FillMatchPart();
 
         }
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //private void FillMatchPart()
-        //{
-        //    AutoCompleteStringCollection cmbstr1 = new AutoCompleteStringCollection();
-        //    var dtmatchpart = m_objUDTMatchSchedule.CurrentDataSet.Tables[15];
-        //    foreach (DataRow item in dtmatchpart.Rows)
-        //    {
-        //        cmbstr1.Add(item["Name"].ToString());
-        //        cmbMatchPart.Items.Add(item["Name"].ToString());
-        //    }
-        //    cmbMatchPart.AutoCompleteCustomSource = cmbstr1;
-        //    DataRow[] dr = dtmatchpart.Select("Active=true");
-        //    if (dr.Count() > 0)
-        //    {
-        //        int index = cmbMatchPart.FindString(dr[0]["Name"].ToString());
-        //        if (index != -1)
-        //        {
-        //            try
-        //            {
-        //                cmbMatchPart.SelectedIndex = index;
-        //            }
-        //            catch (Exception ex)
-        //            {
-
-        //            }
-        //            UdtFilter filter = new UdtFilter();
-        //            filter.FilterColumn = "Name";
-        //            filter.FilterValue = cmbMatchPart.Text;
-        //            filter.TableIndex = 5;
-        //            if (!m_objUDTMatchSchedule.UdtFilters.ContainsKey("Match Part"))
-        //                m_objUDTMatchSchedule.UdtFilters.Add("Match Part", filter);
-        //            else
-        //                m_objUDTMatchSchedule.UdtFilters["Match Part"] = filter;
-        //            m_objUDTMatchSchedule.Notify("Match Part");
-        //        }
-
-        //    }
-
-        //}
 
         /// <summary>
         /// 
@@ -336,6 +298,10 @@ namespace SoccerApp
             }
         }
 
+        /// <summary>
+        /// Set active match udt name and initialize its udts
+        /// </summary>
+        /// <param name="matchname"></param>
         private void SetMatchUDTName(string matchname)
         {
             try
@@ -350,71 +316,6 @@ namespace SoccerApp
             {
                 LogWriter.WriteLog(ex);
             }
-        }
-
-        /// <summary>
-        /// Update the Data Xml with the current match Id
-        /// </summary>
-        /// <param name="objfrm"></param>
-        private void UpdateWaspControls(Form item, bool IsID)
-        {
-
-            try
-            {
-
-                //TODO: Replace the DataXml with the new values where id is that of active match.. and setData with the new XML..
-                if (item != null)
-                {
-                    IAutomationDataEntry objIAutomationDataEntry = (item) as IAutomationDataEntry;
-                    string sDataXml = objIAutomationDataEntry.GetDataXml();
-
-                    XDocument xdoc = XDocument.Parse(sDataXml);
-
-
-                    XElement xe = xdoc.Descendants("query").FirstOrDefault();
-
-                    if (xe != null)
-                    {
-                        string str = xe.Value;
-
-                        XElement tablenodes = XElement.Parse(str);
-                        IEnumerable<XElement> elements = tablenodes.Descendants("table").Where(x => x.Attribute("name").Value == "13");
-
-                        foreach (XElement node in elements)
-                        {
-                            if (IsID)
-                            {
-                                //Update ID  here.....    
-                                node.Attribute("customfilter").SetValue("(T1_ID In (  1 )) AND (([NAME] =" + NAME + "))");
-                                node.Attribute("filter").SetValue("([NAME] = " + NAME + ")");
-                                node.Attribute("actionfilter").SetValue("[NAME] =" + NAME);
-                                //XAttribute attribute = new XAttribute("sort", "");
-                                //node.Add(attribute);
-                            }
-                            else
-                            {
-                                //Update EVENTID and MATCHNAME  here.....    
-                                node.Attribute("customfilter").SetValue("(T1_ID In ( 1)) AND ((([EventID] = " + EVENTID + ") And ([MatchID] = '" + MATCHNAME + "')))");
-                                node.Attribute("filter").SetValue("(([EventID] = " + EVENTID + ") And ([MatchID] ='" + MATCHNAME + "'))");
-                                node.Attribute("actionfilter").SetValue("(([EventID] = " + EVENTID + ") And ([MatchID] ='" + MATCHNAME + "'))");
-                            }
-                        }
-                        xe.ReplaceNodes(new XCData(tablenodes.ToString()));
-                        string updatedxml = xdoc.ToString();
-                        XmlNode xn;
-                        IDataEntry _objDataEntry = (item) as IDataEntry;
-                        XmlDocument objdoc = new XmlDocument();
-                        objdoc.LoadXml(updatedxml);
-                        xn = objdoc.DocumentElement;
-                        _objDataEntry.SetData(xn);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogWriter.WriteLog(ex);
-            }
-
         }
 
         /// <summary>
@@ -542,19 +443,10 @@ namespace SoccerApp
 
         }
 
-        struct ScenInfo
-        {
-            public string Name;
-            public string Id;
-            public string Description;
-            public bool inuse;
-            public bool ismanual;
-        }
-
         /// <summary>
         /// Fills the Datagridview to select players.
         /// </summary>
-        private void fillgrid()
+        private void Fillgrid()
         {
             try
             {
@@ -584,31 +476,6 @@ namespace SoccerApp
             }
 
         }
-        /// <summary>
-        /// Fill list of players from templatesXml
-        /// </summary>
-        private void FillPlayerList()
-        {
-            try
-            {
-                XDocument xdoc = XDocument.Load("templates.xml");
-                var templates = xdoc.Descendants("template");
-                foreach (var item in templates)
-                {
-                    ScenInfo sc = new ScenInfo();
-                    sc.Id = item.Attribute("id").Value;
-                    sc.Name = item.Attribute("name").Value;
-                    sc.Description = item.Attribute("description").Value;
-                    sc.inuse = false;
-                    m_lstSceneCollection.Add(sc);
-
-                }
-            }
-            catch (Exception ex)
-            {
-                LogWriter.WriteLog(ex);
-            }
-        }
 
         /// <summary>
         /// Method to get template details and player
@@ -619,7 +486,7 @@ namespace SoccerApp
         {
             try
             {
-                ScenInfo si = m_lstSceneCollection.Where(s => s.Description == str).FirstOrDefault(); ;
+                ScenInfo si = m_lstSceneCollection.Where(s => s.Description == str).FirstOrDefault();
 
                 STemplateDetails obj = m_objWaspFileHandler.GetTemplatePlayerInfo(si.Id, "");
 
@@ -627,7 +494,7 @@ namespace SoccerApp
                 {
                     m_objPlayer = Activator.CreateInstance(obj.TemplatePlayerInfo) as IPlayer;
                     Form objfrm = m_objPlayer as Form;
-                   
+
                     SetMatchUDT(objfrm);
 
                     //UpdateWaspControls(objfrm, IsID);
@@ -645,9 +512,9 @@ namespace SoccerApp
 
 
                         IDataEntry objDataentry = m_objPlayer as IDataEntry;
-                        if(objDataentry!=null)
+                        if (objDataentry != null)
                         {
-                            objDataentry.PostData+=objDataentry_PostData;
+                            objDataentry.PostData += objDataentry_PostData;
                         }
 
                         IChannelShotBox objChannelShotBox = m_objPlayer as IChannelShotBox;
@@ -658,51 +525,53 @@ namespace SoccerApp
                             //newplaylistinstance.ActiveServer.GetUrl(CConstants.Constants.TCP);
                             //S.No.: -	147
                             objChannelShotBox.SetEngineUrl(ConfigurationManager.AppSettings["stingserver"]);
-
                         }
-                        
+
                         m_objPlayer.OnShotBoxControllerStatus += objPlayer_OnShotBoxControllerStatus;
                         m_objPlayer.Prepare(m_sEngineUrl, Convert.ToInt32(m_objPlayer.ZORDER), string.Empty, RENDERMODE.PROGRAM);
                     }
-                    objfrm.TopLevel = false;
-                    objfrm.Visible = false;
-                    objfrm.Dock = DockStyle.Fill;
-                    Control ctl = null;
-                    Control ctl2 = null;
-                    if (string.Compare(column, "Column2", StringComparison.OrdinalIgnoreCase) == 0)
+                    if (column != "-1")
                     {
-                        ctl = tableLayoutPanel1.GetControlFromPosition(0, 0);
-                        if (ctl != null) // Already control present there
+                        objfrm.TopLevel = false;
+                        objfrm.Visible = false;
+                        objfrm.Dock = DockStyle.Fill;
+                        Control ctl = null;
+                        Control ctl2 = null;
+                        if (string.Compare(column, "Column2", StringComparison.OrdinalIgnoreCase) == 0)
                         {
-                            //First play out the graphic.
-                            //then delete the gfx                            
-                            tableLayoutPanel1.Controls.Remove(ctl);
-                            (ctl as IPlayer).DeleteSg();
+                            ctl = tableLayoutPanel1.GetControlFromPosition(0, 0);
+                            if (ctl != null) // Already control present there
+                            {
+                                //First play out the graphic.
+                                //then delete the gfx                            
+                                tableLayoutPanel1.Controls.Remove(ctl);
+                                (ctl as IPlayer).DeleteSg();
+                                tableLayoutPanel1.Controls.Add(objfrm, 0, 0);
+                            }
+                        }
+
+                        if (string.Compare(column, "Column3", StringComparison.OrdinalIgnoreCase) == 0)
+                        {
+                            ctl2 = tableLayoutPanel1.GetControlFromPosition(1, 0);
+                            if (ctl2 != null) // Already control present there
+                            {
+                                //First play out the graphic.
+                                //then delete the gfx
+                                tableLayoutPanel1.Controls.Remove(ctl2);
+                                (ctl2 as IPlayer).DeleteSg();
+                                tableLayoutPanel1.Controls.Add(objfrm, 1, 0);
+                            }
+                        }
+                        if (ctl == null && (string.Compare(column, "Column2") == 0))
+                        {
                             tableLayoutPanel1.Controls.Add(objfrm, 0, 0);
                         }
-                    }
-
-                    if (string.Compare(column, "Column3", StringComparison.OrdinalIgnoreCase) == 0)
-                    {
-                        ctl2 = tableLayoutPanel1.GetControlFromPosition(1, 0);
-                        if (ctl2 != null) // Already control present there
+                        else if (ctl2 == null && (string.Compare(column, "Column3") == 0))
                         {
-                            //First play out the graphic.
-                            //then delete the gfx
-                            tableLayoutPanel1.Controls.Remove(ctl2);
-                            (ctl2 as IPlayer).DeleteSg();
                             tableLayoutPanel1.Controls.Add(objfrm, 1, 0);
                         }
+                        objfrm.Show();
                     }
-                    if (ctl == null && (string.Compare(column, "Column2") == 0))
-                    {
-                        tableLayoutPanel1.Controls.Add(objfrm, 0, 0);
-                    }
-                    else if (ctl2 == null && (string.Compare(column, "Column3") == 0))
-                    {
-                        tableLayoutPanel1.Controls.Add(objfrm, 1, 0);
-                    }
-                    objfrm.Show();
                 }
                 else
                 {
@@ -718,15 +587,6 @@ namespace SoccerApp
 
         }
 
-        void objDataentry_PostData(object sender, XmlNode objNodeXml)
-        {
-            IPlayer objPlayer = sender as IPlayer;
-            if (objNodeXml != null && objPlayer!=null)
-            {
-                objPlayer.UpdateSceneGraph(objNodeXml.InnerXml, true);
-            }
-        }
-
         /// <summary>
         /// Set match udt name in the udt sequecer object
         /// </summary>
@@ -735,7 +595,7 @@ namespace SoccerApp
         {
 
             Control frmctrl = frmobj as Control;
-            
+
             foreach (Control ctrl in frmobj.Controls)
             {
                 if (ctrl is BeeSys.Wasp3D.Controls2.TextBox)
@@ -766,16 +626,6 @@ namespace SoccerApp
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void SoccerApp_OnUnloadPlayer(object sender, PlayerArgs e)
-        {
-
         }
 
         /// <summary>
@@ -868,27 +718,9 @@ namespace SoccerApp
             return false;
         }
 
-        #endregion
-
-        #region Events
-
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void cmbMatch_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                FillMatchDetails();
-            }
-            catch (Exception ex)
-            {
-                LogWriter.WriteLog(ex);
-            }
-        }
-
         private void FillMatchDetails()
         {
             try
@@ -935,7 +767,7 @@ namespace SoccerApp
                 dgvMatchevents.Rows.Clear();
                 FillMatchEvents();
                 ClearPlayerControlls();
-                lblMatchname.Text= lblHomeTeam.Text + " Vs " + lblAwayTeam.Text;
+                lblMatchname.Text = lblHomeTeam.Text + " Vs " + lblAwayTeam.Text;
             }
             catch (Exception ex)
             {
@@ -943,6 +775,9 @@ namespace SoccerApp
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void ClearPlayerControlls()
         {
             Control ctl1 = null;
@@ -951,7 +786,7 @@ namespace SoccerApp
             {
                 ctl1 = tableLayoutPanel1.GetControlFromPosition(0, 0);
                 ctl2 = tableLayoutPanel1.GetControlFromPosition(1, 0);
-                if(ctl1!=null)
+                if (ctl1 != null)
                 {
                     tableLayoutPanel1.Controls.Remove(ctl1);
                     (ctl1 as IPlayer).DeleteSg();
@@ -970,7 +805,79 @@ namespace SoccerApp
                     dr.Cells[2].Value = false;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
+            {
+                LogWriter.WriteLog(ex);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void EnabaleActions()
+        {
+            btnhomeplus.Enabled = true;
+            btnHomeminus.Enabled = true;
+            btnawayplus.Enabled = true;
+            btnawayminus.Enabled = true;
+            btnFoul.Enabled = true;
+            btnYellow.Enabled = true;
+            btnRed.Enabled = true;
+            btnCorner.Enabled = true;
+            btnShots.Enabled = true;
+            btnShotsOff.Enabled = true;
+            btnSubstitute.Enabled = true;
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void DisableActions()
+        {
+            btnhomeplus.Enabled = false;
+            btnHomeminus.Enabled = false;
+            btnawayplus.Enabled = false;
+            btnawayminus.Enabled = false;
+            btnFoul.Enabled = false;
+            btnYellow.Enabled = false;
+            btnRed.Enabled = false;
+            btnCorner.Enabled = false;
+            btnShots.Enabled = false;
+            btnShotsOff.Enabled = false;
+            btnSubstitute.Enabled = false;
+        }
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="objNodeXml"></param>
+        void objDataentry_PostData(object sender, XmlNode objNodeXml)
+        {
+            IPlayer objPlayer = sender as IPlayer;
+            if (objNodeXml != null && objPlayer != null)
+            {
+                objPlayer.UpdateSceneGraph(objNodeXml.InnerXml, true);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cmbMatch_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                FillMatchDetails();
+            }
+            catch (Exception ex)
             {
                 LogWriter.WriteLog(ex);
             }
@@ -1051,7 +958,7 @@ namespace SoccerApp
         {
             try
             {
-                if (Convert.ToInt32(lblHomeScore.Text) != 0 && m_objUDTMatch !=null)
+                if (Convert.ToInt32(lblHomeScore.Text) != 0 && m_objUDTMatch != null)
                 {
                     m_objUDTMatch.UpdateUDT(4, new string[] { "HomeGoal" }, new string[] { lblHomeScore.Text }, "Match", cmbMatch.Text);
                     lblHomeScore.Text = (Convert.ToInt32(lblHomeScore.Text) - 1).ToString();
@@ -1077,8 +984,6 @@ namespace SoccerApp
                 {
                     lblAwayScore.Text = (Convert.ToInt32(lblAwayScore.Text) + 1).ToString();
                     m_objUDTMatch.UpdateUDT(4, new string[] { "AwayGoal" }, new string[] { lblAwayScore.Text }, "Match", cmbMatch.Text);
-                    //lblAwayScore.Text = (Convert.ToInt32(lblHomeScore.Text) + 1).ToString();
-                    //m_objUDT.UpdateUDT(10, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text);
                     Player p = new Player();
                     p.Team = lblAwayTeam.Text;
                     p._objUDTProvider = m_objUDTMatch;
@@ -1116,7 +1021,7 @@ namespace SoccerApp
         {
             try
             {
-                if (Convert.ToInt32(lblAwayScore.Text) != 0 && m_objUDTMatch!=null)
+                if (Convert.ToInt32(lblAwayScore.Text) != 0 && m_objUDTMatch != null)
                 {
                     m_objUDTMatch.UpdateUDT(4, new string[] { "AwayGoal" }, new string[] { lblAwayScore.Text }, "Match", cmbMatch.Text);
                     lblAwayScore.Text = (Convert.ToInt32(lblAwayScore.Text) - 1).ToString();
@@ -1138,7 +1043,7 @@ namespace SoccerApp
         {
             try
             {
-               
+
                 TeamBuilderForm tf = new TeamBuilderForm();
                 tf.Team = lblHomeTeam.Text;
                 tf._objUDTProvider = m_objUDTMatch;
@@ -1209,7 +1114,6 @@ namespace SoccerApp
         {
             try
             {
-                //string str = null;
                 bool bneedStart = false;
                 if (m_objsceneHandler != null)
                 {
@@ -1275,37 +1179,6 @@ namespace SoccerApp
             {
                 LogWriter.WriteLog(ex);
             }
-        }
-
-        private void EnabaleActions()
-        {
-            btnhomeplus.Enabled = true;
-            btnHomeminus.Enabled = true;
-            btnawayplus.Enabled = true;
-            btnawayminus.Enabled = true;
-            btnFoul.Enabled = true;
-            btnYellow.Enabled = true;
-            btnRed.Enabled = true;
-            btnCorner.Enabled = true;
-            btnShots.Enabled = true;
-            btnShotsOff.Enabled = true;
-            btnSubstitute.Enabled = true;
-
-        }
-
-        private void DisableActions()
-        {
-            btnhomeplus.Enabled = false;
-            btnHomeminus.Enabled = false;
-            btnawayplus.Enabled = false;
-            btnawayminus.Enabled = false;
-            btnFoul.Enabled = false;
-            btnYellow.Enabled = false;
-            btnRed.Enabled = false;
-            btnCorner.Enabled = false;
-            btnShots.Enabled = false;
-            btnShotsOff.Enabled = false;
-            btnSubstitute.Enabled = false;
         }
 
         /// <summary>
@@ -1814,7 +1687,7 @@ namespace SoccerApp
             {
                 case SHOTBOXMSG.PLAYCOMPLETE:
                     m_objplayertodelete = sender as IPlayer;
-                    if (m_objplayertodelete != null)
+                    if (m_objplayertodelete != null && BtnLoadBG.Text != "Unload BG")
                     {
                         m_objplayertodelete.DeleteSg();
                     }
@@ -1869,10 +1742,166 @@ namespace SoccerApp
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnLoadBG_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                switch (BtnLoadBG.Text)
+                {
+                    case "Load BG":
+                        BtnLoadBG.Text = "Unload BG";
+                        ScenInfo si = m_lstSceneCollection.Where(s => s.Description == "bg").FirstOrDefault();
+                        m_objsceneHandler.LoadBackground(si.Id);
+                        break;
+                    case "Unload BG":
+                        BtnLoadBG.Text = "Load BG";
+                        m_objsceneHandler.UnloadBackground();
+                        break;
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
         #endregion
 
         #region Unused Code
 
+        ///// <summary>
+        ///// Fill list of players from templatesXml
+        ///// </summary>
+        //private void FillPlayerList()
+        //{
+        //    try
+        //    {
+        //        XDocument xdoc = XDocument.Load("templates.xml");
+        //        var templates = xdoc.Descendants("template");
+        //        foreach (var item in templates)
+        //        {
+        //            ScenInfo sc = new ScenInfo();
+        //            sc.Id = item.Attribute("id").Value;
+        //            sc.Name = item.Attribute("name").Value;
+        //            sc.Description = item.Attribute("description").Value;
+        //            sc.inuse = false;
+        //            m_lstSceneCollection.Add(sc);
+
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        LogWriter.WriteLog(ex);
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Update the Data Xml with the current match Id
+        ///// </summary>
+        ///// <param name="objfrm"></param>
+        //private void UpdateWaspControls(Form item, bool IsID)
+        //{
+        //    try
+        //    {
+        //        if (item != null)
+        //        {
+        //            IAutomationDataEntry objIAutomationDataEntry = (item) as IAutomationDataEntry;
+        //            string sDataXml = objIAutomationDataEntry.GetDataXml();
+
+        //            XDocument xdoc = XDocument.Parse(sDataXml);
+
+        //            XElement xe = xdoc.Descendants("query").FirstOrDefault();
+
+        //            if (xe != null)
+        //            {
+        //                string str = xe.Value;
+
+        //                XElement tablenodes = XElement.Parse(str);
+        //                IEnumerable<XElement> elements = tablenodes.Descendants("table").Where(x => x.Attribute("name").Value == "13");
+
+        //                foreach (XElement node in elements)
+        //                {
+        //                    if (IsID)
+        //                    {
+        //                        //Update ID  here.....    
+        //                        node.Attribute("customfilter").SetValue("(T1_ID In (  1 )) AND (([NAME] =" + NAME + "))");
+        //                        node.Attribute("filter").SetValue("([NAME] = " + NAME + ")");
+        //                        node.Attribute("actionfilter").SetValue("[NAME] =" + NAME);
+        //                    }
+        //                    else
+        //                    {
+        //                        //Update EVENTID and MATCHNAME  here.....    
+        //                        node.Attribute("customfilter").SetValue("(T1_ID In ( 1)) AND ((([EventID] = " + EVENTID + ") And ([MatchID] = '" + MATCHNAME + "')))");
+        //                        node.Attribute("filter").SetValue("(([EventID] = " + EVENTID + ") And ([MatchID] ='" + MATCHNAME + "'))");
+        //                        node.Attribute("actionfilter").SetValue("(([EventID] = " + EVENTID + ") And ([MatchID] ='" + MATCHNAME + "'))");
+        //                    }
+        //                }
+        //                xe.ReplaceNodes(new XCData(tablenodes.ToString()));
+        //                string updatedxml = xdoc.ToString();
+        //                XmlNode xn;
+        //                IDataEntry _objDataEntry = (item) as IDataEntry;
+        //                XmlDocument objdoc = new XmlDocument();
+        //                objdoc.LoadXml(updatedxml);
+        //                xn = objdoc.DocumentElement;
+        //                _objDataEntry.SetData(xn);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        LogWriter.WriteLog(ex);
+        //    }
+
+        //}
+
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //private void FillMatchPart()
+        //{
+        //    AutoCompleteStringCollection cmbstr1 = new AutoCompleteStringCollection();
+        //    var dtmatchpart = m_objUDTMatchSchedule.CurrentDataSet.Tables[15];
+        //    foreach (DataRow item in dtmatchpart.Rows)
+        //    {
+        //        cmbstr1.Add(item["Name"].ToString());
+        //        cmbMatchPart.Items.Add(item["Name"].ToString());
+        //    }
+        //    cmbMatchPart.AutoCompleteCustomSource = cmbstr1;
+        //    DataRow[] dr = dtmatchpart.Select("Active=true");
+        //    if (dr.Count() > 0)
+        //    {
+        //        int index = cmbMatchPart.FindString(dr[0]["Name"].ToString());
+        //        if (index != -1)
+        //        {
+        //            try
+        //            {
+        //                cmbMatchPart.SelectedIndex = index;
+        //            }
+        //            catch (Exception ex)
+        //            {
+
+        //            }
+        //            UdtFilter filter = new UdtFilter();
+        //            filter.FilterColumn = "Name";
+        //            filter.FilterValue = cmbMatchPart.Text;
+        //            filter.TableIndex = 5;
+        //            if (!m_objUDTMatchSchedule.UdtFilters.ContainsKey("Match Part"))
+        //                m_objUDTMatchSchedule.UdtFilters.Add("Match Part", filter);
+        //            else
+        //                m_objUDTMatchSchedule.UdtFilters["Match Part"] = filter;
+        //            m_objUDTMatchSchedule.Notify("Match Part");
+        //        }
+
+        //    }
+
+        //}
 
 
         //void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -2055,7 +2084,6 @@ namespace SoccerApp
 
 
         #endregion
-
 
     }
 }

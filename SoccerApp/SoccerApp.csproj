@@ -156,6 +156,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SceneHandler.cs" />
+    <Compile Include="SceneInfo.cs" />
     <Compile Include="SoccerApp.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -241,6 +242,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\BackGround.wsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Score Bug.wsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\Soccer League Table.udt" />
     <None Include="Resources\Soccer Match Schedule.udt" />
     <None Include="Resources\soccer.w3d">

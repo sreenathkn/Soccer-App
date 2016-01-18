@@ -15,10 +15,12 @@ namespace SoccerApp
         public UDTProvider.UDTProvider _objUDTProvider { get; set; }
         public string Team { get; set; }
         public string selectedPlayer { get; set; }
+
         public Player()
         {
             InitializeComponent();
         }
+
         public void FillTeam()
         {
             DataRow drTeam = _objUDTProvider.CurrentDataSet.Tables[2].Select("Name = '" + Team+"'").FirstOrDefault();
@@ -31,6 +33,7 @@ namespace SoccerApp
                 }
             }
         }
+
         private void lstPlayers_DoubleClick(object sender, EventArgs e)
         {
             selectedPlayer = lstPlayers.SelectedItem.ToString();

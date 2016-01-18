@@ -17,12 +17,13 @@ namespace SoccerApp
 {
     public partial class PlayerHandler : Form
     {
-        private string _CommonPath;
+        string _CommonPath;
         CRemoteHelper _objRemoteHelper;
         CUDTManagerHelper _mObjUdtHandler;
         CWaspFileHandler objWaspFileHandler;
         int RowPos = 0;
         List<ScenInfo> _SceneCollection;
+
         public PlayerHandler()
         {
             InitializeComponent();
@@ -48,13 +49,7 @@ namespace SoccerApp
                 listBox1.Items.Add(item.Attribute("description").Value);
             }
         }
-        struct ScenInfo
-        {
-            public string Name;
-            public string Id;
-            public string Description;
-            public bool inuse;
-        }
+        
         private void InitializeWasp()
         {
             _CommonPath = Environment.GetEnvironmentVariable("Wasp3.5");
@@ -80,7 +75,6 @@ namespace SoccerApp
                 Form obj1 = Activator.CreateInstance(obj.TemplatePlayerInfo) as Form;
                 obj1.TopLevel = false;
                 obj1.Visible = true;
-               // obj1.Dock = DockStyle.Fill;
                 var ctl = tableLayoutPanel1.GetControlFromPosition(1, RowPos);
                 if(ctl !=null) // Already control present there
                 {
