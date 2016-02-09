@@ -29,43 +29,47 @@ namespace SoccerApp
         {
             AutoCompleteStringCollection cmbstrName = new AutoCompleteStringCollection();
             AutoCompleteStringCollection cmbstrJer = new AutoCompleteStringCollection();
-            DataRow[] t = _objUDTProvider.CurrentDataSet.Tables[7].Select("Team = '" + Team + "' AND Playing=true");
-            cmbIn.Items.Clear();
-            cmbOut.Items.Clear();
-            cmbJerIN.Items.Clear();
-            cmbJerOUT.Items.Clear();
-            foreach (DataRow item in t)
+            DataRow drTeam = _objUDTProvider.CurrentDataSet.Tables[2].Select("Name = '" + Team+"'").FirstOrDefault();
+            if (drTeam != null)
             {
-                cmbIn.Items.Add(item["Name"]);
-                cmbstrName.Add(item["Name"].ToString());
-                cmbOut.Items.Add(item["Name"]);
-                cmbJerIN.Items.Add(item["JerseyNo"]);
-                cmbJerOUT.Items.Add(item["JerseyNo"]);
-                cmbstrJer.Add(item["JerseyNo"].ToString());
-            }
-            cmbIn.SelectedIndex = 1;
-            cmbOut.SelectedIndex = 1;
-            cmbJerIN.SelectedIndex = 1;
-            cmbJerOUT.SelectedIndex = 1;
+                DataRow[] drPlayers = _objUDTProvider.CurrentDataSet.Tables[3].Select("T24_ID = '" + drTeam["T24_ID"] + "' AND Playing=true");
+               // DataRow[] t = _objUDTProvider.CurrentDataSet.Tables[7].Select("Team = '" + Team + "' AND Playing=true");
+                cmbIn.Items.Clear();
+                cmbOut.Items.Clear();
+                cmbJerIN.Items.Clear();
+                cmbJerOUT.Items.Clear();
+                foreach (DataRow item in drPlayers)
+                {
+                    cmbIn.Items.Add(item["First Name"]);
+                    cmbstrName.Add(item["First Name"].ToString());
+                    cmbOut.Items.Add(item["First Name"]);
+                    cmbJerIN.Items.Add(item["Jersey No"]);
+                    cmbJerOUT.Items.Add(item["Jersey No"]);
+                    cmbstrJer.Add(item["Jersey No"].ToString());
+                }
+                cmbIn.SelectedIndex = 1;
+                cmbOut.SelectedIndex = 1;
+                cmbJerIN.SelectedIndex = 1;
+                cmbJerOUT.SelectedIndex = 1;
 
-            cmbIn.AutoCompleteMode = AutoCompleteMode.Suggest;
-            cmbIn.AutoCompleteSource = AutoCompleteSource.CustomSource;
-            cmbOut.AutoCompleteCustomSource = cmbstrName;
-            cmbOut.AutoCompleteMode = AutoCompleteMode.Suggest;
-            cmbOut.AutoCompleteSource = AutoCompleteSource.CustomSource;
-            cmbOut.AutoCompleteCustomSource = cmbstrName;
-            cmbJerIN.AutoCompleteMode = AutoCompleteMode.Suggest;
-            cmbJerIN.AutoCompleteSource = AutoCompleteSource.CustomSource;
-            cmbJerIN.AutoCompleteCustomSource = cmbstrJer;
-            cmbJerOUT.AutoCompleteMode = AutoCompleteMode.Suggest;
-            cmbJerOUT.AutoCompleteSource = AutoCompleteSource.CustomSource;
-            cmbJerOUT.AutoCompleteCustomSource = cmbstrJer;
-            if(cmbTeam.Items.Count<=0)
-            {
-                cmbTeam.Items.Add(HomeTeam);
-                cmbTeam.Items.Add(AwayTeam);
+                cmbIn.AutoCompleteMode = AutoCompleteMode.Suggest;
+                cmbIn.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                cmbOut.AutoCompleteCustomSource = cmbstrName;
+                cmbOut.AutoCompleteMode = AutoCompleteMode.Suggest;
+                cmbOut.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                cmbOut.AutoCompleteCustomSource = cmbstrName;
+                cmbJerIN.AutoCompleteMode = AutoCompleteMode.Suggest;
+                cmbJerIN.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                cmbJerIN.AutoCompleteCustomSource = cmbstrJer;
+                cmbJerOUT.AutoCompleteMode = AutoCompleteMode.Suggest;
+                cmbJerOUT.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                cmbJerOUT.AutoCompleteCustomSource = cmbstrJer;
+                if (cmbTeam.Items.Count <= 0)
+                {
+                    cmbTeam.Items.Add(HomeTeam);
+                    cmbTeam.Items.Add(AwayTeam);
+                }
             }
-
 
         }
         private void cmbJerOUT_SelectedIndexChanged(object sender, EventArgs e)
