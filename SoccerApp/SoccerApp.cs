@@ -40,7 +40,6 @@ namespace SoccerApp
         List<ScenInfo> m_lstSceneCollection = null;
         IPlayer m_objPlayer = null;
         protected static LINKTYPE m_objLinkType = LINKTYPE.TCP;
-        string m_sEngineUrl = null;
         string NAME = string.Empty;
         string EVENTID = string.Empty;
         string MATCHNAME = string.Empty;
@@ -48,6 +47,9 @@ namespace SoccerApp
         string MATCHUDTID = string.Empty;
         IPlayer m_objplayertodelete = null;
         IPlayer m_objplayerbg = null;
+        PlayerGetter objPlayergetter = null;
+        const string m_surlformat = "net.tcp://{0}:{1}/TcpBinding/WcfTcpLink";
+        string m_serverurl = string.Empty;
 
         #endregion
 
@@ -77,20 +79,19 @@ namespace SoccerApp
         {
             try
             {
+                m_serverurl = string.Format(m_surlformat, ConfigurationManager.AppSettings["stingserverip"], ConfigurationManager.AppSettings["stingserverport"]);
                 m_objWaspFileHandler = new CWaspFileHandler();
                 m_objsceneHandler = new SceneHandler();
+                objPlayergetter = new PlayerGetter();
                 SetUI();
                 InitializeWasp();
                 InitilizeMatchScheduleUDT();
                 InitializeCombos();
                 InitializeMatchUDT();
                 FillMatchDetails();
-                //m_lstSceneCollection = new List<ScenInfo>();
-                //FillPlayerList();
                 Fillgrid();
-                //m_objsceneHandler.Initialize();
                 m_objsceneHandler.FileHandler = m_objWaspFileHandler;
-                m_objsceneHandler.Init();
+                m_objsceneHandler.Initialize();
             }
             finally
             {
@@ -144,7 +145,7 @@ namespace SoccerApp
 
                 XDocument xdoc = XDocument.Load(configfile);
                 var url = from lv1 in xdoc.Descendants("add")
-                          where lv1.Attribute("key").Value == "REMOTEMANAGERURL"
+                          where lv1.Attribute("key").Value == "LOCALMANAGERURL"
                           select lv1.Attribute("value").Value;
                 m_objRemoteHelper = new CRemoteHelper(url.ElementAt(0));
                 ConnectionStatus info = m_objRemoteHelper.Connect();
@@ -244,8 +245,6 @@ namespace SoccerApp
             cmbMatchPart.SelectedIndex = 0;
 
             // Get the Match part List from UDT and add to cmbstr1, Fill the Combo, and set the selected Item
-            //FillMatchPart();
-
         }
 
         /// <summary>
@@ -487,104 +486,82 @@ namespace SoccerApp
             try
             {
                 ScenInfo si = m_lstSceneCollection.Where(s => s.Description == str).FirstOrDefault();
-
-                STemplateDetails obj = m_objWaspFileHandler.GetTemplatePlayerInfo(si.Id, "");
-
-                if (obj != null)
+                TemplateInfo obj = objPlayergetter.GetPlayerInfo(si.Id);
+                m_objPlayer = Activator.CreateInstance(obj.TemplatePlayerInfo) as IPlayer;
+                Form objfrm = m_objPlayer as Form;
+                SetMatchUDT(objfrm);
+                string sLinkID = string.Empty;
+                if (m_objPlayer != null)
                 {
-                    m_objPlayer = Activator.CreateInstance(obj.TemplatePlayerInfo) as IPlayer;
-                    Form objfrm = m_objPlayer as Form;
+                    m_objPlayer.Init("", "", si.Id, "");
+                    m_objPlayer.SetLink(m_objsceneHandler.AppLink, obj.MetaDataXml);
+                    //S. No 116: Added for AddIn
+                    //S.No.	: -	128
+                    if (m_objPlayer is IAddinInfo)
+                        (m_objPlayer as IAddinInfo).Init(new InstanceInfo() { InstanceId = si.Id });
 
-                    SetMatchUDT(objfrm);
-
-                    //UpdateWaspControls(objfrm, IsID);
-
-                    string sLinkID = string.Empty;
-                    if (m_objPlayer != null)
+                    IDataEntry objDataentry = m_objPlayer as IDataEntry;
+                    if (objDataentry != null)
                     {
-                        m_objPlayer.Init("", "", si.Id, "");
-                        m_objPlayer.SetLink(m_objsceneHandler.AppLink, obj.Scene);
-                        //S. No 116: Added for AddIn
-                        //S.No.	: -	128
-                        if (m_objPlayer is IAddinInfo)
-                            (m_objPlayer as IAddinInfo).Init(new InstanceInfo() { InstanceId = si.Id });
-                        //    (m_objPlayer as IAddinInfo).Init(new InstanceInfo() { Type = "wsp", InstanceId = "", TemplateId = si.Id, ThemeId = "Default", });
-
-
-                        IDataEntry objDataentry = m_objPlayer as IDataEntry;
-                        if (objDataentry != null)
-                        {
-                            objDataentry.PostData += objDataentry_PostData;
-                        }
-
-                        IChannelShotBox objChannelShotBox = m_objPlayer as IChannelShotBox;
-                        if (objChannelShotBox != null)
-                        {
-                            if (m_objLinkType == LINKTYPE.TCP)
-                                m_sEngineUrl = ConfigurationManager.AppSettings["stingserver"];
-                            //newplaylistinstance.ActiveServer.GetUrl(CConstants.Constants.TCP);
-                            //S.No.: -	147
-                            objChannelShotBox.SetEngineUrl(ConfigurationManager.AppSettings["stingserver"]);
-                        }
-
-                        m_objPlayer.OnShotBoxControllerStatus += objPlayer_OnShotBoxControllerStatus;
-                        m_objPlayer.Prepare(m_sEngineUrl, Convert.ToInt32(m_objPlayer.ZORDER), string.Empty, RENDERMODE.PROGRAM);
+                        objDataentry.PostData += objDataentry_PostData;
                     }
-                    if (column != "-1")
-                    {
-                        objfrm.TopLevel = false;
-                        objfrm.Visible = false;
-                        objfrm.Dock = DockStyle.Fill;
-                        Control ctl = null;
-                        Control ctl2 = null;
-                        if (string.Compare(column, "Column2", StringComparison.OrdinalIgnoreCase) == 0)
-                        {
-                            ctl = tableLayoutPanel1.GetControlFromPosition(0, 0);
-                            if (ctl != null) // Already control present there
-                            {
-                                //First play out the graphic.
-                                //then delete the gfx                            
-                                tableLayoutPanel1.Controls.Remove(ctl);
-                                (ctl as IPlayer).DeleteSg();
-                                tableLayoutPanel1.Controls.Add(objfrm, 0, 0);
-                            }
-                        }
 
-                        if (string.Compare(column, "Column3", StringComparison.OrdinalIgnoreCase) == 0)
+                    IChannelShotBox objChannelShotBox = m_objPlayer as IChannelShotBox;
+                    if (objChannelShotBox != null)
+                    {
+                        objChannelShotBox.SetEngineUrl(m_serverurl);
+                    }
+
+                    m_objPlayer.OnShotBoxControllerStatus += objPlayer_OnShotBoxControllerStatus;
+                    m_objPlayer.Prepare(m_serverurl, Convert.ToInt32(m_objPlayer.ZORDER), string.Empty, RENDERMODE.PROGRAM);
+                }
+                if (column != "-1")
+                {
+                    objfrm.TopLevel = false;
+                    objfrm.Visible = false;
+                    objfrm.Dock = DockStyle.Fill;
+                    Control ctl = null;
+                    Control ctl2 = null;
+                    if (string.Compare(column, "Column2", StringComparison.OrdinalIgnoreCase) == 0)
+                    {
+                        ctl = tableLayoutPanel1.GetControlFromPosition(0, 0);
+                        if (ctl != null) // Already control present there
                         {
-                            ctl2 = tableLayoutPanel1.GetControlFromPosition(1, 0);
-                            if (ctl2 != null) // Already control present there
-                            {
-                                //First play out the graphic.
-                                //then delete the gfx
-                                tableLayoutPanel1.Controls.Remove(ctl2);
-                                (ctl2 as IPlayer).DeleteSg();
-                                tableLayoutPanel1.Controls.Add(objfrm, 1, 0);
-                            }
-                        }
-                        if (ctl == null && (string.Compare(column, "Column2") == 0))
-                        {
+                            //First play out the graphic.
+                            //then delete the gfx                            
+                            tableLayoutPanel1.Controls.Remove(ctl);
+                            (ctl as IPlayer).DeleteSg();
                             tableLayoutPanel1.Controls.Add(objfrm, 0, 0);
                         }
-                        else if (ctl2 == null && (string.Compare(column, "Column3") == 0))
+                    }
+
+                    if (string.Compare(column, "Column3", StringComparison.OrdinalIgnoreCase) == 0)
+                    {
+                        ctl2 = tableLayoutPanel1.GetControlFromPosition(1, 0);
+                        if (ctl2 != null) // Already control present there
                         {
+                            //First play out the graphic.
+                            //then delete the gfx
+                            tableLayoutPanel1.Controls.Remove(ctl2);
+                            (ctl2 as IPlayer).DeleteSg();
                             tableLayoutPanel1.Controls.Add(objfrm, 1, 0);
                         }
-                        objfrm.Show();
                     }
+                    if (ctl == null && (string.Compare(column, "Column2") == 0))
+                    {
+                        tableLayoutPanel1.Controls.Add(objfrm, 0, 0);
+                    }
+                    else if (ctl2 == null && (string.Compare(column, "Column3") == 0))
+                    {
+                        tableLayoutPanel1.Controls.Add(objfrm, 1, 0);
+                    }
+                    objfrm.Show();
                 }
-                else
-                {
-                    MessageBox.Show("Template " + si.Id + "Not found");
-                }
-
             }
-
             catch (Exception ex)
             {
                 LogWriter.WriteLog(ex);
             }
-
         }
 
         /// <summary>
@@ -625,21 +602,6 @@ namespace SoccerApp
                         }
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// clear objects and unbind events
-        /// </summary>
-        private void Shutdown()
-        {
-            try
-            {
-
-            }
-            catch (Exception)
-            {
-
             }
         }
 
@@ -920,7 +882,7 @@ namespace SoccerApp
                 {
                     TimeSpan ts = DateTime.Now.Subtract(MatchPartStartTime);
                     lblHomeScore.Text = (Convert.ToInt32(lblHomeScore.Text) + 1).ToString();
-                    m_objUDTMatch.UpdateUDT(4, new string[] { "HomeGoal" }, new string[] { lblHomeScore.Text }, "Match", cmbMatch.Text);
+                    //m_objUDTMatch.UpdateUDT(4, new string[] { "HomeGoal" }, new string[] { lblHomeScore.Text }, "Match", cmbMatch.Text);
                     Player p = new Player();
                     p.Team = lblHomeTeam.Text;
                     p._objUDTProvider = m_objUDTMatch;
@@ -960,7 +922,7 @@ namespace SoccerApp
             {
                 if (Convert.ToInt32(lblHomeScore.Text) != 0 && m_objUDTMatch != null)
                 {
-                    m_objUDTMatch.UpdateUDT(4, new string[] { "HomeGoal" }, new string[] { lblHomeScore.Text }, "Match", cmbMatch.Text);
+                    //m_objUDTMatch.UpdateUDT(4, new string[] { "HomeGoal" }, new string[] { lblHomeScore.Text }, "Match", cmbMatch.Text);
                     lblHomeScore.Text = (Convert.ToInt32(lblHomeScore.Text) - 1).ToString();
                     updateMatchStats("HomeGoal", -1, "Match", cmbMatch.Text);
                 }
@@ -983,7 +945,7 @@ namespace SoccerApp
                 if (m_objUDTMatch != null)
                 {
                     lblAwayScore.Text = (Convert.ToInt32(lblAwayScore.Text) + 1).ToString();
-                    m_objUDTMatch.UpdateUDT(4, new string[] { "AwayGoal" }, new string[] { lblAwayScore.Text }, "Match", cmbMatch.Text);
+                    //m_objUDTMatch.UpdateUDT(4, new string[] { "AwayGoal" }, new string[] { lblAwayScore.Text }, "Match", cmbMatch.Text);
                     Player p = new Player();
                     p.Team = lblAwayTeam.Text;
                     p._objUDTProvider = m_objUDTMatch;
@@ -1023,7 +985,7 @@ namespace SoccerApp
             {
                 if (Convert.ToInt32(lblAwayScore.Text) != 0 && m_objUDTMatch != null)
                 {
-                    m_objUDTMatch.UpdateUDT(4, new string[] { "AwayGoal" }, new string[] { lblAwayScore.Text }, "Match", cmbMatch.Text);
+                    //m_objUDTMatch.UpdateUDT(4, new string[] { "AwayGoal" }, new string[] { lblAwayScore.Text }, "Match", cmbMatch.Text);
                     lblAwayScore.Text = (Convert.ToInt32(lblAwayScore.Text) - 1).ToString();
                     updateMatchStats("AwayGoal", -1, "Match", cmbMatch.Text);
                 }
@@ -1148,6 +1110,7 @@ namespace SoccerApp
                         else
                         {
                             bneedStart = true;
+                            m_objsceneHandler.TimerAction("start", "");
                         }
                         if (bneedStart)
                         {
@@ -1756,7 +1719,8 @@ namespace SoccerApp
                     case "Load BG":
                         BtnLoadBG.Text = "Unload BG";
                         ScenInfo si = m_lstSceneCollection.Where(s => s.Description == "bg").FirstOrDefault();
-                        m_objsceneHandler.LoadBackground(si.Id);
+                        TemplateInfo tempinfo = objPlayergetter.GetPlayerInfo(si.Id);
+                        m_objsceneHandler.LoadBackground(tempinfo, si.Id);
                         break;
                     case "Unload BG":
                         BtnLoadBG.Text = "Load BG";
@@ -1772,318 +1736,5 @@ namespace SoccerApp
         }
 
         #endregion
-
-        #region Unused Code
-
-        ///// <summary>
-        ///// Fill list of players from templatesXml
-        ///// </summary>
-        //private void FillPlayerList()
-        //{
-        //    try
-        //    {
-        //        XDocument xdoc = XDocument.Load("templates.xml");
-        //        var templates = xdoc.Descendants("template");
-        //        foreach (var item in templates)
-        //        {
-        //            ScenInfo sc = new ScenInfo();
-        //            sc.Id = item.Attribute("id").Value;
-        //            sc.Name = item.Attribute("name").Value;
-        //            sc.Description = item.Attribute("description").Value;
-        //            sc.inuse = false;
-        //            m_lstSceneCollection.Add(sc);
-
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        LogWriter.WriteLog(ex);
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Update the Data Xml with the current match Id
-        ///// </summary>
-        ///// <param name="objfrm"></param>
-        //private void UpdateWaspControls(Form item, bool IsID)
-        //{
-        //    try
-        //    {
-        //        if (item != null)
-        //        {
-        //            IAutomationDataEntry objIAutomationDataEntry = (item) as IAutomationDataEntry;
-        //            string sDataXml = objIAutomationDataEntry.GetDataXml();
-
-        //            XDocument xdoc = XDocument.Parse(sDataXml);
-
-        //            XElement xe = xdoc.Descendants("query").FirstOrDefault();
-
-        //            if (xe != null)
-        //            {
-        //                string str = xe.Value;
-
-        //                XElement tablenodes = XElement.Parse(str);
-        //                IEnumerable<XElement> elements = tablenodes.Descendants("table").Where(x => x.Attribute("name").Value == "13");
-
-        //                foreach (XElement node in elements)
-        //                {
-        //                    if (IsID)
-        //                    {
-        //                        //Update ID  here.....    
-        //                        node.Attribute("customfilter").SetValue("(T1_ID In (  1 )) AND (([NAME] =" + NAME + "))");
-        //                        node.Attribute("filter").SetValue("([NAME] = " + NAME + ")");
-        //                        node.Attribute("actionfilter").SetValue("[NAME] =" + NAME);
-        //                    }
-        //                    else
-        //                    {
-        //                        //Update EVENTID and MATCHNAME  here.....    
-        //                        node.Attribute("customfilter").SetValue("(T1_ID In ( 1)) AND ((([EventID] = " + EVENTID + ") And ([MatchID] = '" + MATCHNAME + "')))");
-        //                        node.Attribute("filter").SetValue("(([EventID] = " + EVENTID + ") And ([MatchID] ='" + MATCHNAME + "'))");
-        //                        node.Attribute("actionfilter").SetValue("(([EventID] = " + EVENTID + ") And ([MatchID] ='" + MATCHNAME + "'))");
-        //                    }
-        //                }
-        //                xe.ReplaceNodes(new XCData(tablenodes.ToString()));
-        //                string updatedxml = xdoc.ToString();
-        //                XmlNode xn;
-        //                IDataEntry _objDataEntry = (item) as IDataEntry;
-        //                XmlDocument objdoc = new XmlDocument();
-        //                objdoc.LoadXml(updatedxml);
-        //                xn = objdoc.DocumentElement;
-        //                _objDataEntry.SetData(xn);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        LogWriter.WriteLog(ex);
-        //    }
-
-        //}
-
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //private void FillMatchPart()
-        //{
-        //    AutoCompleteStringCollection cmbstr1 = new AutoCompleteStringCollection();
-        //    var dtmatchpart = m_objUDTMatchSchedule.CurrentDataSet.Tables[15];
-        //    foreach (DataRow item in dtmatchpart.Rows)
-        //    {
-        //        cmbstr1.Add(item["Name"].ToString());
-        //        cmbMatchPart.Items.Add(item["Name"].ToString());
-        //    }
-        //    cmbMatchPart.AutoCompleteCustomSource = cmbstr1;
-        //    DataRow[] dr = dtmatchpart.Select("Active=true");
-        //    if (dr.Count() > 0)
-        //    {
-        //        int index = cmbMatchPart.FindString(dr[0]["Name"].ToString());
-        //        if (index != -1)
-        //        {
-        //            try
-        //            {
-        //                cmbMatchPart.SelectedIndex = index;
-        //            }
-        //            catch (Exception ex)
-        //            {
-
-        //            }
-        //            UdtFilter filter = new UdtFilter();
-        //            filter.FilterColumn = "Name";
-        //            filter.FilterValue = cmbMatchPart.Text;
-        //            filter.TableIndex = 5;
-        //            if (!m_objUDTMatchSchedule.UdtFilters.ContainsKey("Match Part"))
-        //                m_objUDTMatchSchedule.UdtFilters.Add("Match Part", filter);
-        //            else
-        //                m_objUDTMatchSchedule.UdtFilters["Match Part"] = filter;
-        //            m_objUDTMatchSchedule.Notify("Match Part");
-        //        }
-
-        //    }
-
-        //}
-
-
-        //void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        //{
-        //    dataGridView1.CommitEdit(DataGridViewDataErrorContexts.Commit);
-        //    if (e.ColumnIndex == dataGridView2.Columns["Column2"].Index)
-        //    {
-        //        //dataGridView1.EndEdit();
-        //        if ((bool)dataGridView2.Rows[e.RowIndex].Cells["Column2"].Value)
-        //        {
-        //            MessageBox.Show("Checked");
-        //        }
-        //    }
-
-
-
-
-        //foreach (DataGridViewRow row in dataGridView2.Rows)
-        //{
-        //    DataGridViewCheckBoxCell chk = row.Cells["Column2"] as DataGridViewCheckBoxCell;
-        //    DataGridViewCheckBoxCell chk2 = row.Cells["Column3"] as DataGridViewCheckBoxCell;
-
-        //    if (Convert.ToBoolean(chk2.Value) == true)
-        //        MessageBox.Show("this cell checked");
-
-        //    bool bChecked = (null != chk && null != chk.Value && true == (bool)chk.Value);
-        //    if (true == bChecked)
-        //    {
-        //        MessageBox.Show("Checked too");
-        //    }
-        //if (row.Cells["Column2"].Value != null && (bool)row.Cells["Column2"].Value)
-        //{
-        //    GetTemplate();
-        //}
-
-        //if (((e.ColumnIndex) == 1) && ((bool)dataGridView1.Rows[e.RowIndex].Cells[0].Value))
-        //{
-        //    GetTemplate();
-
-        //}
-
-        //     if (row.Cells["Column2"].Value != null  && (bool)row.Cells["Column2"].Value)
-        //     {
-        //         GetTemplate();
-        //     }
-
-        //     if (((e.ColumnIndex) == 2) && ((bool)dataGridView1.Rows[e.RowIndex].Cells[0].Value))
-        //     {
-        //         GetTemplate();
-
-        //     }
-
-
-        //if (e.ColumnIndex == [])
-        //   CheckForCheckedValue();
-
-
-        void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-        //if (e.RowType == DataControlRowType.DataRow)
-        //{
-        //    var control = e.Row.Cell[cellIndex].FindControl("ControlID");
-        //    e.Row.Cells[1].Text = ((TypeOfControl)control).Text;
-        //}
-
-
-        private void listBox1_DoubleClick(object sender, EventArgs e)
-        {
-            //ScenInfo si = _SceneCollection.Where(s => s.Description == listBox1.Text).FirstOrDefault();
-            //STemplateDetails obj = objWaspFileHandler.GetTemplatePlayerInfo(si.Id, "");
-            //if (obj != null)
-            //{
-            //    Form obj1 = Activator.CreateInstance(obj.TemplatePlayerInfo) as Form;
-            //    obj1.TopLevel = false;
-            //    obj1.TopLevel = false;
-            //    obj1.Dock = DockStyle.Fill;
-            //    tableLayoutPanel1.Controls.Add(obj1);
-            //    obj1.Show();                
-            //}
-            //else
-            //{
-            //    MessageBox.Show("Template " + si.Id + "Not found");
-            //}
-
-            //ScenInfo si = _SceneCollection.Where(s => s.Description == listBox1.Text).FirstOrDefault();
-            //STemplateDetails obj = objWaspFileHandler.GetTemplatePlayerInfo(si.Id, "");
-
-            //if (obj != null)
-            //{
-            //    Form obj1 = Activator.CreateInstance(obj.TemplatePlayerInfo) as Form;
-            //    objPlayer = obj1 as IPlayer;
-            //    string sLinkID = string.Empty;              
-            //    if (objPlayer != null)
-            //    {
-            //        objPlayer.Init("", "", si.Id, "");
-            //        objPlayer.SetLink(_objsceneHandler.AppLink , obj.Scene);
-            //            //S. No 116: Added for AddIn
-            //                //S.No.	: -	128
-            //        if (objPlayer is IAddinInfo)
-            //            (objPlayer as IAddinInfo).Init(new InstanceInfo() { Type = "wsp", InstanceId = "", TemplateId = si.Id, ThemeId = "Default", });
-
-
-            //            IChannelShotBox objChannelShotBox = objPlayer as IChannelShotBox;
-            //            if (objChannelShotBox != null)
-            //            {
-            //                if (m_objLinkType == LINKTYPE.TCP)
-            //                    sEngineUrl = m_surl;
-            //                        //newplaylistinstance.ActiveServer.GetUrl(CConstants.Constants.TCP);
-            //                //S.No.: -	147
-            //                objChannelShotBox.SetEngineUrl(m_surl);
-            //            }                        
-            //            objPlayer.Prepare(sEngineUrl, Convert.ToInt32(objPlayer.ZORDER), string.Empty, RENDERMODE.PROGRAM);
-            //    }
-            //    obj1.TopLevel = false;
-            //    obj1.Visible = true;
-            //    obj1.Dock = DockStyle.Fill;
-            //    var ctl = tableLayoutPanel1.GetControlFromPosition(1, RowPos);
-            //    if (ctl != null) // Already control present there
-            //    {
-            //        //First play out the graphic.
-            //        //then delete the gfx
-            //        tableLayoutPanel1.Controls.Remove(ctl);                  
-            //    }
-            //    tableLayoutPanel1.Controls.Add(obj1, 1, RowPos);
-            //    if (RowPos == 1)
-            //        RowPos--;
-            //    else
-            //        RowPos++;
-            //    obj1.Show();
-
-            //}
-            //else
-            //{
-            //    MessageBox.Show("Template " + si.Id + "Not found");
-            //}
-
-        }
-
-
-        //ScenInfo si = _SceneCollection.Where(s => s.Description == listBox1.Text).FirstOrDefault();
-        //STemplateDetails obj = objWaspFileHandler.GetTemplatePlayerInfo(si.Id, "");
-        //if (obj != null)
-        //{
-        //    Form obj1 = Activator.CreateInstance(obj.TemplatePlayerInfo) as Form;
-        //    obj1.TopLevel = false;
-        //    obj1.TopLevel = false;
-        //    obj1.Dock = DockStyle.Fill;
-        //    tableLayoutPanel1.Controls.Add(obj1);
-        //    obj1.Show();                
-        //}
-        //else
-        //{
-        //    MessageBox.Show("Template " + si.Id + "Not found");
-        //}
-
-        //Aayushi 
-        public void UpdateWaspControl2()
-        {
-            //   xdDoc.LoadXml(str);
-            //XmlNode xn;//= xdDoc.SelectSingleNode("//data/userdata/requery/connection/query");
-            //string str1 = String.Format(sDataXml, cmbMatch.Text);
-            //IDataEntry cd = (objfrm) as IDataEntry;
-            //// xdDoc.RemoveAll();
-            //// xdDoc = null;            
-            //XmlDocument objdoc = new XmlDocument();
-            //objdoc.LoadXml(str1);
-            ////xn.RemoveAll();
-            ////xn = null;
-            //xn = objdoc.Document;// DocumentElement;
-            //cd.SetData(xn);
-
-            //foreach (Control item in tableLayoutPanel1.Controls)
-            //{
-
-
-            //}
-        }
-
-
-        #endregion
-
     }
 }

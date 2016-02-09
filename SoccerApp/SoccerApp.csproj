@@ -60,6 +60,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\OutPut\BeeSys.Wasp.KernelController.IUDTManager.dll</HintPath>
     </Reference>
+    <Reference Include="BeeSys.Wasp.KernelController.TemplateManager, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Resources\BeeSys.Wasp.KernelController.TemplateManager.dll</HintPath>
+    </Reference>
     <Reference Include="Beesys.Wasp.SceneReader, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Beesys.Wasp.SceneReader.dll</HintPath>
       <Private>True</Private>
@@ -147,6 +151,7 @@
     <Compile Include="PlayerDetails.Designer.cs">
       <DependentUpon>PlayerDetails.cs</DependentUpon>
     </Compile>
+    <Compile Include="PlayerGetter.cs" />
     <Compile Include="PlayerHandler.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -181,6 +186,7 @@
     <Compile Include="TeamSelection.Designer.cs">
       <DependentUpon>TeamSelection.cs</DependentUpon>
     </Compile>
+    <Compile Include="TemplateInfo.cs" />
     <EmbeddedResource Include="ExtraTimeEditor.resx">
       <DependentUpon>ExtraTimeEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -229,6 +235,20 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Resources\SoccerScenes\League Table.w3d" />
+    <None Include="Resources\SoccerScenes\Match FT Summary Statistics.w3d" />
+    <None Include="Resources\SoccerScenes\Team Line Up.w3d" />
+    <None Include="Resources\SoccerScenes\Team Line Up_Players.w3d" />
+    <None Include="Resources\SoccerScenes\Team Roster.w3d" />
+    <None Include="Resources\UDT\Soccer League Table.udt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\UDT\Soccer Match Schedule.udt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\UDT\Soccer Match.udt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -242,28 +262,56 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\BackGround.wsl">
+    <None Include="Resources\SoccerScenes\BackGround.w3d">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\Score Bug.wsl">
+    <None Include="Resources\SoccerScenes\Field Formation.w3d">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\Soccer League Table.udt" />
-    <None Include="Resources\Soccer Match Schedule.udt" />
-    <None Include="Resources\soccer.w3d">
+    <None Include="Resources\SoccerScenes\Head To Head.w3d">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\SoccerMatch.udt" />
+    <None Include="Resources\SoccerScenes\Match Lowerthird.w3d">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SoccerScenes\Match Schedule.w3d">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SoccerScenes\Match Score_LT.w3d">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SoccerScenes\Official Band_LT.w3d">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SoccerScenes\Player Profile.w3d">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SoccerScenes\Refree Band.w3d">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SoccerScenes\ScoreBug.w3d">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\Soccer_revised.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\BeeSys.Wasp.IWaspPlayers.dll" />
+    <Content Include="Resources\BeeSys.Wasp.IWaspPlayers.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\BeeSys.Wasp.KernelController.TemplateManager.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Beesys.Wasp.SceneReader.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\soccer_ball.ico" />
     <Content Include="soccer_ball.ico" />
     <Content Include="templates.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

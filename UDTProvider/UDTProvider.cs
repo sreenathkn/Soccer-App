@@ -43,7 +43,7 @@ namespace UDTProvider
 
             XDocument xdoc = XDocument.Load(configfile);
             var url = from lv1 in xdoc.Descendants("add")
-                      where lv1.Attribute("key").Value == "REMOTEMANAGERURL"
+                      where lv1.Attribute("key").Value == "LOCALMANAGERURL"
             select lv1.Attribute("value").Value ;
             _objRemoteHelper = new CRemoteHelper(url.ElementAt(0));
              info = _objRemoteHelper.Connect();
