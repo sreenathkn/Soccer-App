@@ -23,6 +23,7 @@ namespace Team
             }
             set
             {
+
                 _objUDTProvider = value;
                 _objUDTProvider.FilterChanged += OnFilterChangeEvent;
             }
@@ -46,6 +47,7 @@ namespace Team
                 {
                     drPlayers = _objUDTProvider.CurrentDataSet.Tables[7].Select("Team = '" + AwayTeam + "' AND Playing='true'");
                 }
+                dataGridView1.Rows.Clear();
                 for (int i = 0; i < drPlayers.Count(); i++)
                 {
                     DataGridViewRow dgv = (DataGridViewRow)dataGridView1.Rows[0].Clone();

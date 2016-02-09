@@ -9,7 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.XPath;
 using System.Xml.Linq;
+using ExtensionMethods;
 
 namespace UDTProvider
 {
@@ -31,7 +33,6 @@ namespace UDTProvider
            UdtFilters = new Dictionary<string, UdtFilter>();
         }
 
-       
         public bool InitializeConnection()
         {
           
@@ -42,7 +43,7 @@ namespace UDTProvider
 
             XDocument xdoc = XDocument.Load(configfile);
             var url = from lv1 in xdoc.Descendants("add")
-                      where lv1.Attribute("key").Value == "LOCALMANAGERURL"
+                      where lv1.Attribute("key").Value == "REMOTEMANAGERURL"
             select lv1.Attribute("value").Value ;
             _objRemoteHelper = new CRemoteHelper(url.ElementAt(0));
              info = _objRemoteHelper.Connect();
@@ -57,19 +58,17 @@ namespace UDTProvider
         }
         public void InitializeUDT(string UdtName)
         {
+            
             CurrentUDT = _mObjUdtHandler.GetUdtByName(UdtName);
-            using (XmlReader reader = XmlReader.Create(new StringReader(CurrentUDT.FORMAT)))
-            {
-                CurrentDataSet.ReadXmlSchema(reader);
-            }
-
-            if (!string.IsNullOrEmpty(CurrentUDT.DATA))
-            {
-                using (XmlReader reader = XmlReader.Create(new StringReader(CurrentUDT.DATA)))
-                {
-                    CurrentDataSet.ReadXml(reader);
-                }
-            }
+            CurrentDataSet = CurrentUDT.ToDataSet();
+        
+        }
+        public void RefreshUDT(string UdtName)
+        {
+            _mObjUdtHandler = null;
+            _mObjUdtHandler = new CUDTManagerHelper(CRemoteHelper.GetDisconnectedUrl("UDTManager"));
+            CurrentUDT = _mObjUdtHandler.GetUdtByName(UdtName);
+            CurrentDataSet = CurrentUDT.ToDataSet();
         }
         public void UpdateUDT(int tableIndex,string[] Columns,string[]Values,string primaryColumn,string PrimaryValue)
         {
@@ -86,7 +85,7 @@ namespace UDTProvider
             CurrentUDT.UDTTABLE = udtTables;
             _mObjUdtHandler.UpadteUdtRow(CurrentUDT);
         }
-
+        
         public void InsertUDTData(int tableIndex, string[] Columns, string[] Values)
         {
             DataTable dtTable = CurrentDataSet.Tables[tableIndex];
@@ -94,8 +93,25 @@ namespace UDTProvider
             for (int i = 0; i < Columns.Count(); i++)
             {
                 dr[Columns[i]] = Values[i];
+                //delete this
+            }
+            if(string.IsNullOrEmpty(Convert.ToString(dr["Visibility"])))
+            {
+                dr["Visibility"] = true;
+            }
+            if (!Columns.Contains("ID") && dtTable.Columns.Contains("ID"))
+            {
+               DataRow drlast= dtTable.Rows[dtTable.Rows.Count - 1];
+               int id = 0;
+               if (drlast != null && drlast["ID"] != null)
+               {
+                   int.TryParse(Convert.ToString(drlast["ID"]), out id);
+               }
+               id++;
+               dr["ID"] = id;
             }
             var udtTable = new UdtTable();
+            udtTable.UDTPREVIOUSROWDATA = null;
             udtTable.UDTROWDATA = dr.ItemArray.Select(o => o.ToString()).ToList();
             udtTable.UdtTableName = dr.Table.TableName;
             List<UdtTable> udtTables = new List<UdtTable> { udtTable };
