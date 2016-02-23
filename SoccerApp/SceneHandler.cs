@@ -24,6 +24,10 @@ namespace SoccerApp
         string m_scorebugscenepath = string.Empty;
         IPlayer objBGPlayer = null;
         ShotBox objScorePlayer = null;
+        public string Hometeamshortname = string.Empty;
+        public string Awayteamshortname = string.Empty;
+        public string Hometeamscore = string.Empty;
+        public string Awayteamscore = string.Empty;
 
         public Link AppLink
         {
@@ -91,7 +95,7 @@ namespace SoccerApp
                         objChannelShotBox.SetEngineUrl(m_serverurl);
                     }
                     objBGPlayer.OnShotBoxStatus += _objPlayer1_OnShotBoxStatus;
-                    objBGPlayer.Prepare(m_serverurl, Convert.ToInt32(objBGPlayer.ZORDER), string.Empty, RENDERMODE.PROGRAM);
+                    objBGPlayer.Prepare(m_serverurl, 0, string.Empty, RENDERMODE.PROGRAM);
                 }
             }
             catch (Exception ex)
@@ -136,8 +140,25 @@ namespace SoccerApp
                         (objScorePlayer as IAddinInfo).Init(o);
 
                     objScorePlayer.OnShotBoxStatus += _objPlayer1_OnShotBoxStatus;
-                    objScorePlayer.Prepare(m_serverurl, 0, RENDERMODE.PROGRAM);
+                    objScorePlayer.Prepare(m_serverurl, 10, RENDERMODE.PROGRAM);
                 }//end (if)
+            }
+        }
+
+        /// <summary>
+        /// Set match udt name in the udt sequecer object
+        /// </summary>
+        /// <param name="frmobj"></param>
+        public void SetMatchUDT()
+        {
+            if (objScorePlayer != null)
+            {
+                TagData tg = new TagData();
+                tg.UserTags = new string[] { "Hometeamscore", "Awayteamscore", "Hometeamname", "Awayteamname" };
+                tg.Values = new string[] { Hometeamscore, Awayteamscore, Hometeamshortname, Awayteamshortname };
+                tg.IsOnAirUpdate = true;
+                tg.Indexes = new string[] { "0", "0", "0", "0" };
+                objScorePlayer.UpdateSceneGraph(tg);
             }
         }
 
@@ -157,21 +178,33 @@ namespace SoccerApp
                 {
                     ShotBox shotboxobj = sender as ShotBox;
                     if (shotboxobj != null)
-                    { shotboxobj.Play(true, true); }
+                    {
+                        shotboxobj.Play(true, true);
+                        if (shotboxobj.Equals(objScorePlayer))
+                        {
+                            SetMatchUDT();
+                        }
+                    }
                     else
                     {
                         if (sender is IPlayer)
                         {
                             IPlayer playerobj = sender as IPlayer;
                             if (playerobj != null)
-                            { playerobj.Play(true, true); }
+                            {
+                                if (playerobj.Equals(objScorePlayer))
+                                {
+                                    SetMatchUDT();
+                                }
+                                playerobj.Play(true, true);
+                            }
                         }
                     }
                 }
             }
             else if (e.SHOTBOXRESPONSE == SHOTBOXMSG.PLAYCOMPLETE)
             {
-                if(sender is ShotBox)
+                if (sender is ShotBox)
                 {
                     ShotBox shotboxobj = sender as ShotBox;
                     if (shotboxobj.Equals(objScorePlayer))
@@ -179,7 +212,7 @@ namespace SoccerApp
                         shotboxobj.DeleteSg();
                     }
                 }
-                else if(sender is IPlayer)
+                else if (sender is IPlayer)
                 {
                     IPlayer playerobj = sender as IPlayer;
                     if (playerobj.Equals(objBGPlayer))
@@ -193,7 +226,7 @@ namespace SoccerApp
 
         void _objLinkManager_OnEngineDisConnected(object sender, EngineArgs e)
         {
-            if (e.ENGINEIP == ConfigurationManager.AppSettings["stingserver"])
+            if (e.ENGINEIP == m_serverurl)
             {
                 isInitialized = false;
             }
@@ -201,7 +234,7 @@ namespace SoccerApp
 
         void _objLink_OnEngineConnected(object sender, EngineArgs e)
         {
-            if (e.ENGINEIP == ConfigurationManager.AppSettings["stingserver"])
+            if (e.ENGINEIP == m_serverurl)
             {
                 isInitialized = true;
                 LoadScene();
@@ -225,7 +258,7 @@ namespace SoccerApp
                         tg.UserTags = new string[] { ConfigurationManager.AppSettings["counterusertag"] };
                         tg.Values = new string[] { counter };
                         tg.IsOnAirUpdate = true;
-                        tg.Indexes=new string[]{"0"};
+                        tg.Indexes = new string[] { "0" };
                         objScorePlayer.UpdateSceneGraph(tg);
                         break;
                     case "updateextra":

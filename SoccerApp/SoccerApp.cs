@@ -50,6 +50,8 @@ namespace SoccerApp
         PlayerGetter objPlayergetter = null;
         const string m_surlformat = "net.tcp://{0}:{1}/TcpBinding/WcfTcpLink";
         string m_serverurl = string.Empty;
+        string hometeamshortname = string.Empty;
+        string awayteamshortname = string.Empty;
 
         #endregion
 
@@ -92,6 +94,10 @@ namespace SoccerApp
                 Fillgrid();
                 m_objsceneHandler.FileHandler = m_objWaspFileHandler;
                 m_objsceneHandler.Initialize();
+                m_objsceneHandler.Hometeamscore = lblHomeScore.Text;
+                m_objsceneHandler.Awayteamscore = lblAwayScore.Text;
+                m_objsceneHandler.Hometeamshortname = hometeamshortname;
+                m_objsceneHandler.Awayteamshortname = awayteamshortname;
             }
             finally
             {
@@ -394,6 +400,17 @@ namespace SoccerApp
                 DataRow[] dr = m_objUDTMatch.CurrentDataSet.Tables[4].Select("Match= '" + ActiveMatch + "'");
                 lblHomeScore.Text = dr[0]["HomeGoal"].ToString();
                 lblAwayScore.Text = dr[0]["AwayGoal"].ToString();
+                DataTable dtteams = m_objUDTMatch.CurrentDataSet.Tables[1];
+                if (dtteams != null && dtteams.Rows.Count > 0)
+                {
+                    hometeamshortname = dtteams.Rows[0]["Short Name_HT"].ToString();
+                    awayteamshortname = dtteams.Rows[0]["Short Name_AT"].ToString();
+                }
+                m_objsceneHandler.Hometeamscore = lblHomeScore.Text;
+                m_objsceneHandler.Awayteamscore = lblAwayScore.Text;
+                m_objsceneHandler.Hometeamshortname = hometeamshortname;
+                m_objsceneHandler.Awayteamshortname = awayteamshortname;
+                m_objsceneHandler.SetMatchUDT();
             }
             catch (Exception ex)
             {
@@ -903,6 +920,8 @@ namespace SoccerApp
                     m_objUDTMatch.InsertUDTData(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Goal", lblHomeTeam.Text, selectedPlayer });
                     p = null;
                     updateMatchStats("HomeGoal", 1, "Match", cmbMatch.Text);
+                    m_objsceneHandler.Hometeamscore = lblHomeScore.Text;
+                    m_objsceneHandler.SetMatchUDT();
                 }
             }
             catch (Exception ex)
@@ -925,6 +944,8 @@ namespace SoccerApp
                     //m_objUDTMatch.UpdateUDT(4, new string[] { "HomeGoal" }, new string[] { lblHomeScore.Text }, "Match", cmbMatch.Text);
                     lblHomeScore.Text = (Convert.ToInt32(lblHomeScore.Text) - 1).ToString();
                     updateMatchStats("HomeGoal", -1, "Match", cmbMatch.Text);
+                    m_objsceneHandler.Hometeamscore = lblHomeScore.Text;
+                    m_objsceneHandler.SetMatchUDT();
                 }
             }
             catch (Exception ex)
@@ -966,6 +987,8 @@ namespace SoccerApp
                     m_objUDTMatch.InsertUDTData(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Goal", lblAwayTeam.Text, selectedPlayer });
                     p = null;
                     updateMatchStats("AwayGoal", 1, "Match", cmbMatch.Text);
+                    m_objsceneHandler.Awayteamscore = lblAwayScore.Text;
+                    m_objsceneHandler.SetMatchUDT();
                 }
             }
             catch (Exception ex)
@@ -988,6 +1011,8 @@ namespace SoccerApp
                     //m_objUDTMatch.UpdateUDT(4, new string[] { "AwayGoal" }, new string[] { lblAwayScore.Text }, "Match", cmbMatch.Text);
                     lblAwayScore.Text = (Convert.ToInt32(lblAwayScore.Text) - 1).ToString();
                     updateMatchStats("AwayGoal", -1, "Match", cmbMatch.Text);
+                    m_objsceneHandler.Awayteamscore = lblAwayScore.Text;
+                    m_objsceneHandler.SetMatchUDT();
                 }
             }
             catch (Exception ex)
