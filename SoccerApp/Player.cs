@@ -12,9 +12,10 @@ namespace SoccerApp
 {
     public partial class Player : Form
     {
-        public UDTProvider.UDTProvider _objUDTProvider { get; set; }
+        public UDTProvider.UdtProvider ObjUdtprovider { get; set; }
         public string Team { get; set; }
-        public string selectedPlayer { get; set; }
+        public string SelectedPlayer { get; set; }
+        public bool IsPlayerSelected = false;
 
         public Player()
         {
@@ -23,10 +24,10 @@ namespace SoccerApp
 
         public void FillTeam()
         {
-            DataRow drTeam = _objUDTProvider.CurrentDataSet.Tables[2].Select("Name = '" + Team+"'").FirstOrDefault();
+            DataRow drTeam = ObjUdtprovider.CurrentDataSet.Tables[2].Select("Name = '" + Team+"'").FirstOrDefault();
             if (drTeam != null)
             {
-                DataRow[] drPlayers = _objUDTProvider.CurrentDataSet.Tables[3].Select("T24_ID = '" + drTeam["T24_ID"] + "' AND Playing=true");
+                DataRow[] drPlayers = ObjUdtprovider.CurrentDataSet.Tables[3].Select("T24_ID = '" + drTeam["T24_ID"] + "' AND Playing=true");
                 foreach (var item in drPlayers)
                 {
                     lstPlayers.Items.Add(item["First Name"]);
@@ -36,7 +37,15 @@ namespace SoccerApp
 
         private void lstPlayers_DoubleClick(object sender, EventArgs e)
         {
-            selectedPlayer = lstPlayers.SelectedItem.ToString();
+            SelectedPlayer = lstPlayers.SelectedItem.ToString();
+            if (!string.IsNullOrEmpty(lstPlayers.SelectedItem.ToString()))
+            {
+                IsPlayerSelected = true;
+            }
+            else
+            {
+                IsPlayerSelected = false;
+            }
             this.Close();
         }
     }

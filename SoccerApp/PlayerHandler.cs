@@ -17,12 +17,11 @@ namespace SoccerApp
 {
     public partial class PlayerHandler : Form
     {
-        string _CommonPath;
-        CRemoteHelper _objRemoteHelper;
-        CUDTManagerHelper _mObjUdtHandler;
-        CWaspFileHandler objWaspFileHandler;
-        int RowPos = 0;
-        List<ScenInfo> _SceneCollection;
+        private string _CommonPath;
+        private CRemoteHelper _objRemoteHelper;
+        private CWaspFileHandler objWaspFileHandler;
+        private int RowPos = 0;
+        private readonly List<ScenInfo> _SceneCollection;
 
         public PlayerHandler()
         {
@@ -61,10 +60,12 @@ namespace SoccerApp
                       where lv1.Attribute("key").Value == "LOCALMANAGERURL"
                       select lv1.Attribute("value").Value;
             _objRemoteHelper = new CRemoteHelper(url.ElementAt(0));
-            ConnectionStatus info = _objRemoteHelper.Connect();
-            _mObjUdtHandler = new CUDTManagerHelper(CRemoteHelper.GetDisconnectedUrl("UDTManager"));
-            objWaspFileHandler = new CWaspFileHandler();
-            objWaspFileHandler.Initialize(CRemoteHelper.GetDisconnectedUrl("TemplateManager"));
+            ConnectionInfo info = _objRemoteHelper.CheckConnection();
+            if (info.status == Status.Connected)
+            {
+                objWaspFileHandler = new CWaspFileHandler();
+                objWaspFileHandler.Initialize(CRemoteHelper.GetDisconnectedUrl("TemplateManager"));
+            }
         }
         private void listBox1_DoubleClick(object sender, EventArgs e)
         {

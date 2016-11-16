@@ -12,6 +12,10 @@ namespace SoccerApp
 {
     public partial class TeamBuilderForm : Form
     {
+        public UDTProvider.UdtProvider ObjUdtprovider { get; set; }
+
+        public string Team { get; set; }
+
         public TeamBuilderForm()
         {
             InitializeComponent();
@@ -26,7 +30,30 @@ namespace SoccerApp
             listBox2.DragDrop += listBox2_DragDrop;
         }
 
-        void listBox2_DragDrop(object sender, DragEventArgs e)
+        public TeamBuilderForm(UDTProvider.UdtProvider UDTProvider)
+        {
+            ObjUdtprovider = UDTProvider;
+        }
+
+        public void FillTeam()
+        {
+            DataRow dtTeam =ObjUdtprovider.CurrentDataSet.Tables[2].Select("Name='" + Team + "'").FirstOrDefault();
+            string primaryvalue =Convert.ToString(dtTeam[ObjUdtprovider.CurrentDataSet.Tables[2].PrimaryKey[0].ColumnName]);
+            string parentcolumn = ObjUdtprovider.CurrentDataSet.Tables[3].ParentRelations[0].ParentColumns[0].ColumnName;
+            DataRow[] dtTeams = ObjUdtprovider.CurrentDataSet.Tables[3].Select(parentcolumn + "='" + primaryvalue + "' AND Playing=false");
+            foreach (var item in dtTeams)
+            {
+                listBox1.Items.Add(item["First Name"]);
+            }
+            dtTeams = ObjUdtprovider.CurrentDataSet.Tables[3].Select(parentcolumn + "='" + primaryvalue + "' AND Playing=true");
+            foreach (var item in dtTeams)
+            {
+                listBox2.Items.Add(item["First Name"]);
+            }
+
+        }
+
+        private void listBox2_DragDrop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.StringFormat))
             {
@@ -36,12 +63,12 @@ namespace SoccerApp
             }
         }
 
-        void listBox2_DragOver(object sender, DragEventArgs e)
+        private void listBox2_DragOver(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.All;
         }
 
-        void listBox1_MouseDown(object sender, MouseEventArgs e)
+        private void listBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (listBox1.Items.Count == 0)
                 return;
@@ -56,7 +83,7 @@ namespace SoccerApp
             } 
         }
 
-        void listBox1_DragDrop(object sender, DragEventArgs e)
+        private void listBox1_DragDrop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.StringFormat))
             {
@@ -67,12 +94,12 @@ namespace SoccerApp
             }
         }
 
-        void listBox1_DragOver(object sender, DragEventArgs e)
+        private void listBox1_DragOver(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.All;
         }
 
-        void listBox2_MouseDown(object sender, MouseEventArgs e)
+        private void listBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (listBox2.Items.Count == 0)
                 return;
@@ -89,38 +116,16 @@ namespace SoccerApp
                 }
             }
         }
-        public TeamBuilderForm(UDTProvider.UDTProvider UDTProvider)
-        {
-            
-            _objUDTProvider = UDTProvider;
-            
-        }
-        public void FIllTeam()
-        {
-            DataRow[] dtTeams = _objUDTProvider.CurrentDataSet.Tables[7].Select("Team = '" + Team + "' AND Playing=false");
-            foreach (var item in dtTeams)
-            {
-                listBox1.Items.Add(item["Name"]);
-            }
-            dtTeams = _objUDTProvider.CurrentDataSet.Tables[7].Select("Team = '" + Team + "' AND Playing=true");
-            foreach (var item in dtTeams)
-            {
-                listBox2.Items.Add(item["Name"]);
-            }
-
-        }
-        public UDTProvider.UDTProvider _objUDTProvider { get; set; }
-        public string Team { get; set; }
 
         private void button1_Click(object sender, EventArgs e)
         {
             foreach (var item in listBox1.Items)
             {
-                _objUDTProvider.UpdateUDT(7, new string[] { "Playing" }, new string[] { "false" }, "Name", item.ToString());
+                ObjUdtprovider.UpdateUdt(3, new string[] { "Playing" }, new string[] { "false" }, "[First Name]", item.ToString(), true);
             }
             foreach (var item in listBox2.Items)
             {
-                _objUDTProvider.UpdateUDT(7, new string[] { "Playing" }, new string[] { "true" }, "Name", item.ToString());
+                ObjUdtprovider.UpdateUdt(3, new string[] { "Playing" }, new string[] { "true" }, "[First Name]", item.ToString(), true);
             }
             this.Close();
         }

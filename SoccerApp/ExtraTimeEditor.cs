@@ -12,7 +12,7 @@ namespace SoccerApp
 {
     public partial class ExtraTimeEditor : Form
     {
-        public int EXTRATIME { get { return Convert.ToInt32(ExtraTime.Value); } }
+        public int Extratime { get { return Convert.ToInt32(ExtraTime.Value); } }
 
         public ExtraTimeEditor()
         {

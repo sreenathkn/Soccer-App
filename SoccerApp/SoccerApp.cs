@@ -4,8 +4,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Configuration;
 using UDTProvider;
@@ -14,8 +12,6 @@ using BeeSys.Wasp.Communicator;
 using System.Xml.Linq;
 using System.IO;
 using BeeSys.Wasp.KernelController;
-using Beesys.Wasp.WorkFlow;
-using BeeSys.Wasp3D.DesignForms2;
 using System.Xml;
 using BeeSys.Wasp3D.FormDesigner2;
 using BeeSys.Wasp3D.Controls2;
@@ -26,28 +22,28 @@ namespace SoccerApp
     {
         #region Class Members
 
-        private UDTProvider.UDTProvider m_objUDTMatchSchedule;
-        private UDTProvider.UDTProvider m_objUDTMatch;
-        CUDTManagerHelper m_ObjUdtHandler;
-        string ActiveMatch = string.Empty;
-        public DateTime CountDownTarget = DateTime.Now;
+        private UDTProvider.UdtProvider m_objUDTMatchSchedule;
+        private UDTProvider.UdtProvider m_objUDTMatch;
+        private string ActiveMatch = string.Empty;
+        private DateTime CountDownTarget = DateTime.Now;
         private int SrNo = 1;
         private DateTime MatchPartStartTime;
-        CWaspFileHandler m_objWaspFileHandler;
-        CRemoteHelper m_objRemoteHelper;
+        private CWaspFileHandler m_objWaspFileHandler;
+        private CRemoteHelper m_objRemoteHelper;
         private string m_sCommonPath;
-        SceneHandler m_objsceneHandler = null;
-        List<ScenInfo> m_lstSceneCollection = null;
-        IPlayer m_objPlayer = null;
-        protected static LINKTYPE m_objLinkType = LINKTYPE.TCP;
-        string m_sEngineUrl = null;
-        string NAME = string.Empty;
-        string EVENTID = string.Empty;
-        string MATCHNAME = string.Empty;
-        string MATCHUDTNAME = string.Empty;
-        string MATCHUDTID = string.Empty;
-        IPlayer m_objplayertodelete = null;
-        IPlayer m_objplayerbg = null;
+        private SceneHandler m_objsceneHandler = null;
+        private List<ScenInfo> m_lstSceneCollection = null;
+        private IPlayer m_objPlayer = null;
+        private string NAME = string.Empty;
+        private string MATCHUDTNAME = string.Empty;
+        private string MATCHUDTID = string.Empty;
+        private IPlayer m_objplayertodelete = null;
+        private PlayerGetter objPlayergetter = null;
+        private const string m_surlformat = "net.tcp://{0}:{1}/TcpBinding/WcfTcpLink";
+        private string m_serverurl = string.Empty;
+        private string hometeamshortname = string.Empty;
+        private string awayteamshortname = string.Empty;
+        private readonly bool isformloaded = false;
 
         #endregion
 
@@ -59,10 +55,11 @@ namespace SoccerApp
             {
                 InitializeComponent();
                 Init();
+                isformloaded = true;
             }
             catch (Exception ex)
             {
-
+                LogWriter.WriteLog(ex);
             }
         }
 
@@ -71,35 +68,38 @@ namespace SoccerApp
         #region Private Methods
 
         /// <summary>
-        /// 
+        /// Initializing the components
         /// </summary>
         private void Init()
         {
             try
             {
+                m_serverurl = string.Format(m_surlformat, ConfigurationManager.AppSettings["stingserverip"], ConfigurationManager.AppSettings["stingserverport"]);
                 m_objWaspFileHandler = new CWaspFileHandler();
                 m_objsceneHandler = new SceneHandler();
+                objPlayergetter = new PlayerGetter();
                 SetUI();
                 InitializeWasp();
-                InitilizeMatchScheduleUDT();
+                InitilizeMatchScheduleUdt();
                 InitializeCombos();
-                InitializeMatchUDT();
                 FillMatchDetails();
-                //m_lstSceneCollection = new List<ScenInfo>();
-                //FillPlayerList();
                 Fillgrid();
-                //m_objsceneHandler.Initialize();
                 m_objsceneHandler.FileHandler = m_objWaspFileHandler;
-                m_objsceneHandler.Init();
+                m_objsceneHandler.Initialize();
+                m_objsceneHandler.Hometeamscore = lblHomeScore.Text;
+                m_objsceneHandler.Awayteamscore = lblAwayScore.Text;
+                m_objsceneHandler.Hometeamshortname = hometeamshortname;
+                m_objsceneHandler.Awayteamshortname = awayteamshortname;
+                m_objsceneHandler.SetMatchUdt();
             }
-            finally
+            catch (Exception ex)
             {
-
+                LogWriter.WriteLog(ex);
             }
         }
 
         /// <summary>
-        /// 
+        /// Set the UI controls colors and set selection index of combos
         /// </summary>
         private void SetUI()
         {
@@ -132,28 +132,30 @@ namespace SoccerApp
         }
 
         /// <summary>
-        /// 
+        /// Create wasp kc connection and get template manager object
         /// </summary>
         private void InitializeWasp()
         {
             try
             {
                 m_sCommonPath = Environment.GetEnvironmentVariable("Wasp3.5");
-
+                System.Diagnostics.Debug.WriteLine("InitializeWasp Commonpath:" + m_sCommonPath);
                 var configfile = Path.Combine(m_sCommonPath, "CommonConfig.config");
-
+                System.Diagnostics.Debug.WriteLine("InitializeWasp configfile:" + configfile);
                 XDocument xdoc = XDocument.Load(configfile);
                 var url = from lv1 in xdoc.Descendants("add")
-                          where lv1.Attribute("key").Value == "REMOTEMANAGERURL"
+                          where lv1.Attribute("key").Value == "LOCALMANAGERURL"
                           select lv1.Attribute("value").Value;
+                System.Diagnostics.Debug.WriteLine("InitializeWasp Url:" + url.ElementAt(0));
                 m_objRemoteHelper = new CRemoteHelper(url.ElementAt(0));
-                ConnectionStatus info = m_objRemoteHelper.Connect();
-                ServiceUrl udtmgrserviceurl = CRemoteHelper.GetDisconnectedUrl("UDTManager");
-                m_ObjUdtHandler = new CUDTManagerHelper(udtmgrserviceurl);
-                ServiceUrl templatemgrserviceurl = CRemoteHelper.GetDisconnectedUrl("TemplateManager");
-                m_objWaspFileHandler = new CWaspFileHandler();
-                m_objWaspFileHandler.Initialize(templatemgrserviceurl);
-                LoadTemplates();
+                ConnectionInfo info = m_objRemoteHelper.CheckConnection();
+                if (info.status == Status.Connected)
+                {
+                    ServiceUrl templatemgrserviceurl = CRemoteHelper.GetDisconnectedUrl("TemplateManager");
+                    m_objWaspFileHandler = new CWaspFileHandler();
+                    m_objWaspFileHandler.Initialize(templatemgrserviceurl);
+                    LoadTemplates();
+                }
             }
             catch (Exception ex)
             {
@@ -162,7 +164,7 @@ namespace SoccerApp
         }
 
         /// <summary>
-        /// 
+        /// Fill templates list by reading the templates.xml
         /// </summary>
         private void LoadTemplates()
         {
@@ -195,33 +197,46 @@ namespace SoccerApp
         }
 
         /// <summary>
-        /// 
+        /// Initialize SoccerMatchSchedule udt by creating its UdtProvider object
         /// </summary>
-        private void InitilizeMatchScheduleUDT()
+        private void InitilizeMatchScheduleUdt()
         {
             if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["udtname"]))
             {
-                m_objUDTMatchSchedule = new UDTProvider.UDTProvider();
-                m_objUDTMatchSchedule.InitializeConnection();
-                m_objUDTMatchSchedule.InitializeUDT(ConfigurationManager.AppSettings["udtname"]);
+                try
+                {
+                    if (m_objUDTMatchSchedule != null)
+                    {
+                        m_objUDTMatchSchedule.Dispose();
+                        m_objUDTMatchSchedule = null;
+                    }
+                    m_objUDTMatchSchedule = new UDTProvider.UdtProvider();
+                    m_objUDTMatchSchedule.InitializeConnection();
+                    m_objUDTMatchSchedule.InitializeUdt(ConfigurationManager.AppSettings["udtname"]);
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.WriteLog(ex);
+                }
             }
         }
 
         /// <summary>
-        /// 
+        /// Initialize SoccerMatch udt by creating its UdtProvider object
         /// </summary>
-        private void InitializeMatchUDT()
+        private void InitializeMatchUdt()
         {
             if (!string.IsNullOrEmpty(MATCHUDTNAME))
             {
-                var udtargs = m_ObjUdtHandler.GetUdtByName(MATCHUDTNAME);
-                if (udtargs != null)
+                if (m_objUDTMatch != null)
                 {
-                    MATCHUDTID = udtargs.ID;
+                    m_objUDTMatch.Dispose();
+                    m_objUDTMatch = null;
                 }
-                m_objUDTMatch = new UDTProvider.UDTProvider();
+                m_objUDTMatch = new UDTProvider.UdtProvider();
                 m_objUDTMatch.InitializeConnection();
-                m_objUDTMatch.InitializeUDT(MATCHUDTNAME);
+                m_objUDTMatch.InitializeUdt(MATCHUDTNAME);
+                MATCHUDTID = m_objUDTMatch.CnctArgs.Udtid;
             }
             else
             {
@@ -231,7 +246,7 @@ namespace SoccerApp
         }
 
         /// <summary>
-        /// 
+        /// Fill properties of match combos and call method to fill combo
         /// </summary>
         private void InitializeCombos()
         {
@@ -244,12 +259,10 @@ namespace SoccerApp
             cmbMatchPart.SelectedIndex = 0;
 
             // Get the Match part List from UDT and add to cmbstr1, Fill the Combo, and set the selected Item
-            //FillMatchPart();
-
         }
 
         /// <summary>
-        /// 
+        /// Fill match list by reading data from SoccerMatchSchedule udt
         /// </summary>
         private void FillMatchList()
         {
@@ -275,10 +288,7 @@ namespace SoccerApp
                         {
                             cmbMatch.SelectedIndex = index;
                         }
-                        catch (Exception ex)
-                        {
-
-                        }
+                        catch { }
                         UdtFilter filter = new UdtFilter();
                         filter.FilterColumn = "Name";
                         filter.FilterValue = cmbMatch.Text;
@@ -302,7 +312,7 @@ namespace SoccerApp
         /// Set active match udt name and initialize its udts
         /// </summary>
         /// <param name="matchname"></param>
-        private void SetMatchUDTName(string matchname)
+        private void SetMatchUdtName()
         {
             try
             {
@@ -310,7 +320,7 @@ namespace SoccerApp
                 var dtmatch = dt.Tables[1];
                 DataRow[] dr = dtmatch.Select("Active=true");
                 MATCHUDTNAME = dr[0]["UDT Name"].ToString();
-                InitializeMatchUDT();
+                InitializeMatchUdt();
             }
             catch (Exception ex)
             {
@@ -319,7 +329,7 @@ namespace SoccerApp
         }
 
         /// <summary>
-        /// 
+        /// Fill the match events on the grid by reading data from MatchEvents udt table of SoccerMatch
         /// </summary>
         private void FillMatchEvents()
         {
@@ -385,7 +395,7 @@ namespace SoccerApp
         }
 
         /// <summary>
-        /// 
+        /// Get the team scores and names and set it to the score bug wired variable 
         /// </summary>
         /// <param name="ActiveMatch"></param>
         private void InitializeScores(string ActiveMatch)
@@ -395,6 +405,17 @@ namespace SoccerApp
                 DataRow[] dr = m_objUDTMatch.CurrentDataSet.Tables[4].Select("Match= '" + ActiveMatch + "'");
                 lblHomeScore.Text = dr[0]["HomeGoal"].ToString();
                 lblAwayScore.Text = dr[0]["AwayGoal"].ToString();
+                DataTable dtteams = m_objUDTMatch.CurrentDataSet.Tables[1];
+                if (dtteams != null && dtteams.Rows.Count > 0)
+                {
+                    hometeamshortname = dtteams.Rows[0]["Short Name_HT"].ToString();
+                    awayteamshortname = dtteams.Rows[0]["Short Name_AT"].ToString();
+                }
+                m_objsceneHandler.Hometeamscore = lblHomeScore.Text;
+                m_objsceneHandler.Awayteamscore = lblAwayScore.Text;
+                m_objsceneHandler.Hometeamshortname = hometeamshortname;
+                m_objsceneHandler.Awayteamshortname = awayteamshortname;
+                m_objsceneHandler.SetMatchUdt();
             }
             catch (Exception ex)
             {
@@ -403,24 +424,27 @@ namespace SoccerApp
         }
 
         /// <summary>
-        /// 
+        /// Update the Match Statistics table by checking the existance
         /// </summary>
         /// <param name="Column"></param>
         /// <param name="value"></param>
         /// <param name="uniqueColumn"></param>
         /// <param name="uniqueValue"></param>
-        private void updateMatchStats(string Column, int value, string uniqueColumn, string uniqueValue)
+        private void UpdateMatchStats(string Column, int value, string uniqueColumn, string uniqueValue)
         {
             try
             {
-                m_objUDTMatch.RefreshUDT(MATCHUDTNAME); // It will refresh the UDT and Dataset and get latest values available in UDT
+                if (isformloaded)
+                {
+                    m_objUDTMatch.RefreshUdt(MATCHUDTNAME); // It will refresh the UDT and Dataset and get latest values available in UDT
+                }
                 if (m_objUDTMatch.CurrentDataSet != null)
                 {
                     DataRow[] dr = m_objUDTMatch.CurrentDataSet.Tables[4].Select(uniqueColumn + "= '" + uniqueValue + "'");
                     if (dr != null && dr.Length > 0 && (Convert.ToInt32(dr[0][Column]) > 0 || value == 1))
                     {
                         int val = Convert.ToInt32(dr[0][Column].ToString()) + value;
-                        m_objUDTMatch.UpdateUDT(4, new string[] { Column }, new string[] { val.ToString() }, uniqueColumn, uniqueValue);
+                        m_objUDTMatch.UpdateUdt(4, new string[] { Column }, new string[] { val.ToString() }, uniqueColumn, uniqueValue, isformloaded);
                     }
                     else if (value != -1)
                     {
@@ -432,7 +456,7 @@ namespace SoccerApp
                         }
                         id++;
                         int val = value;
-                        m_objUDTMatch.InsertUDTData(4, new string[] { "ID", uniqueColumn, Column }, new string[] { id.ToString(), uniqueValue, val.ToString() });
+                        m_objUDTMatch.InsertUdt(4, new string[] { "ID", uniqueColumn, Column }, new string[] { id.ToString(), uniqueValue, val.ToString() }, isformloaded);
                     }
                 }
             }
@@ -482,116 +506,94 @@ namespace SoccerApp
         /// </summary>
         /// <param name="str"></param>
         /// <param name="column"></param>
-        private void GetTemplate(string str, string column, bool IsID)
+        private void GetTemplate(string str, string column)
         {
             try
             {
+                string columnname = column;
                 ScenInfo si = m_lstSceneCollection.Where(s => s.Description == str).FirstOrDefault();
-
-                STemplateDetails obj = m_objWaspFileHandler.GetTemplatePlayerInfo(si.Id, "");
-
-                if (obj != null)
+                TemplateInfo obj = objPlayergetter.GetPlayerInfo(si.Id);
+                m_objPlayer = Activator.CreateInstance(obj.TemplatePlayerInfo) as IPlayer;
+                Form objfrm = m_objPlayer as Form;
+                SetMatchUdt(objfrm);
+                if (m_objPlayer != null)
                 {
-                    m_objPlayer = Activator.CreateInstance(obj.TemplatePlayerInfo) as IPlayer;
-                    Form objfrm = m_objPlayer as Form;
+                    m_objPlayer.Init("", "", si.Id, "");
+                    m_objPlayer.SetLink(m_objsceneHandler.AppLink, obj.MetaDataXml);
+                    //S. No 116: Added for AddIn
+                    //S.No.	: -	128
+                    if (m_objPlayer is IAddinInfo)
+                        (m_objPlayer as IAddinInfo).Init(new InstanceInfo() { InstanceId = si.Id });
 
-                    SetMatchUDT(objfrm);
-
-                    //UpdateWaspControls(objfrm, IsID);
-
-                    string sLinkID = string.Empty;
-                    if (m_objPlayer != null)
+                    IDataEntry objDataentry = m_objPlayer as IDataEntry;
+                    if (objDataentry != null)
                     {
-                        m_objPlayer.Init("", "", si.Id, "");
-                        m_objPlayer.SetLink(m_objsceneHandler.AppLink, obj.Scene);
-                        //S. No 116: Added for AddIn
-                        //S.No.	: -	128
-                        if (m_objPlayer is IAddinInfo)
-                            (m_objPlayer as IAddinInfo).Init(new InstanceInfo() { InstanceId = si.Id });
-                        //    (m_objPlayer as IAddinInfo).Init(new InstanceInfo() { Type = "wsp", InstanceId = "", TemplateId = si.Id, ThemeId = "Default", });
-
-
-                        IDataEntry objDataentry = m_objPlayer as IDataEntry;
-                        if (objDataentry != null)
-                        {
-                            objDataentry.PostData += objDataentry_PostData;
-                        }
-
-                        IChannelShotBox objChannelShotBox = m_objPlayer as IChannelShotBox;
-                        if (objChannelShotBox != null)
-                        {
-                            if (m_objLinkType == LINKTYPE.TCP)
-                                m_sEngineUrl = ConfigurationManager.AppSettings["stingserver"];
-                            //newplaylistinstance.ActiveServer.GetUrl(CConstants.Constants.TCP);
-                            //S.No.: -	147
-                            objChannelShotBox.SetEngineUrl(ConfigurationManager.AppSettings["stingserver"]);
-                        }
-
-                        m_objPlayer.OnShotBoxControllerStatus += objPlayer_OnShotBoxControllerStatus;
-                        m_objPlayer.Prepare(m_sEngineUrl, Convert.ToInt32(m_objPlayer.ZORDER), string.Empty, RENDERMODE.PROGRAM);
+                        objDataentry.PostData += objDataentry_PostData;
                     }
-                    if (column != "-1")
-                    {
-                        objfrm.TopLevel = false;
-                        objfrm.Visible = false;
-                        objfrm.Dock = DockStyle.Fill;
-                        Control ctl = null;
-                        Control ctl2 = null;
-                        if (string.Compare(column, "Column2", StringComparison.OrdinalIgnoreCase) == 0)
-                        {
-                            ctl = tableLayoutPanel1.GetControlFromPosition(0, 0);
-                            if (ctl != null) // Already control present there
-                            {
-                                //First play out the graphic.
-                                //then delete the gfx                            
-                                tableLayoutPanel1.Controls.Remove(ctl);
-                                (ctl as IPlayer).DeleteSg();
-                                tableLayoutPanel1.Controls.Add(objfrm, 0, 0);
-                            }
-                        }
 
-                        if (string.Compare(column, "Column3", StringComparison.OrdinalIgnoreCase) == 0)
+                    IChannelShotBox objChannelShotBox = m_objPlayer as IChannelShotBox;
+                    if (objChannelShotBox != null)
+                    {
+                        objChannelShotBox.SetEngineUrl(m_serverurl);
+                    }
+
+                    m_objPlayer.OnShotBoxControllerStatus += objPlayer_OnShotBoxControllerStatus;
+                    m_objPlayer.Prepare(m_serverurl, Convert.ToInt32(m_objPlayer.ZORDER), string.Empty, RENDERMODE.PROGRAM);
+                }
+                if (columnname != "-1")
+                {
+                    objfrm.TopLevel = false;
+                    objfrm.Visible = false;
+                    objfrm.Dock = DockStyle.Fill;
+                    Control ctl = null;
+                    Control ctl2 = null;
+                    if (string.Compare(columnname, "Column2", StringComparison.OrdinalIgnoreCase) == 0)
+                    {
+                        ctl = tableLayoutPanel1.GetControlFromPosition(0, 0);
+                        if (ctl != null) // Already control present there
                         {
-                            ctl2 = tableLayoutPanel1.GetControlFromPosition(1, 0);
-                            if (ctl2 != null) // Already control present there
-                            {
-                                //First play out the graphic.
-                                //then delete the gfx
-                                tableLayoutPanel1.Controls.Remove(ctl2);
-                                (ctl2 as IPlayer).DeleteSg();
-                                tableLayoutPanel1.Controls.Add(objfrm, 1, 0);
-                            }
-                        }
-                        if (ctl == null && (string.Compare(column, "Column2") == 0))
-                        {
+                            //First play out the graphic.
+                            //then delete the gfx                            
+                            tableLayoutPanel1.Controls.Remove(ctl);
+                            (ctl as IPlayer).DeleteSg();
                             tableLayoutPanel1.Controls.Add(objfrm, 0, 0);
                         }
-                        else if (ctl2 == null && (string.Compare(column, "Column3") == 0))
+                    }
+
+                    if (string.Compare(columnname, "Column3", StringComparison.OrdinalIgnoreCase) == 0)
+                    {
+                        ctl2 = tableLayoutPanel1.GetControlFromPosition(1, 0);
+                        if (ctl2 != null) // Already control present there
                         {
+                            //First play out the graphic.
+                            //then delete the gfx
+                            tableLayoutPanel1.Controls.Remove(ctl2);
+                            (ctl2 as IPlayer).DeleteSg();
                             tableLayoutPanel1.Controls.Add(objfrm, 1, 0);
                         }
-                        objfrm.Show();
                     }
+                    if (ctl == null && (string.Compare(columnname, "Column2",StringComparison.OrdinalIgnoreCase) == 0))
+                    {
+                        tableLayoutPanel1.Controls.Add(objfrm, 0, 0);
+                    }
+                    else if (ctl2 == null && (string.Compare(columnname, "Column3", StringComparison.OrdinalIgnoreCase) == 0))
+                    {
+                        tableLayoutPanel1.Controls.Add(objfrm, 1, 0);
+                    }
+                    objfrm.Show();
                 }
-                else
-                {
-                    MessageBox.Show("Template " + si.Id + "Not found");
-                }
-
             }
-
             catch (Exception ex)
             {
                 LogWriter.WriteLog(ex);
             }
-
         }
 
         /// <summary>
         /// Set match udt name in the udt sequecer object
         /// </summary>
         /// <param name="frmobj"></param>
-        private void SetMatchUDT(Form frmobj)
+        private void SetMatchUdt(Form frmobj)
         {
 
             Control frmctrl = frmobj as Control;
@@ -608,38 +610,19 @@ namespace SoccerApp
             FieldInfo[] objfieldinfo = frmctrl.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             foreach (var objfield in objfieldinfo)
             {
-                Type objFieldType = objfield.FieldType;
                 object o = objfield.GetValue(frmctrl);
                 if (o != null)
                 {
                     Component objComponent = o as Component;
-                    if (objComponent != null && objComponent is UDT)
+                    if (objComponent != null && objComponent is UDT && !string.IsNullOrEmpty(MATCHUDTID))
                     {
-                        if (!string.IsNullOrEmpty(MATCHUDTID))
-                        {
-                            UDT objudt = (UDT)objComponent;
-                            objudt.SelectedUdtId = MATCHUDTID;
-                            objudt.UDTNames = MATCHUDTNAME;
-                            objudt.ExecuteQuery(MATCHUDTID, objudt.Filter);
-                            break;
-                        }
+                        UDT objudt = (UDT)objComponent;
+                        objudt.SelectedUdtId = MATCHUDTID;
+                        objudt.UDTNames = MATCHUDTNAME;
+                        objudt.ExecuteQuery(MATCHUDTID, objudt.Filter);
+                        break;
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// clear objects and unbind events
-        /// </summary>
-        private void Shutdown()
-        {
-            try
-            {
-
-            }
-            catch (Exception)
-            {
-
             }
         }
 
@@ -647,7 +630,7 @@ namespace SoccerApp
         /// Loading match events player 
         /// </summary>
         /// <param name="eventid"></param>
-        private void LoadMatchEventGrahicPlayer(int eventid)
+        private void LoadMatchEventGrahicPlayer()
         {
             try
             {
@@ -668,7 +651,7 @@ namespace SoccerApp
                     }
                     if (oldP1 != mgps.P1)
                     {
-                        GetTemplate("matchevent", "Column2", false);
+                        GetTemplate("matchevent", "Column2");
                     }
                 }
                 if (mgps.P2)
@@ -679,7 +662,7 @@ namespace SoccerApp
                     }
                     if (oldP2 != mgps.P2)
                     {
-                        GetTemplate("matchevent", "Column3", false);
+                        GetTemplate("matchevent", "Column3");
                     }
                 }
             }
@@ -702,24 +685,21 @@ namespace SoccerApp
 
             foreach (DataGridViewRow dr in dgvSelectPlayer.Rows)
             {
-                if ((bool)dr.Cells[columnindex].Value != false)
+                if ((bool)dr.Cells[columnindex].Value)
                 {
                     isAllfalse = false;
                     break;
                 }
             }
-            if (isAllfalse)
+            if (isAllfalse && tableLayoutPanel1.GetControlFromPosition(columnpos, 0) != null)
             {
-                if (tableLayoutPanel1.GetControlFromPosition(columnpos, 0) != null)
-                {
-                    return true;
-                }
+                return true;
             }
             return false;
         }
 
         /// <summary>
-        /// 
+        /// Change the active match and fill the data according to the new match
         /// </summary>
         private void FillMatchDetails()
         {
@@ -736,29 +716,27 @@ namespace SoccerApp
 
                 foreach (string item in cmbMatch.Items)
                 {
-                    System.Diagnostics.Trace.WriteLine(item);
-
                     if (item == cmbMatch.Text)
                     {
-                        m_objUDTMatchSchedule.UpdateUDT(1, new string[] { "Active" }, new string[] { "true" }, "Name", cmbMatch.Text);
+                        m_objUDTMatchSchedule.UpdateUdt(1, new string[] { "Active" }, new string[] { "true" }, "Name", cmbMatch.Text, isformloaded);
                     }
                     else
                     {
-                        m_objUDTMatchSchedule.UpdateUDT(1, new string[] { "Active" }, new string[] { "false" }, "Name", item);
+                        m_objUDTMatchSchedule.UpdateUdt(1, new string[] { "Active" }, new string[] { "false" }, "Name", item, isformloaded);
                     }
                 }
                 m_objUDTMatchSchedule.Notify("Active Match");
                 ActiveMatch = cmbMatch.Text;
                 if (m_objUDTMatchSchedule != null)
                 {
-                    DataTable dt = m_objUDTMatchSchedule.CurrentDataSet.Tables["13"];
+                    DataTable dt = m_objUDTMatchSchedule.CurrentDataSet.Tables[1];
                     {
                         foreach (DataRow row in dt.Rows)
                         {
                             if ((bool)row["Active"])
                             {
                                 NAME = row["NAME"].ToString();
-                                SetMatchUDTName(NAME);
+                                SetMatchUdtName();
                             }
                         }
                     }
@@ -776,7 +754,7 @@ namespace SoccerApp
         }
 
         /// <summary>
-        /// 
+        /// remove the player controls
         /// </summary>
         private void ClearPlayerControlls()
         {
@@ -812,7 +790,7 @@ namespace SoccerApp
         }
 
         /// <summary>
-        /// 
+        /// Enable buttons
         /// </summary>
         private void EnabaleActions()
         {
@@ -831,7 +809,7 @@ namespace SoccerApp
         }
 
         /// <summary>
-        /// 
+        /// Disable buttons
         /// </summary>
         private void DisableActions()
         {
@@ -853,7 +831,7 @@ namespace SoccerApp
         #region Events
 
         /// <summary>
-        /// 
+        ///  On player post button click update the scenegraph
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="objNodeXml"></param>
@@ -867,7 +845,7 @@ namespace SoccerApp
         }
 
         /// <summary>
-        /// 
+        /// On active match change event call the method to fill the new match details
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -884,7 +862,7 @@ namespace SoccerApp
         }
 
         /// <summary>
-        /// 
+        /// On change of match part set the counter
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -920,27 +898,35 @@ namespace SoccerApp
                 {
                     TimeSpan ts = DateTime.Now.Subtract(MatchPartStartTime);
                     lblHomeScore.Text = (Convert.ToInt32(lblHomeScore.Text) + 1).ToString();
-                    m_objUDTMatch.UpdateUDT(4, new string[] { "HomeGoal" }, new string[] { lblHomeScore.Text }, "Match", cmbMatch.Text);
                     Player p = new Player();
                     p.Team = lblHomeTeam.Text;
-                    p._objUDTProvider = m_objUDTMatch;
+                    p.ObjUdtprovider = m_objUDTMatch;
                     p.FillTeam();
                     p.StartPosition = FormStartPosition.CenterParent;
                     p.ShowDialog();
-
-                    string selectedPlayer = p.selectedPlayer;
-                    DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
-                    dgv.Cells[0].Value = SrNo;
-                    dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
-                    dgv.Cells[2].Value = cmbMatchPart.Text;
-                    dgv.Cells[3].Value = "Goal";
-                    dgv.Cells[4].Value = lblHomeTeam.Text;
-                    dgv.Cells[5].Value = selectedPlayer;
-                    dgvMatchevents.Rows.Add(dgv);
-                    SrNo++;
-                    m_objUDTMatch.InsertUDTData(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Goal", lblHomeTeam.Text, selectedPlayer });
-                    p = null;
-                    updateMatchStats("HomeGoal", 1, "Match", cmbMatch.Text);
+                    if (p.IsPlayerSelected)
+                    {
+                        string selectedPlayer = p.SelectedPlayer;
+                        DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
+                        dgv.Cells[0].Value = SrNo;
+                        dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+                        dgv.Cells[2].Value = cmbMatchPart.Text;
+                        dgv.Cells[3].Value = "Goal";
+                        dgv.Cells[4].Value = lblHomeTeam.Text;
+                        dgv.Cells[5].Value = selectedPlayer;
+                        dgvMatchevents.Rows.Add(dgv);
+                        SrNo++;
+                        m_objUDTMatch.InsertUdt(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Goal", lblHomeTeam.Text, selectedPlayer }, isformloaded);
+                        p = null;
+                        UpdateMatchStats("HomeGoal", 1, "Match", cmbMatch.Text);
+                        m_objUDTMatch.UpdateUdt(1, new string[] { "HomeScore" }, new string[] { lblHomeScore.Text }, "Name", cmbMatch.Text, isformloaded);
+                        m_objsceneHandler.Hometeamscore = lblHomeScore.Text;
+                        m_objsceneHandler.SetMatchUdt();
+                    }
+                    else
+                    {
+                        lblHomeScore.Text = (Convert.ToInt32(lblHomeScore.Text) - 1).ToString();
+                    }
                 }
             }
             catch (Exception ex)
@@ -950,7 +936,7 @@ namespace SoccerApp
         }//end(btnhomeplus_Click)
 
         /// <summary>
-        /// 
+        /// On hometeam goals minus action update the values in udt as well as in UI to the new value
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -960,9 +946,11 @@ namespace SoccerApp
             {
                 if (Convert.ToInt32(lblHomeScore.Text) != 0 && m_objUDTMatch != null)
                 {
-                    m_objUDTMatch.UpdateUDT(4, new string[] { "HomeGoal" }, new string[] { lblHomeScore.Text }, "Match", cmbMatch.Text);
                     lblHomeScore.Text = (Convert.ToInt32(lblHomeScore.Text) - 1).ToString();
-                    updateMatchStats("HomeGoal", -1, "Match", cmbMatch.Text);
+                    m_objUDTMatch.UpdateUdt(1, new string[] { "HomeScore" }, new string[] { lblHomeScore.Text }, "Name", cmbMatch.Text, isformloaded);
+                    UpdateMatchStats("HomeGoal", -1, "Match", cmbMatch.Text);
+                    m_objsceneHandler.Hometeamscore = lblHomeScore.Text;
+                    m_objsceneHandler.SetMatchUdt();
                 }
             }
             catch (Exception ex)
@@ -972,7 +960,7 @@ namespace SoccerApp
         }//end(btnHomeminus_Click)
 
         /// <summary>
-        /// 
+        /// On awayteam goals plus action update the values in udt as well as in UI to the new value
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -983,27 +971,36 @@ namespace SoccerApp
                 if (m_objUDTMatch != null)
                 {
                     lblAwayScore.Text = (Convert.ToInt32(lblAwayScore.Text) + 1).ToString();
-                    m_objUDTMatch.UpdateUDT(4, new string[] { "AwayGoal" }, new string[] { lblAwayScore.Text }, "Match", cmbMatch.Text);
                     Player p = new Player();
                     p.Team = lblAwayTeam.Text;
-                    p._objUDTProvider = m_objUDTMatch;
+                    p.ObjUdtprovider = m_objUDTMatch;
                     p.FillTeam();
                     p.StartPosition = FormStartPosition.CenterParent;
                     p.ShowDialog();
-                    TimeSpan ts = DateTime.Now.Subtract(MatchPartStartTime);
-                    string selectedPlayer = p.selectedPlayer;
-                    DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
-                    dgv.Cells[0].Value = SrNo;
-                    dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
-                    dgv.Cells[2].Value = cmbMatchPart.Text;
-                    dgv.Cells[3].Value = "Goal";
-                    dgv.Cells[4].Value = lblAwayTeam.Text;
-                    dgv.Cells[5].Value = selectedPlayer;
-                    dgvMatchevents.Rows.Add(dgv);
-                    SrNo++;
-                    m_objUDTMatch.InsertUDTData(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Goal", lblAwayTeam.Text, selectedPlayer });
-                    p = null;
-                    updateMatchStats("AwayGoal", 1, "Match", cmbMatch.Text);
+                    if (p.IsPlayerSelected)
+                    {
+                        TimeSpan ts = DateTime.Now.Subtract(MatchPartStartTime);
+                        string selectedPlayer = p.SelectedPlayer;
+                        DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
+                        dgv.Cells[0].Value = SrNo;
+                        dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+                        dgv.Cells[2].Value = cmbMatchPart.Text;
+                        dgv.Cells[3].Value = "Goal";
+                        dgv.Cells[4].Value = lblAwayTeam.Text;
+                        dgv.Cells[5].Value = selectedPlayer;
+                        dgvMatchevents.Rows.Add(dgv);
+                        SrNo++;
+                        m_objUDTMatch.InsertUdt(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Goal", lblAwayTeam.Text, selectedPlayer }, isformloaded);
+                        p = null;
+                        m_objUDTMatch.UpdateUdt(1, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text, isformloaded);
+                        UpdateMatchStats("AwayGoal", 1, "Match", cmbMatch.Text);
+                        m_objsceneHandler.Awayteamscore = lblAwayScore.Text;
+                        m_objsceneHandler.SetMatchUdt();
+                    }
+                    else
+                    {
+                        lblAwayScore.Text = (Convert.ToInt32(lblAwayScore.Text) - 1).ToString();
+                    }
                 }
             }
             catch (Exception ex)
@@ -1013,7 +1010,7 @@ namespace SoccerApp
         }
 
         /// <summary>
-        /// 
+        /// On awayteam goals minus action update the values in udt as well as in UI to the new value
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -1023,9 +1020,11 @@ namespace SoccerApp
             {
                 if (Convert.ToInt32(lblAwayScore.Text) != 0 && m_objUDTMatch != null)
                 {
-                    m_objUDTMatch.UpdateUDT(4, new string[] { "AwayGoal" }, new string[] { lblAwayScore.Text }, "Match", cmbMatch.Text);
                     lblAwayScore.Text = (Convert.ToInt32(lblAwayScore.Text) - 1).ToString();
-                    updateMatchStats("AwayGoal", -1, "Match", cmbMatch.Text);
+                    m_objUDTMatch.UpdateUdt(1, new string[] { "AwayScore" }, new string[] { lblAwayScore.Text }, "Name", cmbMatch.Text, isformloaded);
+                    UpdateMatchStats("AwayGoal", -1, "Match", cmbMatch.Text);
+                    m_objsceneHandler.Awayteamscore = lblAwayScore.Text;
+                    m_objsceneHandler.SetMatchUdt();
                 }
             }
             catch (Exception ex)
@@ -1043,11 +1042,10 @@ namespace SoccerApp
         {
             try
             {
-
                 TeamBuilderForm tf = new TeamBuilderForm();
                 tf.Team = lblHomeTeam.Text;
-                tf._objUDTProvider = m_objUDTMatch;
-                tf.FIllTeam();
+                tf.ObjUdtprovider = m_objUDTMatch;
+                tf.FillTeam();
                 tf.StartPosition = FormStartPosition.CenterParent;
                 tf.ShowDialog();
                 tf = null;
@@ -1069,8 +1067,8 @@ namespace SoccerApp
             {
                 TeamBuilderForm tf = new TeamBuilderForm();
                 tf.Team = lblAwayTeam.Text;
-                tf._objUDTProvider = m_objUDTMatch;
-                tf.FIllTeam();
+                tf.ObjUdtprovider = m_objUDTMatch;
+                tf.FillTeam();
                 tf.StartPosition = FormStartPosition.CenterParent;
                 tf.ShowDialog();
                 tf = null;
@@ -1096,7 +1094,6 @@ namespace SoccerApp
                 {
                     TimeSpan timeLeft = CountDownTarget.Subtract(DateTime.Now);
                     lblCounter.Text = timeLeft.Minutes.ToString("00") + ":" + timeLeft.Seconds.ToString("00");
-
                 }
             }
             catch (Exception ex)
@@ -1133,11 +1130,11 @@ namespace SoccerApp
                                 ExtraTimeEditor ete = new ExtraTimeEditor();
                                 ete.StartPosition = FormStartPosition.CenterParent;
                                 ete.ShowDialog();
-                                if (ete.EXTRATIME > 0)
+                                if (ete.Extratime > 0)
                                 {
-                                    m_objsceneHandler.TimerAction("updateextra", ete.EXTRATIME + ",0,0,0");
+                                    m_objsceneHandler.TimerAction("updateextra", ete.Extratime + ",0,0,0");
                                     m_objsceneHandler.TimerAction("extrain", "");
-                                    CountDownTarget = DateTime.Now.AddMinutes(ete.EXTRATIME);
+                                    CountDownTarget = DateTime.Now.AddMinutes(ete.Extratime);
                                     m_objsceneHandler.TimerAction("extrastart", "");
                                     bneedStart = true;
                                 }
@@ -1148,6 +1145,7 @@ namespace SoccerApp
                         else
                         {
                             bneedStart = true;
+                            m_objsceneHandler.TimerAction("start", "");
                         }
                         if (bneedStart)
                         {
@@ -1160,6 +1158,7 @@ namespace SoccerApp
                     }
                     else
                     {
+                        m_objsceneHandler.TimerAction("update", "0,0,0,0");
                         if (cmbMatchPart.Text != "Extra Time")
                         {
                             m_objsceneHandler.TimerAction("stop", "");
@@ -1199,43 +1198,44 @@ namespace SoccerApp
                     }
 
                     Substitution sb = new Substitution();
-                    sb._objUDTProvider = m_objUDTMatch;
-                    sb.HomeTeam = lblHomeTeam.Text;
-                    sb.AwayTeam = lblAwayTeam.Text;
+                    sb.ObjUdtprovider = m_objUDTMatch;
+                    sb.Hometeam = lblHomeTeam.Text;
+                    sb.Awayteam = lblAwayTeam.Text;
                     sb.Team = lblHomeTeam.Text;
                     sb.Initialize();
                     sb.StartPosition = FormStartPosition.CenterParent;
                     sb.ShowDialog();
-
-                    //string selectedInPlayer = p.selectedPlayer;
-                    DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
-                    dgv.Cells[0].Value = SrNo;
-                    if (MatchPartStartTime.Year != 0001)
+                    if (sb.IsTeamSelected)
                     {
+                        DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
+                        dgv.Cells[0].Value = SrNo;
+                        if (MatchPartStartTime.Year != 0001)
+                        {
+                            dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+                        }
+                        else
+                        {
+                            dgv.Cells[1].Value = "00:00";
+                        }
+                        dgv.Cells[2].Value = cmbMatchPart.Text;
+                        dgv.Cells[3].Value = "Substitution Out";
+                        dgv.Cells[4].Value = sb.Team;
+                        dgv.Cells[5].Value = sb.SelectedOutPlayer;
+                        dgvMatchevents.Rows.Add(dgv);
+                        m_objUDTMatch.InsertUdt(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Substitution Out", sb.Team, sb.SelectedOutPlayer }, isformloaded);
+                        SrNo++;
+                        dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
+                        dgv.Cells[0].Value = SrNo;
                         dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+                        dgv.Cells[2].Value = cmbMatchPart.Text;
+                        dgv.Cells[3].Value = "Substitution In";
+                        dgv.Cells[4].Value = sb.Team;
+                        dgv.Cells[5].Value = sb.SelectedInPlayer;
+                        dgvMatchevents.Rows.Add(dgv);
+                        m_objUDTMatch.InsertUdt(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Substitution In", sb.Team, sb.SelectedInPlayer }, isformloaded);
+                        SrNo++;
+                        sb = null;
                     }
-                    else
-                    {
-                        dgv.Cells[1].Value = "00:00";
-                    }
-                    dgv.Cells[2].Value = cmbMatchPart.Text;
-                    dgv.Cells[3].Value = "Substitution Out";
-                    dgv.Cells[4].Value = sb.Team;
-                    dgv.Cells[5].Value = sb.SelectedOutPlayer;
-                    dgvMatchevents.Rows.Add(dgv);
-                    m_objUDTMatch.InsertUDTData(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Substitution Out", sb.Team, sb.SelectedOutPlayer });
-                    SrNo++;
-                    dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
-                    dgv.Cells[0].Value = SrNo;
-                    dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
-                    dgv.Cells[2].Value = cmbMatchPart.Text;
-                    dgv.Cells[3].Value = "Substitution In";
-                    dgv.Cells[4].Value = sb.Team;
-                    dgv.Cells[5].Value = sb.SelectedInPlayer;
-                    dgvMatchevents.Rows.Add(dgv);
-                    m_objUDTMatch.InsertUDTData(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Substitution In", sb.Team, sb.SelectedInPlayer });
-                    SrNo++;
-                    sb = null;
                 }
             }
             catch (Exception ex)
@@ -1261,42 +1261,44 @@ namespace SoccerApp
                         ts = DateTime.Now.Subtract(MatchPartStartTime);
                     }
                     PlayerDetails pd = new PlayerDetails();
-                    pd._objUDTProvider = m_objUDTMatch;
-                    pd.Parent = "Foul";
+                    pd.ObjUdtprovider = m_objUDTMatch;
+                    pd.ParentName = "Foul";
                     pd.Team = lblHomeTeam.Text;
                     pd.cmbTeam.Items.Add(lblHomeTeam.Text);
                     pd.cmbTeam.Items.Add(lblAwayTeam.Text);
                     pd.Initialize();
                     pd.StartPosition = FormStartPosition.CenterParent;
                     pd.ShowDialog();
-
-                    DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
-                    dgv.Cells[0].Value = SrNo;
-                    if (MatchPartStartTime.Year != 0001)
+                    if (pd.IsTeamSelected)
                     {
-                        dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+                        DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
+                        dgv.Cells[0].Value = SrNo;
+                        if (MatchPartStartTime.Year != 0001)
+                        {
+                            dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+                        }
+                        else
+                        {
+                            dgv.Cells[1].Value = "00:00";
+                        }
+                        dgv.Cells[2].Value = cmbMatchPart.Text;
+                        dgv.Cells[3].Value = "Fouls";
+                        dgv.Cells[4].Value = pd.Team;
+                        dgv.Cells[5].Value = pd.SelectedPlayer;
+                        dgvMatchevents.Rows.Add(dgv);
+                        m_objUDTMatch.InsertUdt(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Fouls", pd.Team, pd.SelectedPlayer }, isformloaded);
+                        SrNo++;
+                        string FoulTeam = "";
+                        if (pd.Team == lblHomeTeam.Text)
+                        {
+                            FoulTeam = "HomeFoul";
+                        }
+                        else
+                        {
+                            FoulTeam = "AwayFoul";
+                        }
+                        UpdateMatchStats(FoulTeam, 1, "Match", cmbMatch.Text);
                     }
-                    else
-                    {
-                        dgv.Cells[1].Value = "00:00";
-                    }
-                    dgv.Cells[2].Value = cmbMatchPart.Text;
-                    dgv.Cells[3].Value = "Fouls";
-                    dgv.Cells[4].Value = pd.Team;
-                    dgv.Cells[5].Value = pd.SelectedPlayer;
-                    dgvMatchevents.Rows.Add(dgv);
-                    m_objUDTMatch.InsertUDTData(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Fouls", pd.Team, pd.SelectedPlayer });
-                    SrNo++;
-                    string FoulTeam = "";
-                    if (pd.Team == lblHomeTeam.Text)
-                    {
-                        FoulTeam = "HomeFoul";
-                    }
-                    else
-                    {
-                        FoulTeam = "AwayFoul";
-                    }
-                    updateMatchStats(FoulTeam, 1, "Match", cmbMatch.Text);
                 }
             }
             catch (Exception ex)
@@ -1326,35 +1328,38 @@ namespace SoccerApp
                     tms.cmbTeam.Items.Add(lblAwayTeam.Text);
                     tms.StartPosition = FormStartPosition.CenterParent;
                     tms.ShowDialog();
-                    DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
-                    dgv.Cells[0].Value = SrNo;
-                    if (MatchPartStartTime.Year != 0001)
+                    if (tms.IsTeamSelected)
                     {
-                        dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
-                    }
-                    else
-                    {
-                        dgv.Cells[1].Value = "00:00";
-                    }
-                    dgv.Cells[2].Value = cmbMatchPart.Text;
-                    dgv.Cells[3].Value = "Corner kicks";
-                    dgv.Cells[4].Value = tms.SelectedTeam;
-                    dgv.Cells[5].Value = "";
-                    dgvMatchevents.Rows.Add(dgv);
-                    m_objUDTMatch.InsertUDTData(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Corner kicks", tms.SelectedTeam, "" });
-                    SrNo++;
+                        DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
+                        dgv.Cells[0].Value = SrNo;
+                        if (MatchPartStartTime.Year != 0001)
+                        {
+                            dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+                        }
+                        else
+                        {
+                            dgv.Cells[1].Value = "00:00";
+                        }
+                        dgv.Cells[2].Value = cmbMatchPart.Text;
+                        dgv.Cells[3].Value = "Corner kicks";
+                        dgv.Cells[4].Value = tms.SelectedTeam;
+                        dgv.Cells[5].Value = "";
+                        dgvMatchevents.Rows.Add(dgv);
+                        m_objUDTMatch.InsertUdt(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Corner kicks", tms.SelectedTeam, "" }, isformloaded);
+                        SrNo++;
 
-                    string FoulTeam = "";
-                    if (tms.SelectedTeam == lblHomeTeam.Text)
-                    {
-                        FoulTeam = "HomeCorner";
+                        string FoulTeam = "";
+                        if (tms.SelectedTeam == lblHomeTeam.Text)
+                        {
+                            FoulTeam = "HomeCorner";
+                        }
+                        else
+                        {
+                            FoulTeam = "AwayCorner";
+                        }
+                        UpdateMatchStats(FoulTeam, 1, "Match", cmbMatch.Text);
+                        tms = null;
                     }
-                    else
-                    {
-                        FoulTeam = "AwayCorner";
-                    }
-                    updateMatchStats(FoulTeam, 1, "Match", cmbMatch.Text);
-                    tms = null;
                 }
             }
             catch (Exception ex)
@@ -1380,42 +1385,44 @@ namespace SoccerApp
                         ts = DateTime.Now.Subtract(MatchPartStartTime);
                     }
                     PlayerDetails pd = new PlayerDetails();
-                    pd._objUDTProvider = m_objUDTMatch;
-                    pd.Parent = "Shots ON";
+                    pd.ObjUdtprovider = m_objUDTMatch;
+                    pd.ParentName = "Shots ON";
                     pd.Team = lblHomeTeam.Text;
                     pd.cmbTeam.Items.Add(lblHomeTeam.Text);
                     pd.cmbTeam.Items.Add(lblAwayTeam.Text);
                     pd.Initialize();
                     pd.StartPosition = FormStartPosition.CenterParent;
                     pd.ShowDialog();
-
-                    DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
-                    dgv.Cells[0].Value = SrNo;
-                    if (MatchPartStartTime.Year != 0001)
+                    if (pd.IsTeamSelected)
                     {
-                        dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+                        DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
+                        dgv.Cells[0].Value = SrNo;
+                        if (MatchPartStartTime.Year != 0001)
+                        {
+                            dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+                        }
+                        else
+                        {
+                            dgv.Cells[1].Value = "00:00";
+                        }
+                        dgv.Cells[2].Value = cmbMatchPart.Text;
+                        dgv.Cells[3].Value = "Shots On Goal";
+                        dgv.Cells[4].Value = pd.Team;
+                        dgv.Cells[5].Value = pd.SelectedPlayer;
+                        dgvMatchevents.Rows.Add(dgv);
+                        m_objUDTMatch.InsertUdt(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Shots On Goal", pd.Team, pd.SelectedPlayer }, isformloaded);
+                        SrNo++;
+                        string FoulTeam = "";
+                        if (pd.Team == lblHomeTeam.Text)
+                        {
+                            FoulTeam = "HomeShotsOnGoal";
+                        }
+                        else
+                        {
+                            FoulTeam = "AwayShotsOnGoal";
+                        }
+                        UpdateMatchStats(FoulTeam, 1, "Match", cmbMatch.Text);
                     }
-                    else
-                    {
-                        dgv.Cells[1].Value = "00:00";
-                    }
-                    dgv.Cells[2].Value = cmbMatchPart.Text;
-                    dgv.Cells[3].Value = "Shots On Goal";
-                    dgv.Cells[4].Value = pd.Team;
-                    dgv.Cells[5].Value = pd.SelectedPlayer;
-                    dgvMatchevents.Rows.Add(dgv);
-                    m_objUDTMatch.InsertUDTData(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Shots On Goal", pd.Team, pd.SelectedPlayer });
-                    SrNo++;
-                    string FoulTeam = "";
-                    if (pd.Team == lblHomeTeam.Text)
-                    {
-                        FoulTeam = "HomeShotsOnGoal";
-                    }
-                    else
-                    {
-                        FoulTeam = "AwayShotsOnGoal";
-                    }
-                    updateMatchStats(FoulTeam, 1, "Match", cmbMatch.Text);
                 }
             }
             catch (Exception ex)
@@ -1442,42 +1449,44 @@ namespace SoccerApp
                         ts = DateTime.Now.Subtract(MatchPartStartTime);
                     }
                     PlayerDetails pd = new PlayerDetails();
-                    pd._objUDTProvider = m_objUDTMatch;
-                    pd.Parent = "Shots OFF";
+                    pd.ObjUdtprovider = m_objUDTMatch;
+                    pd.ParentName = "Shots OFF";
                     pd.Team = lblHomeTeam.Text;
                     pd.cmbTeam.Items.Add(lblHomeTeam.Text);
                     pd.cmbTeam.Items.Add(lblAwayTeam.Text);
                     pd.Initialize();
                     pd.StartPosition = FormStartPosition.CenterParent;
                     pd.ShowDialog();
-
-                    DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
-                    dgv.Cells[0].Value = SrNo;
-                    if (MatchPartStartTime.Year != 0001)
+                    if (pd.IsTeamSelected)
                     {
-                        dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+                        DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
+                        dgv.Cells[0].Value = SrNo;
+                        if (MatchPartStartTime.Year != 0001)
+                        {
+                            dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+                        }
+                        else
+                        {
+                            dgv.Cells[1].Value = "00:00";
+                        }
+                        dgv.Cells[2].Value = cmbMatchPart.Text;
+                        dgv.Cells[3].Value = "Shots Off Goal";
+                        dgv.Cells[4].Value = pd.Team;
+                        dgv.Cells[5].Value = pd.SelectedPlayer;
+                        dgvMatchevents.Rows.Add(dgv);
+                        m_objUDTMatch.InsertUdt(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Shots Off Goal", pd.Team, pd.SelectedPlayer }, isformloaded);
+                        SrNo++;
+                        string FoulTeam = "";
+                        if (pd.Team == lblHomeTeam.Text)
+                        {
+                            FoulTeam = "HomeShotsMissed";
+                        }
+                        else
+                        {
+                            FoulTeam = "AwayShotsMissed";
+                        }
+                        UpdateMatchStats(FoulTeam, 1, "Match", cmbMatch.Text);
                     }
-                    else
-                    {
-                        dgv.Cells[1].Value = "00:00";
-                    }
-                    dgv.Cells[2].Value = cmbMatchPart.Text;
-                    dgv.Cells[3].Value = "Shots Off Goal";
-                    dgv.Cells[4].Value = pd.Team;
-                    dgv.Cells[5].Value = pd.SelectedPlayer;
-                    dgvMatchevents.Rows.Add(dgv);
-                    m_objUDTMatch.InsertUDTData(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Shots Off Goal", pd.Team, pd.SelectedPlayer });
-                    SrNo++;
-                    string FoulTeam = "";
-                    if (pd.Team == lblHomeTeam.Text)
-                    {
-                        FoulTeam = "HomeShotsMissed";
-                    }
-                    else
-                    {
-                        FoulTeam = "AwayShotsMissed";
-                    }
-                    updateMatchStats(FoulTeam, 1, "Match", cmbMatch.Text);
                 }
             }
             catch (Exception ex)
@@ -1503,32 +1512,34 @@ namespace SoccerApp
                         ts = DateTime.Now.Subtract(MatchPartStartTime);
                     }
                     PlayerDetails pd = new PlayerDetails();
-                    pd._objUDTProvider = m_objUDTMatch;
-                    pd.Parent = "Yellow Card";
+                    pd.ObjUdtprovider = m_objUDTMatch;
+                    pd.ParentName = "Yellow Card";
                     pd.Team = lblHomeTeam.Text;
                     pd.cmbTeam.Items.Add(lblHomeTeam.Text);
                     pd.cmbTeam.Items.Add(lblAwayTeam.Text);
                     pd.Initialize();
                     pd.StartPosition = FormStartPosition.CenterParent;
                     pd.ShowDialog();
-
-                    DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
-                    dgv.Cells[0].Value = SrNo;
-                    if (MatchPartStartTime.Year != 0001)
+                    if (pd.IsTeamSelected)
                     {
-                        dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+                        DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
+                        dgv.Cells[0].Value = SrNo;
+                        if (MatchPartStartTime.Year != 0001)
+                        {
+                            dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+                        }
+                        else
+                        {
+                            dgv.Cells[1].Value = "00:00";
+                        }
+                        dgv.Cells[2].Value = cmbMatchPart.Text;
+                        dgv.Cells[3].Value = "Yellow Cards";
+                        dgv.Cells[4].Value = pd.Team;
+                        dgv.Cells[5].Value = pd.SelectedPlayer;
+                        dgvMatchevents.Rows.Add(dgv);
+                        m_objUDTMatch.InsertUdt(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Yellow Cards", pd.Team, pd.SelectedPlayer }, isformloaded);
+                        SrNo++;
                     }
-                    else
-                    {
-                        dgv.Cells[1].Value = "00:00";
-                    }
-                    dgv.Cells[2].Value = cmbMatchPart.Text;
-                    dgv.Cells[3].Value = "Yellow Cards";
-                    dgv.Cells[4].Value = pd.Team;
-                    dgv.Cells[5].Value = pd.SelectedPlayer;
-                    dgvMatchevents.Rows.Add(dgv);
-                    m_objUDTMatch.InsertUDTData(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Yellow Cards", pd.Team, pd.SelectedPlayer });
-                    SrNo++;
                 }
             }
             catch (Exception ex)
@@ -1554,32 +1565,34 @@ namespace SoccerApp
                         ts = DateTime.Now.Subtract(MatchPartStartTime);
                     }
                     PlayerDetails pd = new PlayerDetails();
-                    pd._objUDTProvider = m_objUDTMatch;
-                    pd.Parent = "Red Card";
+                    pd.ObjUdtprovider = m_objUDTMatch;
+                    pd.ParentName = "Red Card";
                     pd.Team = lblHomeTeam.Text;
                     pd.cmbTeam.Items.Add(lblHomeTeam.Text);
                     pd.cmbTeam.Items.Add(lblAwayTeam.Text);
                     pd.Initialize();
                     pd.StartPosition = FormStartPosition.CenterParent;
                     pd.ShowDialog();
-
-                    DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
-                    dgv.Cells[0].Value = SrNo;
-                    if (MatchPartStartTime.Year != 0001)
+                    if (pd.IsTeamSelected)
                     {
-                        dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+                        DataGridViewRow dgv = (DataGridViewRow)dgvMatchevents.Rows[0].Clone();
+                        dgv.Cells[0].Value = SrNo;
+                        if (MatchPartStartTime.Year != 0001)
+                        {
+                            dgv.Cells[1].Value = ts.Minutes.ToString("00") + ":" + ts.Seconds.ToString("00");
+                        }
+                        else
+                        {
+                            dgv.Cells[1].Value = "00:00";
+                        }
+                        dgv.Cells[2].Value = cmbMatchPart.Text;
+                        dgv.Cells[3].Value = "Red Cards";
+                        dgv.Cells[4].Value = pd.Team;
+                        dgv.Cells[5].Value = pd.SelectedPlayer;
+                        dgvMatchevents.Rows.Add(dgv);
+                        m_objUDTMatch.InsertUdt(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Red Cards", pd.Team, pd.SelectedPlayer }, isformloaded);
+                        SrNo++;
                     }
-                    else
-                    {
-                        dgv.Cells[1].Value = "00:00";
-                    }
-                    dgv.Cells[2].Value = cmbMatchPart.Text;
-                    dgv.Cells[3].Value = "Red Cards";
-                    dgv.Cells[4].Value = pd.Team;
-                    dgv.Cells[5].Value = pd.SelectedPlayer;
-                    dgvMatchevents.Rows.Add(dgv);
-                    m_objUDTMatch.InsertUDTData(5, new string[] { "EventID", "MatchPart", "Time", "EventType", "Team", "Player" }, new string[] { SrNo.ToString(), cmbMatchPart.Text, dgv.Cells[1].Value.ToString(), "Red Cards", pd.Team, pd.SelectedPlayer });
-                    SrNo++;
                 }
             }
             catch (Exception ex)
@@ -1602,14 +1615,12 @@ namespace SoccerApp
                 {
                     dgvSelectPlayer.CommitEdit(DataGridViewDataErrorContexts.Commit);
                 }
-
             }
 
             catch (Exception ex)
             {
                 LogWriter.WriteLog(ex);
             }
-
         }
 
         /// <summary>
@@ -1647,12 +1658,11 @@ namespace SoccerApp
 
                 if (e.ColumnIndex == dgvSelectPlayer.Columns["Column2"].Index)
                 {
-                    //dataGridView1.EndEdit();
                     if ((bool)dgvSelectPlayer.Rows[e.RowIndex].Cells["Column2"].Value)
                     {
                         string sTemplate = dgvSelectPlayer.Rows[e.RowIndex].Cells["Name"].Value.ToString();
                         string sCol = "Column2";
-                        GetTemplate(sTemplate, sCol, true);
+                        GetTemplate(sTemplate, sCol);
                     }
                 }
 
@@ -1662,18 +1672,15 @@ namespace SoccerApp
                     {
                         string sTemplate = dgvSelectPlayer.Rows[e.RowIndex].Cells["Name"].Value.ToString();
                         string sCol2 = "Column3";
-                        GetTemplate(sTemplate, sCol2, true);
+                        GetTemplate(sTemplate, sCol2);
                     }
                 }
-
             }
 
             catch (Exception ex)
             {
                 LogWriter.WriteLog(ex);
             }
-
-
         }
 
         /// <summary>
@@ -1732,7 +1739,7 @@ namespace SoccerApp
                     int eventid = Convert.ToInt32(dgvMatchevents.Rows[e.RowIndex].Cells[0].Value);
                     if (eventid > 0)
                     {
-                        LoadMatchEventGrahicPlayer(eventid);
+                        LoadMatchEventGrahicPlayer();
                     }
                 }
             }
@@ -1756,7 +1763,8 @@ namespace SoccerApp
                     case "Load BG":
                         BtnLoadBG.Text = "Unload BG";
                         ScenInfo si = m_lstSceneCollection.Where(s => s.Description == "bg").FirstOrDefault();
-                        m_objsceneHandler.LoadBackground(si.Id);
+                        TemplateInfo tempinfo = objPlayergetter.GetPlayerInfo(si.Id);
+                        m_objsceneHandler.LoadBackground(tempinfo, si.Id);
                         break;
                     case "Unload BG":
                         BtnLoadBG.Text = "Load BG";
@@ -1767,323 +1775,10 @@ namespace SoccerApp
             }
             catch (Exception ex)
             {
-
+                LogWriter.WriteLog(ex);
             }
         }
 
         #endregion
-
-        #region Unused Code
-
-        ///// <summary>
-        ///// Fill list of players from templatesXml
-        ///// </summary>
-        //private void FillPlayerList()
-        //{
-        //    try
-        //    {
-        //        XDocument xdoc = XDocument.Load("templates.xml");
-        //        var templates = xdoc.Descendants("template");
-        //        foreach (var item in templates)
-        //        {
-        //            ScenInfo sc = new ScenInfo();
-        //            sc.Id = item.Attribute("id").Value;
-        //            sc.Name = item.Attribute("name").Value;
-        //            sc.Description = item.Attribute("description").Value;
-        //            sc.inuse = false;
-        //            m_lstSceneCollection.Add(sc);
-
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        LogWriter.WriteLog(ex);
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Update the Data Xml with the current match Id
-        ///// </summary>
-        ///// <param name="objfrm"></param>
-        //private void UpdateWaspControls(Form item, bool IsID)
-        //{
-        //    try
-        //    {
-        //        if (item != null)
-        //        {
-        //            IAutomationDataEntry objIAutomationDataEntry = (item) as IAutomationDataEntry;
-        //            string sDataXml = objIAutomationDataEntry.GetDataXml();
-
-        //            XDocument xdoc = XDocument.Parse(sDataXml);
-
-        //            XElement xe = xdoc.Descendants("query").FirstOrDefault();
-
-        //            if (xe != null)
-        //            {
-        //                string str = xe.Value;
-
-        //                XElement tablenodes = XElement.Parse(str);
-        //                IEnumerable<XElement> elements = tablenodes.Descendants("table").Where(x => x.Attribute("name").Value == "13");
-
-        //                foreach (XElement node in elements)
-        //                {
-        //                    if (IsID)
-        //                    {
-        //                        //Update ID  here.....    
-        //                        node.Attribute("customfilter").SetValue("(T1_ID In (  1 )) AND (([NAME] =" + NAME + "))");
-        //                        node.Attribute("filter").SetValue("([NAME] = " + NAME + ")");
-        //                        node.Attribute("actionfilter").SetValue("[NAME] =" + NAME);
-        //                    }
-        //                    else
-        //                    {
-        //                        //Update EVENTID and MATCHNAME  here.....    
-        //                        node.Attribute("customfilter").SetValue("(T1_ID In ( 1)) AND ((([EventID] = " + EVENTID + ") And ([MatchID] = '" + MATCHNAME + "')))");
-        //                        node.Attribute("filter").SetValue("(([EventID] = " + EVENTID + ") And ([MatchID] ='" + MATCHNAME + "'))");
-        //                        node.Attribute("actionfilter").SetValue("(([EventID] = " + EVENTID + ") And ([MatchID] ='" + MATCHNAME + "'))");
-        //                    }
-        //                }
-        //                xe.ReplaceNodes(new XCData(tablenodes.ToString()));
-        //                string updatedxml = xdoc.ToString();
-        //                XmlNode xn;
-        //                IDataEntry _objDataEntry = (item) as IDataEntry;
-        //                XmlDocument objdoc = new XmlDocument();
-        //                objdoc.LoadXml(updatedxml);
-        //                xn = objdoc.DocumentElement;
-        //                _objDataEntry.SetData(xn);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        LogWriter.WriteLog(ex);
-        //    }
-
-        //}
-
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //private void FillMatchPart()
-        //{
-        //    AutoCompleteStringCollection cmbstr1 = new AutoCompleteStringCollection();
-        //    var dtmatchpart = m_objUDTMatchSchedule.CurrentDataSet.Tables[15];
-        //    foreach (DataRow item in dtmatchpart.Rows)
-        //    {
-        //        cmbstr1.Add(item["Name"].ToString());
-        //        cmbMatchPart.Items.Add(item["Name"].ToString());
-        //    }
-        //    cmbMatchPart.AutoCompleteCustomSource = cmbstr1;
-        //    DataRow[] dr = dtmatchpart.Select("Active=true");
-        //    if (dr.Count() > 0)
-        //    {
-        //        int index = cmbMatchPart.FindString(dr[0]["Name"].ToString());
-        //        if (index != -1)
-        //        {
-        //            try
-        //            {
-        //                cmbMatchPart.SelectedIndex = index;
-        //            }
-        //            catch (Exception ex)
-        //            {
-
-        //            }
-        //            UdtFilter filter = new UdtFilter();
-        //            filter.FilterColumn = "Name";
-        //            filter.FilterValue = cmbMatchPart.Text;
-        //            filter.TableIndex = 5;
-        //            if (!m_objUDTMatchSchedule.UdtFilters.ContainsKey("Match Part"))
-        //                m_objUDTMatchSchedule.UdtFilters.Add("Match Part", filter);
-        //            else
-        //                m_objUDTMatchSchedule.UdtFilters["Match Part"] = filter;
-        //            m_objUDTMatchSchedule.Notify("Match Part");
-        //        }
-
-        //    }
-
-        //}
-
-
-        //void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        //{
-        //    dataGridView1.CommitEdit(DataGridViewDataErrorContexts.Commit);
-        //    if (e.ColumnIndex == dataGridView2.Columns["Column2"].Index)
-        //    {
-        //        //dataGridView1.EndEdit();
-        //        if ((bool)dataGridView2.Rows[e.RowIndex].Cells["Column2"].Value)
-        //        {
-        //            MessageBox.Show("Checked");
-        //        }
-        //    }
-
-
-
-
-        //foreach (DataGridViewRow row in dataGridView2.Rows)
-        //{
-        //    DataGridViewCheckBoxCell chk = row.Cells["Column2"] as DataGridViewCheckBoxCell;
-        //    DataGridViewCheckBoxCell chk2 = row.Cells["Column3"] as DataGridViewCheckBoxCell;
-
-        //    if (Convert.ToBoolean(chk2.Value) == true)
-        //        MessageBox.Show("this cell checked");
-
-        //    bool bChecked = (null != chk && null != chk.Value && true == (bool)chk.Value);
-        //    if (true == bChecked)
-        //    {
-        //        MessageBox.Show("Checked too");
-        //    }
-        //if (row.Cells["Column2"].Value != null && (bool)row.Cells["Column2"].Value)
-        //{
-        //    GetTemplate();
-        //}
-
-        //if (((e.ColumnIndex) == 1) && ((bool)dataGridView1.Rows[e.RowIndex].Cells[0].Value))
-        //{
-        //    GetTemplate();
-
-        //}
-
-        //     if (row.Cells["Column2"].Value != null  && (bool)row.Cells["Column2"].Value)
-        //     {
-        //         GetTemplate();
-        //     }
-
-        //     if (((e.ColumnIndex) == 2) && ((bool)dataGridView1.Rows[e.RowIndex].Cells[0].Value))
-        //     {
-        //         GetTemplate();
-
-        //     }
-
-
-        //if (e.ColumnIndex == [])
-        //   CheckForCheckedValue();
-
-
-        void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-        //if (e.RowType == DataControlRowType.DataRow)
-        //{
-        //    var control = e.Row.Cell[cellIndex].FindControl("ControlID");
-        //    e.Row.Cells[1].Text = ((TypeOfControl)control).Text;
-        //}
-
-
-        private void listBox1_DoubleClick(object sender, EventArgs e)
-        {
-            //ScenInfo si = _SceneCollection.Where(s => s.Description == listBox1.Text).FirstOrDefault();
-            //STemplateDetails obj = objWaspFileHandler.GetTemplatePlayerInfo(si.Id, "");
-            //if (obj != null)
-            //{
-            //    Form obj1 = Activator.CreateInstance(obj.TemplatePlayerInfo) as Form;
-            //    obj1.TopLevel = false;
-            //    obj1.TopLevel = false;
-            //    obj1.Dock = DockStyle.Fill;
-            //    tableLayoutPanel1.Controls.Add(obj1);
-            //    obj1.Show();                
-            //}
-            //else
-            //{
-            //    MessageBox.Show("Template " + si.Id + "Not found");
-            //}
-
-            //ScenInfo si = _SceneCollection.Where(s => s.Description == listBox1.Text).FirstOrDefault();
-            //STemplateDetails obj = objWaspFileHandler.GetTemplatePlayerInfo(si.Id, "");
-
-            //if (obj != null)
-            //{
-            //    Form obj1 = Activator.CreateInstance(obj.TemplatePlayerInfo) as Form;
-            //    objPlayer = obj1 as IPlayer;
-            //    string sLinkID = string.Empty;              
-            //    if (objPlayer != null)
-            //    {
-            //        objPlayer.Init("", "", si.Id, "");
-            //        objPlayer.SetLink(_objsceneHandler.AppLink , obj.Scene);
-            //            //S. No 116: Added for AddIn
-            //                //S.No.	: -	128
-            //        if (objPlayer is IAddinInfo)
-            //            (objPlayer as IAddinInfo).Init(new InstanceInfo() { Type = "wsp", InstanceId = "", TemplateId = si.Id, ThemeId = "Default", });
-
-
-            //            IChannelShotBox objChannelShotBox = objPlayer as IChannelShotBox;
-            //            if (objChannelShotBox != null)
-            //            {
-            //                if (m_objLinkType == LINKTYPE.TCP)
-            //                    sEngineUrl = m_surl;
-            //                        //newplaylistinstance.ActiveServer.GetUrl(CConstants.Constants.TCP);
-            //                //S.No.: -	147
-            //                objChannelShotBox.SetEngineUrl(m_surl);
-            //            }                        
-            //            objPlayer.Prepare(sEngineUrl, Convert.ToInt32(objPlayer.ZORDER), string.Empty, RENDERMODE.PROGRAM);
-            //    }
-            //    obj1.TopLevel = false;
-            //    obj1.Visible = true;
-            //    obj1.Dock = DockStyle.Fill;
-            //    var ctl = tableLayoutPanel1.GetControlFromPosition(1, RowPos);
-            //    if (ctl != null) // Already control present there
-            //    {
-            //        //First play out the graphic.
-            //        //then delete the gfx
-            //        tableLayoutPanel1.Controls.Remove(ctl);                  
-            //    }
-            //    tableLayoutPanel1.Controls.Add(obj1, 1, RowPos);
-            //    if (RowPos == 1)
-            //        RowPos--;
-            //    else
-            //        RowPos++;
-            //    obj1.Show();
-
-            //}
-            //else
-            //{
-            //    MessageBox.Show("Template " + si.Id + "Not found");
-            //}
-
-        }
-
-
-        //ScenInfo si = _SceneCollection.Where(s => s.Description == listBox1.Text).FirstOrDefault();
-        //STemplateDetails obj = objWaspFileHandler.GetTemplatePlayerInfo(si.Id, "");
-        //if (obj != null)
-        //{
-        //    Form obj1 = Activator.CreateInstance(obj.TemplatePlayerInfo) as Form;
-        //    obj1.TopLevel = false;
-        //    obj1.TopLevel = false;
-        //    obj1.Dock = DockStyle.Fill;
-        //    tableLayoutPanel1.Controls.Add(obj1);
-        //    obj1.Show();                
-        //}
-        //else
-        //{
-        //    MessageBox.Show("Template " + si.Id + "Not found");
-        //}
-
-        //Aayushi 
-        public void UpdateWaspControl2()
-        {
-            //   xdDoc.LoadXml(str);
-            //XmlNode xn;//= xdDoc.SelectSingleNode("//data/userdata/requery/connection/query");
-            //string str1 = String.Format(sDataXml, cmbMatch.Text);
-            //IDataEntry cd = (objfrm) as IDataEntry;
-            //// xdDoc.RemoveAll();
-            //// xdDoc = null;            
-            //XmlDocument objdoc = new XmlDocument();
-            //objdoc.LoadXml(str1);
-            ////xn.RemoveAll();
-            ////xn = null;
-            //xn = objdoc.Document;// DocumentElement;
-            //cd.SetData(xn);
-
-            //foreach (Control item in tableLayoutPanel1.Controls)
-            //{
-
-
-            //}
-        }
-
-
-        #endregion
-
     }
 }

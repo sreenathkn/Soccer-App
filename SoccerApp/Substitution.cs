@@ -12,28 +12,27 @@ namespace SoccerApp
 {
     public partial class Substitution : Form
     {
-        public UDTProvider.UDTProvider _objUDTProvider { get; set; }
+        public UDTProvider.UdtProvider ObjUdtprovider { get; set; }
         public string Team { get; set; }
-        private bool isJerOutChanged;
-        private bool isoutNameChanged;
-        public string HomeTeam { get; set; }
-        public string AwayTeam { get; set; }
+        public string Hometeam { get; set; }
+        public string Awayteam { get; set; }
         public string SelectedInPlayer { get; set; }
         public string SelectedOutPlayer { get; set; }
+        public bool IsTeamSelected = false;
 
         public Substitution()
         {
             InitializeComponent();
         }
+        
         public void Initialize()
         {
             AutoCompleteStringCollection cmbstrName = new AutoCompleteStringCollection();
             AutoCompleteStringCollection cmbstrJer = new AutoCompleteStringCollection();
-            DataRow drTeam = _objUDTProvider.CurrentDataSet.Tables[2].Select("Name = '" + Team+"'").FirstOrDefault();
+            DataRow drTeam = ObjUdtprovider.CurrentDataSet.Tables[2].Select("Name = '" + Team + "'").FirstOrDefault();
             if (drTeam != null)
             {
-                DataRow[] drPlayers = _objUDTProvider.CurrentDataSet.Tables[3].Select("T24_ID = '" + drTeam["T24_ID"] + "' AND Playing=true");
-               // DataRow[] t = _objUDTProvider.CurrentDataSet.Tables[7].Select("Team = '" + Team + "' AND Playing=true");
+                DataRow[] drPlayers = ObjUdtprovider.CurrentDataSet.Tables[3].Select("T24_ID = '" + drTeam["T24_ID"] + "' AND Playing=true");
                 cmbIn.Items.Clear();
                 cmbOut.Items.Clear();
                 cmbJerIN.Items.Clear();
@@ -66,23 +65,20 @@ namespace SoccerApp
                 cmbJerOUT.AutoCompleteCustomSource = cmbstrJer;
                 if (cmbTeam.Items.Count <= 0)
                 {
-                    cmbTeam.Items.Add(HomeTeam);
-                    cmbTeam.Items.Add(AwayTeam);
+                    cmbTeam.Items.Add(Hometeam);
+                    cmbTeam.Items.Add(Awayteam);
                 }
             }
 
         }
+
         private void cmbJerOUT_SelectedIndexChanged(object sender, EventArgs e)
         {
-          
-                cmbOut.SelectedIndex = cmbJerOUT.SelectedIndex;
-          
+            cmbOut.SelectedIndex = cmbJerOUT.SelectedIndex;
         }
         private void cmbOut_SelectedIndexChanged(object sender, EventArgs e)
         {
-                cmbOut.SelectedIndex = cmbOut.SelectedIndex;
-                SelectedOutPlayer = cmbOut.Text;
-           
+            SelectedOutPlayer = cmbOut.Text;
         }
 
         private void cmbJerIN_SelectedIndexChanged(object sender, EventArgs e)
@@ -105,6 +101,14 @@ namespace SoccerApp
         {
             Team = cmbTeam.Text;
             Initialize();
+            if (!string.IsNullOrEmpty(cmbTeam.Text))
+            {
+                IsTeamSelected = true;
+            }
+            else
+            {
+                IsTeamSelected = false;
+            }
         }
     }
 }
