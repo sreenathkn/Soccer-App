@@ -1,0 +1,90 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoccerApp", "SoccerApp\SoccerApp.csproj", "{C8A2585A-06F3-449B-906B-0F130032B9EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UDTProvider", "UDTProvider\UDTProvider.csproj", "{BFA81BC4-2ED7-48ED-935B-045265A4D60C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{7B94A24B-B081-4B87-B725-B0E50C0EF5FC}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{0F2B0826-279E-40EB-A685-183351D6786A}"
+	ProjectSection(SolutionItems) = preProject
+		Libraries\Beesys.Wasp.AddIn.ILinkCommandManager.dll = Libraries\Beesys.Wasp.AddIn.ILinkCommandManager.dll
+		Libraries\BeeSys.Wasp.CommonReference.dll = Libraries\BeeSys.Wasp.CommonReference.dll
+		Libraries\BeeSys.Wasp.Communicator.dll = Libraries\BeeSys.Wasp.Communicator.dll
+		Libraries\BeeSys.Wasp.IWaspPlayers.dll = Libraries\BeeSys.Wasp.IWaspPlayers.dll
+		Libraries\BeeSys.Wasp.KernelController.IDeviceManager.dll = Libraries\BeeSys.Wasp.KernelController.IDeviceManager.dll
+		Libraries\BeeSys.Wasp.KernelController.IFavoritesManager.dll = Libraries\BeeSys.Wasp.KernelController.IFavoritesManager.dll
+		Libraries\BeeSys.Wasp.KernelController.IScheduleManager.dll = Libraries\BeeSys.Wasp.KernelController.IScheduleManager.dll
+		Libraries\BeeSys.Wasp.KernelController.IServices.dll = Libraries\BeeSys.Wasp.KernelController.IServices.dll
+		Libraries\BeeSys.Wasp.KernelController.IUDTDataManager.dll = Libraries\BeeSys.Wasp.KernelController.IUDTDataManager.dll
+		Libraries\BeeSys.Wasp.KernelController.IUDTManager.dll = Libraries\BeeSys.Wasp.KernelController.IUDTManager.dll
+		Libraries\BeeSys.Wasp.KernelController.IUserManager.dll = Libraries\BeeSys.Wasp.KernelController.IUserManager.dll
+		Libraries\BeeSys.Wasp.KernelController.IWaspUpdatesManager.dll = Libraries\BeeSys.Wasp.KernelController.IWaspUpdatesManager.dll
+		Libraries\BeeSys.Wasp.KernelController.TemplateManager.dll = Libraries\BeeSys.Wasp.KernelController.TemplateManager.dll
+		Libraries\BeeSys.Wasp.KernelController.UDTCache.dll = Libraries\BeeSys.Wasp.KernelController.UDTCache.dll
+		Libraries\BeeSys.Wasp.KernelController.UDTDataManagerHelper.dll = Libraries\BeeSys.Wasp.KernelController.UDTDataManagerHelper.dll
+		Libraries\BeeSys.Wasp.KernelController.UDTManagerHelper.dll = Libraries\BeeSys.Wasp.KernelController.UDTManagerHelper.dll
+		Libraries\BeeSys.Wasp.KernelController.UDTServiceUtils.dll = Libraries\BeeSys.Wasp.KernelController.UDTServiceUtils.dll
+		Libraries\BeeSys.Wasp.PlayOut.MultiPageDataController.dll = Libraries\BeeSys.Wasp.PlayOut.MultiPageDataController.dll
+		Libraries\BeeSys.Wasp.PlayOut.Multiple_SG_Controller.dll = Libraries\BeeSys.Wasp.PlayOut.Multiple_SG_Controller.dll
+		Libraries\Beesys.Wasp.SceneReader.dll = Libraries\Beesys.Wasp.SceneReader.dll
+		Libraries\BeeSys.Wasp.SGController.dll = Libraries\BeeSys.Wasp.SGController.dll
+		Libraries\Beesys.Wasp.ShotBoxManager.dll = Libraries\Beesys.Wasp.ShotBoxManager.dll
+		Libraries\BeeSys.Wasp.WaspEditors.dll = Libraries\BeeSys.Wasp.WaspEditors.dll
+		Libraries\Beesys.Wasp.Workflow.CommunicationHandler.dll = Libraries\Beesys.Wasp.Workflow.CommunicationHandler.dll
+		Libraries\Beesys.Wasp.Workflow.Editors.dll = Libraries\Beesys.Wasp.Workflow.Editors.dll
+		Libraries\BeeSys.Wasp3D.Controls2.dll = Libraries\BeeSys.Wasp3D.Controls2.dll
+		Libraries\BeeSys.Wasp3D.Designer.AssetManagerExtendedAssembly.dll = Libraries\BeeSys.Wasp3D.Designer.AssetManagerExtendedAssembly.dll
+		Libraries\BeeSys.Wasp3D.Designer.AssetManagerSharedAssembly.dll = Libraries\BeeSys.Wasp3D.Designer.AssetManagerSharedAssembly.dll
+		Libraries\BeeSys.Wasp3D.Designer.WaxEditorDialog.dll = Libraries\BeeSys.Wasp3D.Designer.WaxEditorDialog.dll
+		Libraries\BeeSys.Wasp3D.Designer.WFilterControl.dll = Libraries\BeeSys.Wasp3D.Designer.WFilterControl.dll
+		Libraries\BeeSys.Wasp3D.DesignForms2.dll = Libraries\BeeSys.Wasp3D.DesignForms2.dll
+		Libraries\CustomTreeList.dll = Libraries\CustomTreeList.dll
+		Libraries\GeneralWorkings.dll = Libraries\GeneralWorkings.dll
+		Libraries\Interop.adodb.dll = Libraries\Interop.adodb.dll
+		Libraries\Interop.MSDASC.dll = Libraries\Interop.MSDASC.dll
+		Libraries\Interop.MSMQ.dll = Libraries\Interop.MSMQ.dll
+		Libraries\IWaspWorkFlow.dll = Libraries\IWaspWorkFlow.dll
+		Libraries\NetSpell.SpellChecker.dll = Libraries\NetSpell.SpellChecker.dll
+		Libraries\Player Manager.dll = Libraries\Player Manager.dll
+		Libraries\RightsGridControl.dll = Libraries\RightsGridControl.dll
+		Libraries\UdtPool.dll = Libraries\UdtPool.dll
+		Libraries\UserManagement.dll = Libraries\UserManagement.dll
+		Libraries\WaspPools.dll = Libraries\WaspPools.dll
+		Libraries\WaspUDTPool.dll = Libraries\WaspUDTPool.dll
+		Libraries\WaspView.dll = Libraries\WaspView.dll
+		Libraries\WaspWorkFlow.dll = Libraries\WaspWorkFlow.dll
+		Libraries\WorkFlowItems.dll = Libraries\WorkFlowItems.dll
+		Libraries\Xceed.Compression.dll = Libraries\Xceed.Compression.dll
+		Libraries\Xceed.FileSystem.dll = Libraries\Xceed.FileSystem.dll
+		Libraries\Xceed.Zip.dll = Libraries\Xceed.Zip.dll
+		Libraries\XmlDiffPatch.dll = Libraries\XmlDiffPatch.dll
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C8A2585A-06F3-449B-906B-0F130032B9EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8A2585A-06F3-449B-906B-0F130032B9EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8A2585A-06F3-449B-906B-0F130032B9EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8A2585A-06F3-449B-906B-0F130032B9EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFA81BC4-2ED7-48ED-935B-045265A4D60C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFA81BC4-2ED7-48ED-935B-045265A4D60C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFA81BC4-2ED7-48ED-935B-045265A4D60C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFA81BC4-2ED7-48ED-935B-045265A4D60C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
