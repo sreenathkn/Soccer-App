@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\OutPut\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -24,20 +24,39 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\OutPut\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BeeSys.Wasp.Communicator">
-      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\BeeSys.Wasp.Communicator.dll</HintPath>
+    <Reference Include="BeeSys.Wasp.Communicator, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\BeeSys.Wasp.Communicator.dll</HintPath>
     </Reference>
-    <Reference Include="BeeSys.Wasp.KernelController.IServices">
-      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\BeeSys.Wasp.KernelController.IServices.dll</HintPath>
+    <Reference Include="BeeSys.Wasp.KernelController.IServices, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\BeeSys.Wasp.KernelController.IServices.dll</HintPath>
     </Reference>
-    <Reference Include="BeeSys.Wasp.KernelController.IUDTManager">
-      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\BeeSys.Wasp.KernelController.IUDTManager.dll</HintPath>
+    <Reference Include="BeeSys.Wasp.KernelController.IUDTDataManager, Version=3.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\BeeSys.Wasp.KernelController.IUDTDataManager.dll</HintPath>
+    </Reference>
+    <Reference Include="BeeSys.Wasp.KernelController.IUDTManager, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\BeeSys.Wasp.KernelController.IUDTManager.dll</HintPath>
+    </Reference>
+    <Reference Include="BeeSys.Wasp.KernelController.UDTDataManagerHelper, Version=3.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\BeeSys.Wasp.KernelController.UDTDataManagerHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="BeeSys.Wasp.KernelController.UDTManagerHelper, Version=3.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\BeeSys.Wasp.KernelController.UDTManagerHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="BeeSys.Wasp.KernelController.UDTServiceUtils, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\BeeSys.Wasp.KernelController.UDTServiceUtils.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -49,7 +68,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UDTExtensions.cs" />
     <Compile Include="UDTProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

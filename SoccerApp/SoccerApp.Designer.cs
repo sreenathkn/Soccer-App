@@ -72,6 +72,7 @@
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.pnlcntr = new System.Windows.Forms.Panel();
             this.pnlbuttons = new System.Windows.Forms.Panel();
+            this.BtnLoadBG = new System.Windows.Forms.Button();
             this.dgvSelectPlayer = new System.Windows.Forms.DataGridView();
             this.pnlActions = new System.Windows.Forms.Panel();
             this.lblMatchevents = new System.Windows.Forms.Label();
@@ -85,7 +86,6 @@
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.pnlMActions = new System.Windows.Forms.Panel();
             this.splitter1 = new System.Windows.Forms.Splitter();
-            this.BtnLoadBG = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMatchevents)).BeginInit();
             this.pnlMatch.SuspendLayout();
             this.pnlAwayTeam.SuspendLayout();
@@ -306,7 +306,7 @@
             this.PlayerName.HeaderText = "Player Name";
             this.PlayerName.Name = "PlayerName";
             this.PlayerName.ReadOnly = true;
-            this.PlayerName.Width = 91;
+            this.PlayerName.Width = 92;
             // 
             // cmbMatch
             // 
@@ -617,6 +617,19 @@
             this.pnlbuttons.Size = new System.Drawing.Size(1486, 55);
             this.pnlbuttons.TabIndex = 32;
             // 
+            // BtnLoadBG
+            // 
+            this.BtnLoadBG.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.BtnLoadBG.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnLoadBG.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnLoadBG.Location = new System.Drawing.Point(1387, 2);
+            this.BtnLoadBG.Name = "BtnLoadBG";
+            this.BtnLoadBG.Size = new System.Drawing.Size(96, 33);
+            this.BtnLoadBG.TabIndex = 25;
+            this.BtnLoadBG.Text = "Load BG";
+            this.BtnLoadBG.UseVisualStyleBackColor = false;
+            this.BtnLoadBG.Click += new System.EventHandler(this.BtnLoadBG_Click);
+            // 
             // dgvSelectPlayer
             // 
             this.dgvSelectPlayer.AllowUserToAddRows = false;
@@ -661,7 +674,7 @@
             this.pnlPlay.Controls.Add(this.pnlPlayers);
             this.pnlPlay.Controls.Add(this.pnlPlaySelect);
             this.pnlPlay.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlPlay.Location = new System.Drawing.Point(0, 560);
+            this.pnlPlay.Location = new System.Drawing.Point(0, 551);
             this.pnlPlay.Name = "pnlPlay";
             this.pnlPlay.Padding = new System.Windows.Forms.Padding(10);
             this.pnlPlay.Size = new System.Drawing.Size(1506, 494);
@@ -745,39 +758,26 @@
             this.pnlMActions.Location = new System.Drawing.Point(0, 0);
             this.pnlMActions.Name = "pnlMActions";
             this.pnlMActions.Padding = new System.Windows.Forms.Padding(10);
-            this.pnlMActions.Size = new System.Drawing.Size(1506, 560);
+            this.pnlMActions.Size = new System.Drawing.Size(1506, 551);
             this.pnlMActions.TabIndex = 15;
             // 
             // splitter1
             // 
             this.splitter1.BackColor = System.Drawing.Color.White;
             this.splitter1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitter1.Location = new System.Drawing.Point(0, 555);
+            this.splitter1.Location = new System.Drawing.Point(0, 546);
             this.splitter1.Margin = new System.Windows.Forms.Padding(2);
             this.splitter1.Name = "splitter1";
             this.splitter1.Size = new System.Drawing.Size(1506, 5);
             this.splitter1.TabIndex = 30;
             this.splitter1.TabStop = false;
             // 
-            // BtnLoadBG
-            // 
-            this.BtnLoadBG.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.BtnLoadBG.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.BtnLoadBG.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnLoadBG.Location = new System.Drawing.Point(1387, 2);
-            this.BtnLoadBG.Name = "BtnLoadBG";
-            this.BtnLoadBG.Size = new System.Drawing.Size(96, 33);
-            this.BtnLoadBG.TabIndex = 25;
-            this.BtnLoadBG.Text = "Load BG";
-            this.BtnLoadBG.UseVisualStyleBackColor = false;
-            this.BtnLoadBG.Click += new System.EventHandler(this.BtnLoadBG_Click);
-            // 
             // SoccerApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.ClientSize = new System.Drawing.Size(1506, 1054);
+            this.ClientSize = new System.Drawing.Size(1506, 1045);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.pnlMActions);
             this.Controls.Add(this.pnlPlay);

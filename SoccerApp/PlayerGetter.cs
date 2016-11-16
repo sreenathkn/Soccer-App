@@ -14,16 +14,16 @@ namespace SoccerApp
 {
     public class PlayerGetter
     {
-        TemplateInfo m_objTempDtls;
-        CSceneReader m_objCSceneReader;
+        private TemplateInfo m_objTempDtls;
+        private readonly CSceneReader m_objCSceneReader;
 
-        const string UNIFIED = "unified";
-        const string SOCCERFORM = "SoccerForm";
-        const string DGN = "dgn";
-        const string ACTION = "action";
-        const string FORMTYPE = "formtype";
-        const string NAME = "name";
-        readonly string GETATTACHMENTPATH = "//action/file[@filetype='{0}']";
+        private const string UNIFIED = "unified";
+        private const string SOCCERFORM = "SoccerForm";
+        private const string DGN = "dgn";
+        private const string ACTION = "action";
+        private const string FORMTYPE = "formtype";
+        private const string NAME = "name";
+        private readonly string GETATTACHMENTPATH = "//action/file[@filetype='{0}']";
 
         public PlayerGetter()
         {
@@ -71,7 +71,7 @@ namespace SoccerApp
                             case CCommonConstants.XML:
                                 byte[] barrData = info.TemplateDetails[skey].Data;
                                 string sData = WaspEncoder.GetStringfromByte(barrData);
-                                xdHeaderXml = XDocument.Parse(sData); ;
+                                xdHeaderXml = XDocument.Parse(sData);
                                 break;
                             case CCommonConstants.SCENEDLL:
                                 barrSceneDll = info.TemplateDetails[skey].Data;

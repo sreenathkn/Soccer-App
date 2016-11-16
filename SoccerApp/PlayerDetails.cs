@@ -12,10 +12,12 @@ namespace SoccerApp
 {
     public partial class PlayerDetails : Form
     {
-        public UDTProvider.UDTProvider _objUDTProvider { get; set; }
+        public UDTProvider.UdtProvider ObjUdtprovider { get; set; }
         public string Team { get; set; }
         public string SelectedPlayer { get; set; }
-        public string Parent { get; set; }
+        public string ParentName { get; set; }
+        public bool IsTeamSelected = false;
+
         public PlayerDetails()
         {
             InitializeComponent();
@@ -23,13 +25,13 @@ namespace SoccerApp
 
         public void Initialize()
         {
-            setFormHeader();
+            SetFormHeader();
             AutoCompleteStringCollection cmbstrName = new AutoCompleteStringCollection();
             AutoCompleteStringCollection cmbstrJer = new AutoCompleteStringCollection();
-            DataRow drTeam = _objUDTProvider.CurrentDataSet.Tables[2].Select("Name = '" + Team+"'").FirstOrDefault();
+            DataRow drTeam = ObjUdtprovider.CurrentDataSet.Tables[2].Select("Name = '" + Team+"'").FirstOrDefault();
             if (drTeam != null)
             {
-                DataRow[] drPlayers = _objUDTProvider.CurrentDataSet.Tables[3].Select("T24_ID = '" + drTeam["T24_ID"] + "' AND Playing=true");
+                DataRow[] drPlayers = ObjUdtprovider.CurrentDataSet.Tables[3].Select("T24_ID = '" + drTeam["T24_ID"] + "' AND Playing=true");
                 cmbPlayerJer.Items.Clear();
                 cmbPlayerName.Items.Clear();
                 foreach (DataRow item in drPlayers)
@@ -50,9 +52,9 @@ namespace SoccerApp
             }
         }
 
-        private void setFormHeader()
+        private void SetFormHeader()
         {
-            switch (Parent)
+            switch (ParentName)
             {
                 case "Foul":
                     this.Text = "Foul: Player Selection";
@@ -66,6 +68,14 @@ namespace SoccerApp
         {
             Team = cmbTeam.Text;
             Initialize();
+            if(!string.IsNullOrEmpty(cmbTeam.Text))
+            {
+                IsTeamSelected = true;
+            }
+            else
+            {
+                IsTeamSelected = false;
+            }
         }
 
         private void cmbPlayerName_SelectedIndexChanged(object sender, EventArgs e)

@@ -20,7 +20,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\OutPut\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -29,7 +29,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\OutPut\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -40,65 +40,68 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Beesys.Wasp.AddIn.ILinkCommandManager, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Beesys.Wasp.AddIn.ILinkCommandManager.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\Beesys.Wasp.AddIn.ILinkCommandManager.dll</HintPath>
     </Reference>
     <Reference Include="BeeSys.Wasp.CommonReference, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\BeeSys.Wasp.CommonReference.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\BeeSys.Wasp.CommonReference.dll</HintPath>
     </Reference>
     <Reference Include="BeeSys.Wasp.Communicator, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\OutPut\BeeSys.Wasp.Communicator.dll</HintPath>
+      <HintPath>..\Libraries\BeeSys.Wasp.Communicator.dll</HintPath>
     </Reference>
     <Reference Include="BeeSys.Wasp.IWaspPlayers, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Build\BeeSys.Wasp.IWaspPlayers.dll</HintPath>
+      <HintPath>..\Libraries\BeeSys.Wasp.IWaspPlayers.dll</HintPath>
     </Reference>
     <Reference Include="BeeSys.Wasp.KernelController.IServices, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\BeeSys.Wasp.KernelController.IServices.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\BeeSys.Wasp.KernelController.IServices.dll</HintPath>
     </Reference>
     <Reference Include="BeeSys.Wasp.KernelController.IUDTManager, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\OutPut\BeeSys.Wasp.KernelController.IUDTManager.dll</HintPath>
+      <HintPath>..\Libraries\BeeSys.Wasp.KernelController.IUDTManager.dll</HintPath>
     </Reference>
     <Reference Include="BeeSys.Wasp.KernelController.TemplateManager, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Resources\BeeSys.Wasp.KernelController.TemplateManager.dll</HintPath>
+      <HintPath>..\Libraries\BeeSys.Wasp.KernelController.TemplateManager.dll</HintPath>
+    </Reference>
+    <Reference Include="BeeSys.Wasp.KernelController.UDTCache, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\BeeSys.Wasp.KernelController.UDTCache.dll</HintPath>
     </Reference>
     <Reference Include="Beesys.Wasp.SceneReader, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Beesys.Wasp.SceneReader.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\Beesys.Wasp.SceneReader.dll</HintPath>
     </Reference>
     <Reference Include="Beesys.Wasp.ShotBoxManager, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Beesys.Wasp.ShotBoxManager.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\Beesys.Wasp.ShotBoxManager.dll</HintPath>
     </Reference>
     <Reference Include="Beesys.Wasp.Workflow.CommunicationHandler, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Beesys.Wasp.Workflow.CommunicationHandler.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\Beesys.Wasp.Workflow.CommunicationHandler.dll</HintPath>
     </Reference>
     <Reference Include="BeeSys.Wasp3D.Controls2, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\BeeSys.Wasp3D.Controls2.dll</HintPath>
+      <HintPath>..\Libraries\BeeSys.Wasp3D.Controls2.dll</HintPath>
     </Reference>
     <Reference Include="BeeSys.Wasp3D.DesignForms2, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\BeeSys.Wasp3D.DesignForms2.dll</HintPath>
+      <HintPath>..\Libraries\BeeSys.Wasp3D.DesignForms2.dll</HintPath>
     </Reference>
     <Reference Include="GeneralWorkings, Version=3.0.0.0, Culture=neutral, PublicKeyToken=97f06817abd0bb0a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\GeneralWorkings.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\GeneralWorkings.dll</HintPath>
     </Reference>
-    <Reference Include="Interop.MSMQ, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Interop.MSMQ">
+      <HintPath>..\Libraries\Interop.MSMQ.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Interop.MSMQ.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Player Manager, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Beehive Systems Ltd\WASP3D\Ver3.5\Common\Shared Resources\Player Manager.dll</HintPath>
+      <HintPath>..\Libraries\Player Manager.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -114,19 +117,22 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="WaspPools, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="WaspPools, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\WaspPools.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="Xceed.Compression, Version=3.2.6319.0, Culture=neutral, PublicKeyToken=ba83ff368b7563c6">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Xceed.Compression.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\Xceed.Compression.dll</HintPath>
     </Reference>
     <Reference Include="Xceed.FileSystem, Version=3.2.6319.0, Culture=neutral, PublicKeyToken=ba83ff368b7563c6">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Xceed.FileSystem.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\Xceed.FileSystem.dll</HintPath>
     </Reference>
     <Reference Include="Xceed.Zip, Version=3.2.6319.0, Culture=neutral, PublicKeyToken=ba83ff368b7563c6">
-      <HintPath>..\packages\Wasp3DSDK.3.50.15000.10206\lib\Xceed.Zip.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\Xceed.Zip.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -322,6 +328,19 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>if not exist ..\..\OutPut mkdir ..\..\OutPut
+copy "$(TargetDir)*.dll" "..\..\OutPut\"
+copy "$(TargetDir)SoccerApp.exe" "..\..\OutPut\SoccerApp.exe"
+copy "$(TargetDir)SoccerApp.exe.config" "..\..\OutPut\SoccerApp.exe.config"
+copy "$(ProjectDir)templates.xml" "..\..\OutPut\templates.xml"
+if not exist ..\..\OutPut\Resources mkdir ..\..\OutPut\Resources
+if not exist ..\..\OutPut\Resources\SoccerScenes mkdir ..\..\OutPut\Resources\SoccerScenes
+if not exist ..\..\OutPut\Resources\UDT mkdir ..\..\OutPut\Resources\UDT
+copy "..\Resources\*.dll" "..\..\OutPut\Resources\"
+copy "..\Resources\SoccerScenes\*.w3d" "..\..\OutPut\Resources\SoccerScenes\"
+copy "..\Resources\UDT\*.udt" "..\..\OutPut\Resources\UDT\"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

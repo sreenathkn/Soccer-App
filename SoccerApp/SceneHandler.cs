@@ -8,26 +8,27 @@ using System.IO;
 using Beesys.Wasp.Workflow;
 using System.Threading;
 using System.Windows.Forms;
+using System.Globalization;
 
 
 namespace SoccerApp
 {
-    public class SceneHandler
+    public class SceneHandler:IDisposable
     {
         #region Class Variables
 
-        public bool isInitialized { get; set; }
-        public bool isSceneLoaded { get; set; }
-        LinkManager _objLinkManager;
-        const string m_surlformat = "net.tcp://{0}:{1}/TcpBinding/WcfTcpLink";
-        string m_serverurl = string.Empty;
-        string m_scorebugscenepath = string.Empty;
-        IPlayer objBGPlayer = null;
-        ShotBox objScorePlayer = null;
+        public bool IsInitialized { get; set; }
+        public bool IsSceneLoaded { get; set; }
         public string Hometeamshortname = string.Empty;
         public string Awayteamshortname = string.Empty;
         public string Hometeamscore = string.Empty;
         public string Awayteamscore = string.Empty;
+
+        private const string m_surlformat = "net.tcp://{0}:{1}/TcpBinding/WcfTcpLink";
+        private string m_serverurl = string.Empty;
+        private string m_scorebugscenepath = string.Empty;
+        private IPlayer objBGPlayer = null;
+        private ShotBox objScorePlayer = null;
 
         public Link AppLink
         {
@@ -48,7 +49,7 @@ namespace SoccerApp
         /// </summary>
         public void Initialize()
         {
-            isInitialized = false;
+            IsInitialized = false;
             m_serverurl = string.Format(m_surlformat, ConfigurationManager.AppSettings["stingserverip"], ConfigurationManager.AppSettings["stingserverport"]);
             if (File.Exists(ConfigurationManager.AppSettings["scorebugscenepath"]))
             {
@@ -59,17 +60,14 @@ namespace SoccerApp
                 m_scorebugscenepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "ScoreBug.w3d");
             }
 
-            if (!string.IsNullOrEmpty(m_scorebugscenepath))
+            if (!string.IsNullOrEmpty(m_scorebugscenepath) && ConfigurationManager.AppSettings["stingserverip"] != null)
             {
-                if (ConfigurationManager.AppSettings["stingserverip"] != null)
-                {
-                    string sLinkID = string.Empty;
-                    _objLinkManager = new LinkManager();
-                    AppLink = _objLinkManager.GetLink(LINKTYPE.TCP, out sLinkID);
-                    AppLink.OnEngineConnected += new EventHandler<EngineArgs>(_objLink_OnEngineConnected);
-                    AppLink.Connect(m_serverurl);
-                    _objLinkManager.OnEngineDisConnected += _objLinkManager_OnEngineDisConnected;
-                }
+                string sLinkID = string.Empty;
+                LinkManager objLinkManager = new LinkManager();
+                AppLink = objLinkManager.GetLink(LINKTYPE.TCP, out sLinkID);
+                AppLink.OnEngineConnected += new EventHandler<EngineArgs>(objLink_OnEngineConnected);
+                AppLink.Connect(m_serverurl);
+                objLinkManager.OnEngineDisConnected += objLinkManager_OnEngineDisConnected;
             }
         }
 
@@ -94,13 +92,14 @@ namespace SoccerApp
                     {
                         objChannelShotBox.SetEngineUrl(m_serverurl);
                     }
-                    objBGPlayer.OnShotBoxStatus += _objPlayer1_OnShotBoxStatus;
+                    objBGPlayer.OnShotBoxStatus += objPlayer1_OnShotBoxStatus;
+                    objBGPlayer.OnShotBoxControllerStatus += objPlayer1_OnShotBoxStatus;
                     objBGPlayer.Prepare(m_serverurl, 0, string.Empty, RENDERMODE.PROGRAM);
                 }
             }
             catch (Exception ex)
             {
-
+                LogWriter.WriteLog(ex);
             }
         }
 
@@ -120,7 +119,6 @@ namespace SoccerApp
         /// </summary>
         public void LoadScene()
         {
-            string stemplateID = string.Empty;
             string sXml = string.Empty;
             string sShotBoxID = null;
             bool isTicker;
@@ -139,7 +137,8 @@ namespace SoccerApp
                     if (objScorePlayer is IAddinInfo)
                         (objScorePlayer as IAddinInfo).Init(o);
 
-                    objScorePlayer.OnShotBoxStatus += _objPlayer1_OnShotBoxStatus;
+                    objScorePlayer.OnShotBoxStatus += objPlayer1_OnShotBoxStatus;
+                    objScorePlayer.OnShotBoxControllerStatus += objPlayer1_OnShotBoxStatus;
                     objScorePlayer.Prepare(m_serverurl, 10, RENDERMODE.PROGRAM);
                 }//end (if)
             }
@@ -149,10 +148,12 @@ namespace SoccerApp
         /// Set match udt name in the udt sequecer object
         /// </summary>
         /// <param name="frmobj"></param>
-        public void SetMatchUDT()
+        public void SetMatchUdt()
         {
             if (objScorePlayer != null)
             {
+                System.Diagnostics.Debug.WriteLine("SetMatchUDT " + Hometeamshortname + " VS " + Awayteamshortname);
+                System.Diagnostics.Debug.WriteLine("SetMatchUDT " + Hometeamscore + " : " + Awayteamscore);
                 TagData tg = new TagData();
                 tg.UserTags = new string[] { "Hometeamscore", "Awayteamscore", "Hometeamname", "Awayteamname" };
                 tg.Values = new string[] { Hometeamscore, Awayteamscore, Hometeamshortname, Awayteamshortname };
@@ -167,23 +168,25 @@ namespace SoccerApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void _objPlayer1_OnShotBoxStatus(object sender, SHOTBOXARGS e)
+        void objPlayer1_OnShotBoxStatus(object sender, SHOTBOXARGS e)
         {
             if (e.SHOTBOXRESPONSE == SHOTBOXMSG.PREPARED)
             {
-                isInitialized = true;
-                isSceneLoaded = true;
+                IsInitialized = true;
+                IsSceneLoaded = true;
 
                 if (sender != null)
                 {
                     ShotBox shotboxobj = sender as ShotBox;
                     if (shotboxobj != null)
                     {
-                        shotboxobj.Play(true, true);
                         if (shotboxobj.Equals(objScorePlayer))
                         {
-                            SetMatchUDT();
+                            System.Diagnostics.Debug.WriteLine("objPlayer1_OnShotBoxStatus Scoreplayer Scene prepared,Calling SetMatchUdt...");
+                            SetMatchUdt();
                         }
+                        System.Diagnostics.Debug.WriteLine("objPlayer1_OnShotBoxStatus Scoreplayer Scene prepared,Calling Play..");
+                        shotboxobj.Play(true, true);
                     }
                     else
                     {
@@ -192,10 +195,7 @@ namespace SoccerApp
                             IPlayer playerobj = sender as IPlayer;
                             if (playerobj != null)
                             {
-                                if (playerobj.Equals(objScorePlayer))
-                                {
-                                    SetMatchUDT();
-                                }
+                                System.Diagnostics.Debug.WriteLine("objPlayer1_OnShotBoxStatus BackGround Scene prepared,Calling Play...");
                                 playerobj.Play(true, true);
                             }
                         }
@@ -204,11 +204,13 @@ namespace SoccerApp
             }
             else if (e.SHOTBOXRESPONSE == SHOTBOXMSG.PLAYCOMPLETE)
             {
+                System.Diagnostics.Debug.WriteLine("objPlayer1_OnShotBoxStatus SHOTBOXMSG.PLAYCOMPLETE event..");
                 if (sender is ShotBox)
                 {
                     ShotBox shotboxobj = sender as ShotBox;
                     if (shotboxobj.Equals(objScorePlayer))
                     {
+                        System.Diagnostics.Debug.WriteLine("objPlayer1_OnShotBoxStatus Scoreplayer Scene playcomplete,Calling DeleteSg...");
                         shotboxobj.DeleteSg();
                     }
                 }
@@ -217,6 +219,7 @@ namespace SoccerApp
                     IPlayer playerobj = sender as IPlayer;
                     if (playerobj.Equals(objBGPlayer))
                     {
+                        System.Diagnostics.Debug.WriteLine("objPlayer1_OnShotBoxStatus BackGround Scene playcomplete,Calling DeleteSg...");
                         playerobj.DeleteSg();
                     }
                 }
@@ -224,19 +227,19 @@ namespace SoccerApp
         }
 
 
-        void _objLinkManager_OnEngineDisConnected(object sender, EngineArgs e)
+        void objLinkManager_OnEngineDisConnected(object sender, EngineArgs e)
         {
             if (e.ENGINEIP == m_serverurl)
             {
-                isInitialized = false;
+                IsInitialized = false;
             }
         }
 
-        void _objLink_OnEngineConnected(object sender, EngineArgs e)
+        void objLink_OnEngineConnected(object sender, EngineArgs e)
         {
             if (e.ENGINEIP == m_serverurl)
             {
-                isInitialized = true;
+                IsInitialized = true;
                 LoadScene();
             }
         }
@@ -246,7 +249,7 @@ namespace SoccerApp
             try
             {
                 TagData tg = new TagData();
-                switch (actiontype.ToLower())
+                switch (actiontype.ToLower(CultureInfo.InvariantCulture))
                 {
                     case "start":
                         objScorePlayer.PlayActionSet(ConfigurationManager.AppSettings["counterstartaction"]);
@@ -287,6 +290,34 @@ namespace SoccerApp
             catch (Exception ex)
             {
                 LogWriter.WriteLog(ex);
+            }
+        }
+
+        public void Dispose()
+        {
+            if(objBGPlayer!=null)
+            {
+                objBGPlayer.OnShotBoxStatus -= objPlayer1_OnShotBoxStatus;
+                objBGPlayer.OnShotBoxControllerStatus -= objPlayer1_OnShotBoxStatus;
+                objBGPlayer.Dispose();
+                objBGPlayer = null;
+            }
+            if (objScorePlayer != null)
+            {
+                objScorePlayer.OnShotBoxStatus -= objPlayer1_OnShotBoxStatus;
+                objScorePlayer.OnShotBoxControllerStatus -= objPlayer1_OnShotBoxStatus;
+                objScorePlayer.Dispose();
+                objScorePlayer = null;
+            }
+            if(AppLink!=null)
+            {
+                AppLink.Dispose();
+                AppLink = null;
+            }
+            if (FileHandler != null)
+            {
+                FileHandler.Dispose();
+                FileHandler = null;
             }
         }
     }
