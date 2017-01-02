@@ -11,3 +11,4 @@ Video Links related to this sample can be found here
 ###### [Score Band] (http://vimeo.com/161729799)
 ###### [League Table] (http://vimeo.com/161729799)
 ###### [Field Formation] (http://vimeo.com/161729786)
+For detail documentation please go through Wasp3D Soccer Application.pdf in Docs folder.
