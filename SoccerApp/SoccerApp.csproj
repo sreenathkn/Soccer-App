@@ -294,6 +294,7 @@ copy "..\Graphics\SoccerScenes\*.w3d" "..\..\OutPut\Resources\Graphics\"
 copy "..\Graphics\SoccerScenes\*.wcz" "..\..\OutPut\Resources\Graphics\"
 copy "..\Graphics\SoccerScenes\*.w3d" "..\..\Graphics\"
 copy "..\Graphics\SoccerScenes\*.wcz" "..\..\Graphics\"
+copy "..\Resources\*.w3d" "..\..\OutPut\Resources\"
 copy "..\Docs\*.pdf" "..\..\Docs\"
 copy "..\Graphics\UDT\*.udt" "..\..\OutPut\Resources\UDT\"</PostBuildEvent>
   </PropertyGroup>
